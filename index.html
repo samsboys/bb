@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+
 <meta charset="UTF-8">
 
 <meta name="viewport"
@@ -10,9 +11,11 @@
                user-scalable=no,
                viewport-fit=cover">
 
+<!-- 브라우저 / Android 색상 -->
 <meta name="theme-color" content="#1976d2">
 
-<!-- Android / PWA -->
+<!-- Android PWA -->
+<meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" href="./manifest.json">
 
 <!-- iPhone / iPad -->
@@ -21,7 +24,9 @@
 <meta name="apple-mobile-web-app-title" content="북부전자카드">
 
 <!-- iPhone 홈 화면 아이콘 -->
-<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="apple-touch-icon"
+      sizes="192x192"
+      href="./icon-192.png">
 
 <!-- 브라우저 아이콘 -->
 <link rel="icon"
@@ -47,6 +52,7 @@ html{
 body{
   margin:0;
   padding:0;
+
   min-height:100vh;
   min-height:100dvh;
 
@@ -63,8 +69,11 @@ body{
   color:#172033;
 }
 
+/* 전체 페이지 */
+
 .page{
   width:100%;
+
   min-height:100vh;
   min-height:100dvh;
 
@@ -75,11 +84,15 @@ body{
     max(16px,env(safe-area-inset-left));
 }
 
+/* 가운데 영역 */
+
 .container{
   width:100%;
   max-width:760px;
   margin:0 auto;
 }
+
+/* 제목 */
 
 .header{
   padding:8px 4px 20px;
@@ -96,12 +109,12 @@ body{
   color:#102a43;
 }
 
-
 /* =========================
    메인 게시판
 ========================= */
 
 .main-link{
+
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -138,6 +151,7 @@ body{
 }
 
 .main-icon{
+
   width:54px;
   height:54px;
 
@@ -153,6 +167,7 @@ body{
 }
 
 .main-title{
+
   font-size:25px;
   font-weight:800;
   letter-spacing:-.7px;
@@ -164,12 +179,12 @@ body{
   opacity:.9;
 }
 
-
 /* =========================
    버튼
 ========================= */
 
 .buttons{
+
   display:grid;
 
   grid-template-columns:
@@ -181,6 +196,7 @@ body{
 }
 
 .button{
+
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -207,14 +223,17 @@ body{
 }
 
 .button-left{
+
   display:flex;
   align-items:center;
+
   gap:12px;
 
   min-width:0;
 }
 
 .icon{
+
   flex:0 0 auto;
 
   width:42px;
@@ -252,6 +271,7 @@ body{
 }
 
 .button-text{
+
   font-size:18px;
   font-weight:750;
   letter-spacing:-.5px;
@@ -260,6 +280,7 @@ body{
 }
 
 .button-arrow{
+
   flex:0 0 auto;
 
   font-size:21px;
@@ -269,12 +290,10 @@ body{
   margin-left:5px;
 }
 
-
-/* =========================
-   관리자
-========================= */
+/* 관리자 */
 
 .admin-button{
+
   grid-column:1/-1;
 
   min-height:76px;
@@ -302,10 +321,7 @@ body{
   color:#a9c0d8;
 }
 
-
-/* =========================
-   터치 효과
-========================= */
+/* 터치 */
 
 .button:active,
 .main-link:active{
@@ -322,7 +338,6 @@ body{
     0 12px 32px rgba(7,87,181,.30);
 }
 
-
 /* =========================
    작은 휴대폰
 ========================= */
@@ -330,6 +345,7 @@ body{
 @media(max-width:430px){
 
   .page{
+
     padding-top:
       max(20px,env(safe-area-inset-top));
 
@@ -349,15 +365,21 @@ body{
   }
 
   .main-link{
+
     min-height:100px;
+
     padding:19px;
+
     border-radius:21px;
   }
 
   .main-icon{
+
     width:48px;
     height:48px;
+
     border-radius:15px;
+
     font-size:24px;
   }
 
@@ -366,13 +388,18 @@ body{
   }
 
   .buttons{
+
     gap:9px;
+
     margin-top:13px;
   }
 
   .button{
+
     min-height:84px;
+
     padding:13px 12px;
+
     border-radius:17px;
   }
 
@@ -381,9 +408,12 @@ body{
   }
 
   .icon{
+
     width:36px;
     height:36px;
+
     border-radius:11px;
+
     font-size:18px;
   }
 
@@ -399,7 +429,6 @@ body{
     min-height:68px;
   }
 }
-
 
 /* =========================
    아주 작은 휴대폰
@@ -424,13 +453,16 @@ body{
   }
 
   .icon{
+
     width:33px;
     height:33px;
+
     font-size:16px;
   }
 }
 
 </style>
+
 </head>
 
 
@@ -442,7 +474,11 @@ body{
 
 
 <header class="header">
-  <h1 class="title">서울 북부 회중</h1>
+
+<h1 class="title">
+서울 북부 회중
+</h1>
+
 </header>
 
 
@@ -483,8 +519,13 @@ body{
    rel="noopener">
 
   <div class="button-left">
+
     <div class="icon">📅</div>
-    <span class="button-text">화요일</span>
+
+    <span class="button-text">
+      화요일
+    </span>
+
   </div>
 
   <span class="button-arrow">›</span>
@@ -500,8 +541,13 @@ body{
    rel="noopener">
 
   <div class="button-left">
+
     <div class="icon">📅</div>
-    <span class="button-text">수요일</span>
+
+    <span class="button-text">
+      수요일
+    </span>
+
   </div>
 
   <span class="button-arrow">›</span>
@@ -517,8 +563,13 @@ body{
    rel="noopener">
 
   <div class="button-left">
+
     <div class="icon">📅</div>
-    <span class="button-text">목요일</span>
+
+    <span class="button-text">
+      목요일
+    </span>
+
   </div>
 
   <span class="button-arrow">›</span>
@@ -534,8 +585,13 @@ body{
    rel="noopener">
 
   <div class="button-left">
+
     <div class="icon">📅</div>
-    <span class="button-text">금요일</span>
+
+    <span class="button-text">
+      금요일
+    </span>
+
   </div>
 
   <span class="button-arrow">›</span>
@@ -551,8 +607,13 @@ body{
    rel="noopener">
 
   <div class="button-left">
+
     <div class="icon">📅</div>
-    <span class="button-text">토요일</span>
+
+    <span class="button-text">
+      토요일
+    </span>
+
   </div>
 
   <span class="button-arrow">›</span>
@@ -568,8 +629,13 @@ body{
    rel="noopener">
 
   <div class="button-left">
+
     <div class="icon">📅</div>
-    <span class="button-text">일요일</span>
+
+    <span class="button-text">
+      일요일
+    </span>
+
   </div>
 
   <span class="button-arrow">›</span>
@@ -585,8 +651,13 @@ body{
    rel="noopener">
 
   <div class="button-left">
+
     <div class="icon">📞</div>
-    <span class="button-text">전화 증거</span>
+
+    <span class="button-text">
+      전화 증거
+    </span>
+
   </div>
 
   <span class="button-arrow">›</span>
@@ -602,8 +673,13 @@ body{
    rel="noopener">
 
   <div class="button-left">
+
     <div class="icon">✉️</div>
-    <span class="button-text">편지 봉사</span>
+
+    <span class="button-text">
+      편지 봉사
+    </span>
+
   </div>
 
   <span class="button-arrow">›</span>
@@ -619,8 +695,13 @@ body{
    rel="noopener">
 
   <div class="button-left">
+
     <div class="icon">👤</div>
-    <span class="button-text">개인 봉사</span>
+
+    <span class="button-text">
+      개인 봉사
+    </span>
+
   </div>
 
   <span class="button-arrow">›</span>
@@ -636,8 +717,13 @@ body{
    rel="noopener">
 
   <div class="button-left">
+
     <div class="icon">📝</div>
-    <span class="button-text">전시대 신청</span>
+
+    <span class="button-text">
+      전시대 신청
+    </span>
+
   </div>
 
   <span class="button-arrow">›</span>
@@ -674,11 +760,11 @@ body{
 </main>
 
 
-<script>
+<!-- =========================
+     PWA 서비스워커
+========================= -->
 
-/* =========================
-   PWA 서비스워커 등록
-========================= */
+<script>
 
 if ("serviceWorker" in navigator) {
 
@@ -686,11 +772,22 @@ if ("serviceWorker" in navigator) {
 
     navigator.serviceWorker
       .register("./sw.js")
+
       .then(function () {
-        console.log("북부전자카드 서비스워커 등록 완료");
+
+        console.log(
+          "북부전자카드 서비스워커 등록 완료"
+        );
+
       })
+
       .catch(function (error) {
-        console.log("서비스워커 등록 실패:", error);
+
+        console.log(
+          "서비스워커 등록 실패:",
+          error
+        );
+
       });
 
   });
@@ -698,6 +795,7 @@ if ("serviceWorker" in navigator) {
 }
 
 </script>
+
 
 </body>
 </html>
