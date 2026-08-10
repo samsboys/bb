@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#f3f6fa">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>서울 북부 회중</title>
+
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{margin:0;padding:0;background:#f3f6fa}
+body{
+  margin:0;padding:0;min-height:100vh;min-height:100dvh;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",
+  "Noto Sans KR","Malgun Gothic",sans-serif;
+  background:#f3f6fa;color:#172033;
+}
+.page{
+  width:100%;min-height:100vh;min-height:100dvh;
+  padding:max(28px,env(safe-area-inset-top))
+  max(16px,env(safe-area-inset-right))
+  max(32px,env(safe-area-inset-bottom))
+  max(16px,env(safe-area-inset-left));
+}
+.container{width:100%;max-width:760px;margin:0 auto}
+.header{padding:8px 4px 20px}
+.title{
+  margin:0;font-size:34px;font-weight:800;letter-spacing:-1.3px;
+  line-height:1.15;color:#102a43;
+}
+.main-link{
+  display:flex;align-items:center;justify-content:space-between;
+  width:100%;min-height:108px;padding:22px 24px;
+  background:linear-gradient(135deg,#1976d2 0%,#0757b5 100%);
+  color:#fff;text-decoration:none;border-radius:24px;
+  box-shadow:0 10px 28px rgba(7,87,181,.25);
+  transition:transform .12s ease,box-shadow .12s ease;
+}
+.main-content{display:flex;align-items:center;gap:16px}
+.main-icon{
+  width:54px;height:54px;display:flex;align-items:center;justify-content:center;
+  border-radius:17px;background:rgba(255,255,255,.17);font-size:27px;
+}
+.main-title{font-size:25px;font-weight:800;letter-spacing:-.7px}
+.arrow{font-size:30px;font-weight:300;opacity:.9}
+
+.buttons{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;margin-top:16px;
+}
+.button{
+  display:flex;align-items:center;justify-content:space-between;
+  min-height:92px;padding:17px;border-radius:20px;
+  text-decoration:none;color:#172033;background:#fff;
+  border:1px solid #d9e2ec;
+  box-shadow:0 3px 12px rgba(16,42,67,.07);
+  transition:transform .12s ease,box-shadow .12s ease;
+}
+.button-left{display:flex;align-items:center;gap:12px;min-width:0}
+.icon{
+  flex:0 0 auto;width:42px;height:42px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:13px;font-size:21px;background:#e7f0ff;
+}
+.purple .icon{background:#e5efff}
+.blue .icon{background:#e1ecff}
+.gray .icon{background:#e8eef5}
+.orange .icon{background:#e5efff}
+.green .icon{background:#e3edff}
+.button-text{font-size:18px;font-weight:750;letter-spacing:-.5px;white-space:nowrap}
+.button-arrow{flex:0 0 auto;font-size:21px;color:#9db2c8;margin-left:5px}
+.admin-button{
+  grid-column:1/-1;min-height:76px;
+  background:linear-gradient(135deg,#123f70 0%,#082b50 100%);
+  color:#fff;border:none;box-shadow:0 7px 20px rgba(8,43,80,.20);
+}
+.admin-button .icon{background:rgba(255,255,255,.13)}
+.admin-button .button-arrow{color:#a9c0d8}
+.button:active,.main-link:active{transform:scale(.97)}
+.button:hover{box-shadow:0 6px 18px rgba(16,42,67,.11)}
+.main-link:hover{box-shadow:0 12px 32px rgba(7,87,181,.30)}
+
+@media(max-width:430px){
+  .page{
+    padding-top:max(20px,env(safe-area-inset-top));
+    padding-left:max(13px,env(safe-area-inset-left));
+    padding-right:max(13px,env(safe-area-inset-right));
+  }
+  .header{padding-bottom:17px}
+  .title{font-size:31px}
+  .main-link{min-height:100px;padding:19px;border-radius:21px}
+  .main-icon{width:48px;height:48px;border-radius:15px;font-size:24px}
+  .main-title{font-size:22px}
+  .buttons{gap:9px;margin-top:13px}
+  .button{min-height:84px;padding:13px 12px;border-radius:17px}
+  .button-left{gap:9px}
+  .icon{width:36px;height:36px;border-radius:11px;font-size:18px}
+  .button-text{font-size:16px}
+  .button-arrow{font-size:18px}
+  .admin-button{min-height:68px}
+}
+@media(max-width:360px){
+  .title{font-size:28px}
+  .main-title{font-size:20px}
+  .button{min-height:80px}
+  .button-text{font-size:14px}
+  .icon{width:33px;height:33px;font-size:16px}
+}
+</style>
+</head>
+
+<body>
+<main class="page">
+<div class="container">
+
+<header class="header">
+  <h1 class="title">서울 북부 회중</h1>
+</header>
+
+<a class="main-link"
+   href="https://docs.google.com/spreadsheets/d/1Z-tXk1lHjDKJ9QfvNfPFXRUSL8awENpLzRRczfown9E/edit?gid=1903762694#gid=1903762694"
+   target="_top">
+  <div class="main-content">
+    <div class="main-icon">📋</div>
+    <div class="main-title">북부회중 게시판</div>
+  </div>
+  <span class="arrow">›</span>
+</a>
+
+<section class="buttons">
+
+<a class="button purple"
+   href="https://docs.google.com/spreadsheets/d/1Qup_YoEKWxplnGioeA5r4BQfMZP3DQBKOVzU3OCxarM/edit?gid=0#gid=0"
+   target="_top">
+  <div class="button-left"><div class="icon">📅</div><span class="button-text">화요일</span></div>
+  <span class="button-arrow">›</span>
+</a>
+
+<a class="button blue"
+   href="https://docs.google.com/spreadsheets/d/1UEdmbFROuAe1rny6-HN6998ObACrme-mhmC7QXBBUHE/edit?gid=0#gid=0"
+   target="_top">
+  <div class="button-left"><div class="icon">📅</div><span class="button-text">수요일</span></div>
+  <span class="button-arrow">›</span>
+</a>
+
+<a class="button gray"
+   href="https://docs.google.com/spreadsheets/d/1JpNcenBexX6tJVujE53o4R4G9NRwUJ_QIVk8nCKOT1w/edit?gid=0#gid=0"
+   target="_top">
+  <div class="button-left"><div class="icon">📅</div><span class="button-text">목요일</span></div>
+  <span class="button-arrow">›</span>
+</a>
+
+<a class="button gray"
+   href="https://docs.google.com/spreadsheets/d/1ixb-jhy3HEtuJ8oJvII9TRp1VwV0plR1CxFaqjYdBTo/edit?gid=0#gid=0"
+   target="_top">
+  <div class="button-left"><div class="icon">📅</div><span class="button-text">금요일</span></div>
+  <span class="button-arrow">›</span>
+</a>
+
+<a class="button purple"
+   href="https://docs.google.com/spreadsheets/d/1jF9CUYw-Hyg71YwxRRVPvWgZ0OG86CI4TIqpOXnnlUA/edit?gid=0#gid=0"
+   target="_top">
+  <div class="button-left"><div class="icon">📅</div><span class="button-text">토요일</span></div>
+  <span class="button-arrow">›</span>
+</a>
+
+<a class="button purple"
+   href="https://docs.google.com/spreadsheets/d/1LhsyRYL04sOXDxstABVhvNcJ4eG6AxnEoa3jMiAahdg/edit?gid=0#gid=0"
+   target="_top">
+  <div class="button-left"><div class="icon">📅</div><span class="button-text">일요일</span></div>
+  <span class="button-arrow">›</span>
+</a>
+
+<a class="button orange"
+   href="https://docs.google.com/spreadsheets/d/1axP-z7SiAx6vAr97R7SwD-0yP4Yd19JtEwoF1ApYaJY/edit?gid=0#gid=0"
+   target="_top">
+  <div class="button-left"><div class="icon">📞</div><span class="button-text">전화 증거</span></div>
+  <span class="button-arrow">›</span>
+</a>
+
+<a class="button blue"
+   href="https://docs.google.com/spreadsheets/d/1bGcu0AaT2iPOw2a3379wScaIM5s4ut-O9Umj3Fco4Uc/edit?gid=0#gid=0"
+   target="_top">
+  <div class="button-left"><div class="icon">✉️</div><span class="button-text">편지 봉사</span></div>
+  <span class="button-arrow">›</span>
+</a>
+
+<a class="button purple"
+   href="https://docs.google.com/spreadsheets/d/10uhO1PXHa4zPdxqc7oNQ_WLtlsj5w8vwZ7PIZkb35II/edit?gid=0#gid=0"
+   target="_top">
+  <div class="button-left"><div class="icon">👤</div><span class="button-text">개인 봉사</span></div>
+  <span class="button-arrow">›</span>
+</a>
+
+<a class="button green"
+   href="https://docs.google.com/spreadsheets/d/13biGx4c_LIhM7wLaZDLdbHAs5-egmXA9Io7naDJln-w/edit?gid=1888339369#gid=1888339369"
+   target="_top">
+  <div class="button-left"><div class="icon">📝</div><span class="button-text">전시대 신청</span></div>
+  <span class="button-arrow">›</span>
+</a>
+
+<a class="button admin-button"
+   href="https://docs.google.com/spreadsheets/d/1eQHscrZpAWzrOo6QJw3pmyoeUijUoTKyfMmmPRPqkaU/edit?gid=1237649201#gid=1237649201"
+   target="_top">
+  <div class="button-left"><div class="icon">⚙️</div><span class="button-text">전시대 관리자</span></div>
+  <span class="button-arrow">›</span>
+</a>
+
+</section>
+</div>
+</main>
+</body>
+</html>
