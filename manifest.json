@@ -1,0 +1,45 @@
+{
+  "name": "서울 북부 회중",
+  "short_name": "북부전자카드",
+  "description": "서울 북부 회중 전자카드",
+  "lang": "ko-KR",
+  "dir": "ltr",
+
+  "start_url": "./",
+  "scope": "./",
+
+  "display": "standalone",
+  "orientation": "portrait",
+
+  "background_color": "#f3f6fa",
+  "theme_color": "#1976d2",
+
+  "id": "./",
+
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
