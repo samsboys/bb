@@ -8,85 +8,53 @@ const FILES_TO_CACHE = [
   "./icon-512.png"
 ];
 
-
-/* 설치 */
-
-self.addEventListener("install", function(event) {
-
+// 설치
+self.addEventListener("install", event => {
   event.waitUntil(
-
-    caches.open(CACHE_NAME).then(function(cache) {
-
-      return cache.addAll(FILES_TO_CACHE);
-
-    })
-
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(FILES_TO_CACHE))
+      .then(() => self.skipWaiting())
   );
-
-  self.skipWaiting();
-
 });
 
-
-/* 활성화 */
-
-self.addEventListener("activate", function(event) {
-
+// 활성화
+self.addEventListener("activate", event => {
   event.waitUntil(
-
-    caches.keys().then(function(keys) {
-
-      return Promise.all(
-
-        keys.map(function(key) {
-
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-
-        })
-
-      );
-
-    })
-
+    caches.keys().then(keys =>
+      Promise.all(
+        keys
+          .filter(key => key !== CACHE_NAME)
+          .map(key => caches.delete(key))
+      )
+    ).then(() => self.clients.claim())
   );
-
-  self.clients.claim();
-
 });
 
+// 네트워크 우선
+self.addEventListener("fetch", event => {
 
-/* 인터넷 우선 */
-
-self.addEventListener("fetch", function(event) {
-
-  if (event.request.method !== "GET") {
+  // Google 문서/스프레드시트 등 외부 사이트는 Service Worker에서 건드리지 않음
+  if (!event.request.url.startsWith(self.location.origin)) {
     return;
   }
 
   event.respondWith(
-
     fetch(event.request)
+      .then(response => {
 
-      .then(function(response) {
+        // 정상 응답은 캐시에 저장
+        if (response && response.status === 200) {
+          const responseClone = response.clone();
 
-        const copy = response.clone();
-
-        caches.open(CACHE_NAME).then(function(cache) {
-          cache.put(event.request, copy);
-        });
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseClone);
+          });
+        }
 
         return response;
-
       })
-
-      .catch(function() {
-
+      .catch(() => {
         return caches.match(event.request);
-
       })
-
   );
-
 });
