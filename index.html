@@ -53,7 +53,7 @@
 <style>
 
 /* ==================================================
-   기본 초기화
+   기본
 ================================================== */
 
 * {
@@ -92,30 +92,12 @@ body {
 
 
 /* ==================================================
-   ★ 페이지 잠금
+   페이지 잠금
 ================================================== */
-
-/*
-   처음에는 전체 페이지를 숨깁니다.
-
-   비밀번호가 맞으면
-   JavaScript에서 .unlocked를 추가합니다.
-*/
 
 .page {
     display: none;
-}
 
-body.unlocked .page {
-    display: block;
-}
-
-
-/* ==================================================
-   전체 페이지
-================================================== */
-
-.page {
     width: 100%;
 
     min-height: 100vh;
@@ -132,6 +114,10 @@ body.unlocked .page {
 
     padding-left:
         max(16px, env(safe-area-inset-left));
+}
+
+body.unlocked .page {
+    display: block;
 }
 
 
@@ -611,11 +597,6 @@ body.unlocked .page {
             #0b3b68 100%
         );
 
-    /*
-       처음 접속했을 때
-       화면 전체를 덮습니다.
-    */
-
     opacity: 1;
 
     visibility: visible;
@@ -624,11 +605,6 @@ body.unlocked .page {
         opacity 0.2s ease,
         visibility 0.2s ease;
 }
-
-
-/*
-   인증이 완료되면 잠금 화면을 숨깁니다.
-*/
 
 body.unlocked .password-overlay {
 
@@ -788,7 +764,6 @@ body.unlocked .password-overlay {
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     gap: 9px;
@@ -870,7 +845,7 @@ body.unlocked .password-overlay {
 
 
 /* ==================================================
-   잠금 해제 시 애니메이션
+   페이지 나타남
 ================================================== */
 
 body.unlocked .page {
@@ -900,7 +875,7 @@ body.unlocked .page {
 
 
 <!-- ==================================================
-     비밀번호 잠금 화면
+     처음 접속할 때 나타나는 비밀번호 화면
 ================================================== -->
 
 <div
@@ -978,8 +953,6 @@ body.unlocked .page {
 
 <!-- ==================================================
      메인 페이지
-     처음에는 CSS로 숨겨져 있습니다.
-     비밀번호가 맞으면 body에 unlocked가 추가됩니다.
 ================================================== -->
 
 <main class="page">
@@ -987,9 +960,7 @@ body.unlocked .page {
 <div class="container">
 
 
-<!-- ==================================================
-     제목
-================================================== -->
+<!-- 제목 -->
 
 <header class="header">
 
@@ -1044,9 +1015,7 @@ body.unlocked .page {
 
     <div class="button-left">
 
-        <div class="icon">
-            📅
-        </div>
+        <div class="icon">📅</div>
 
         <span class="button-text">
             화요일
@@ -1054,9 +1023,7 @@ body.unlocked .page {
 
     </div>
 
-    <span class="button-arrow">
-        ›
-    </span>
+    <span class="button-arrow">›</span>
 
 </a>
 
@@ -1070,9 +1037,7 @@ body.unlocked .page {
 
     <div class="button-left">
 
-        <div class="icon">
-            📅
-        </div>
+        <div class="icon">📅</div>
 
         <span class="button-text">
             수요일
@@ -1080,9 +1045,7 @@ body.unlocked .page {
 
     </div>
 
-    <span class="button-arrow">
-        ›
-    </span>
+    <span class="button-arrow">›</span>
 
 </a>
 
@@ -1096,9 +1059,7 @@ body.unlocked .page {
 
     <div class="button-left">
 
-        <div class="icon">
-            📅
-        </div>
+        <div class="icon">📅</div>
 
         <span class="button-text">
             목요일
@@ -1106,9 +1067,7 @@ body.unlocked .page {
 
     </div>
 
-    <span class="button-arrow">
-        ›
-    </span>
+    <span class="button-arrow">›</span>
 
 </a>
 
@@ -1122,9 +1081,7 @@ body.unlocked .page {
 
     <div class="button-left">
 
-        <div class="icon">
-            📅
-        </div>
+        <div class="icon">📅</div>
 
         <span class="button-text">
             금요일
@@ -1132,9 +1089,7 @@ body.unlocked .page {
 
     </div>
 
-    <span class="button-arrow">
-        ›
-    </span>
+    <span class="button-arrow">›</span>
 
 </a>
 
@@ -1148,9 +1103,7 @@ body.unlocked .page {
 
     <div class="button-left">
 
-        <div class="icon">
-            📅
-        </div>
+        <div class="icon">📅</div>
 
         <span class="button-text">
             토요일
@@ -1158,9 +1111,7 @@ body.unlocked .page {
 
     </div>
 
-    <span class="button-arrow">
-        ›
-    </span>
+    <span class="button-arrow">›</span>
 
 </a>
 
@@ -1174,9 +1125,7 @@ body.unlocked .page {
 
     <div class="button-left">
 
-        <div class="icon">
-            📅
-        </div>
+        <div class="icon">📅</div>
 
         <span class="button-text">
             일요일
@@ -1184,9 +1133,7 @@ body.unlocked .page {
 
     </div>
 
-    <span class="button-arrow">
-        ›
-    </span>
+    <span class="button-arrow">›</span>
 
 </a>
 
@@ -1200,9 +1147,7 @@ body.unlocked .page {
 
     <div class="button-left">
 
-        <div class="icon">
-            📞
-        </div>
+        <div class="icon">📞</div>
 
         <span class="button-text">
             전화 증거
@@ -1210,9 +1155,7 @@ body.unlocked .page {
 
     </div>
 
-    <span class="button-arrow">
-        ›
-    </span>
+    <span class="button-arrow">›</span>
 
 </a>
 
@@ -1226,9 +1169,7 @@ body.unlocked .page {
 
     <div class="button-left">
 
-        <div class="icon">
-            ✉️
-        </div>
+        <div class="icon">✉️</div>
 
         <span class="button-text">
             편지 봉사
@@ -1236,9 +1177,7 @@ body.unlocked .page {
 
     </div>
 
-    <span class="button-arrow">
-        ›
-    </span>
+    <span class="button-arrow">›</span>
 
 </a>
 
@@ -1252,9 +1191,7 @@ body.unlocked .page {
 
     <div class="button-left">
 
-        <div class="icon">
-            👤
-        </div>
+        <div class="icon">👤</div>
 
         <span class="button-text">
             개인 봉사
@@ -1262,9 +1199,7 @@ body.unlocked .page {
 
     </div>
 
-    <span class="button-arrow">
-        ›
-    </span>
+    <span class="button-arrow">›</span>
 
 </a>
 
@@ -1278,9 +1213,7 @@ body.unlocked .page {
 
     <div class="button-left">
 
-        <div class="icon">
-            📝
-        </div>
+        <div class="icon">📝</div>
 
         <span class="button-text">
             전시대 신청
@@ -1288,27 +1221,23 @@ body.unlocked .page {
 
     </div>
 
-    <span class="button-arrow">
-        ›
-    </span>
+    <span class="button-arrow">›</span>
 
 </a>
 
 
 <!-- ==================================================
-     관리자
+     전시대 관리자
 ================================================== -->
 
-<a
+<button
+    type="button"
     class="button admin-button"
-    href="https://docs.google.com/spreadsheets/d/1eQHscrZpAWzrOo6QJw3pmyoeUijUoTKyfMmmPRPqkaU/edit?gid=1237649201#gid=1237649201"
-    target="_top">
+    id="adminButton">
 
     <div class="button-left">
 
-        <div class="icon">
-            ⚙️
-        </div>
+        <div class="icon">⚙️</div>
 
         <span class="button-text">
             전시대 관리자
@@ -1316,11 +1245,9 @@ body.unlocked .page {
 
     </div>
 
-    <span class="button-arrow">
-        ›
-    </span>
+    <span class="button-arrow">›</span>
 
-</a>
+</button>
 
 
 </section>
@@ -1337,28 +1264,47 @@ body.unlocked .page {
 ================================================== */
 
 /*
-   현재 비밀번호는 1234입니다.
+   일반 접속 비밀번호
+   ==================
 
-   원하는 비밀번호로 바꾸려면
-   아래 숫자만 변경하세요.
-
-   예:
-   const ADMIN_PASSWORD = "2580";
+   처음 페이지에 들어올 때 사용하는 비밀번호
 */
 
-const ADMIN_PASSWORD = "1234";
+const PAGE_PASSWORD = "7216";
+
+
+/*
+   관리자 비밀번호
+   ===============
+
+   '전시대 관리자' 버튼을 눌렀을 때
+   사용하는 별도의 비밀번호
+*/
+
+const ADMIN_PASSWORD = "7979";
+
+
+/*
+   관리자 Google Sheets 주소
+*/
+
+const ADMIN_URL =
+    "https://docs.google.com/spreadsheets/d/1eQHscrZpAWzrOo6QJw3pmyoeUijUoTKyfMmmPRPqkaU/edit?gid=1237649201#gid=1237649201";
 
 
 /* ==================================================
-   비밀번호 저장 이름
+   저장 키
 ================================================== */
 
-const PASSWORD_STORAGE_KEY =
-    "bukbu_electronic_card_password_saved";
+const PAGE_PASSWORD_KEY =
+    "bukbu_page_password_saved";
+
+const ADMIN_PASSWORD_KEY =
+    "bukbu_admin_password_saved";
 
 
 /* ==================================================
-   화면 요소
+   요소
 ================================================== */
 
 const passwordInput =
@@ -1373,17 +1319,48 @@ const rememberPassword =
 const passwordError =
     document.getElementById("passwordError");
 
+const adminButton =
+    document.getElementById("adminButton");
+
 
 /* ==================================================
-   저장된 인증 여부 확인
+   현재 인증된 상태
 ================================================== */
 
-function isPasswordSaved() {
+let pageUnlocked = false;
+
+
+/* ==================================================
+   페이지 비밀번호가 저장되어 있는지 확인
+================================================== */
+
+function isPagePasswordSaved() {
 
     try {
 
         return localStorage.getItem(
-            PASSWORD_STORAGE_KEY
+            PAGE_PASSWORD_KEY
+        ) === "true";
+
+    } catch (error) {
+
+        return false;
+
+    }
+
+}
+
+
+/* ==================================================
+   관리자 비밀번호가 저장되어 있는지 확인
+================================================== */
+
+function isAdminPasswordSaved() {
+
+    try {
+
+        return localStorage.getItem(
+            ADMIN_PASSWORD_KEY
         ) === "true";
 
     } catch (error) {
@@ -1401,18 +1378,11 @@ function isPasswordSaved() {
 
 function unlockPage() {
 
-    /*
-       메인 화면 표시
-    */
+    pageUnlocked = true;
 
     document.body.classList.add(
         "unlocked"
     );
-
-
-    /*
-       비밀번호 입력창 비우기
-    */
 
     passwordInput.value = "";
 
@@ -1422,16 +1392,14 @@ function unlockPage() {
 
 
 /* ==================================================
-   비밀번호 확인
+   일반 페이지 비밀번호 확인
 ================================================== */
 
-function checkPassword() {
+function checkPagePassword() {
 
     const enteredPassword =
         passwordInput.value.trim();
 
-
-    /* 빈 비밀번호 */
 
     if (!enteredPassword) {
 
@@ -1445,14 +1413,11 @@ function checkPassword() {
     }
 
 
-    /* 비밀번호가 맞음 */
-
-    if (enteredPassword === ADMIN_PASSWORD) {
+    if (enteredPassword === PAGE_PASSWORD) {
 
 
         /*
-           '이 기기에서 기억하기'
-           선택 여부 확인
+           비밀번호 기억하기
         */
 
         if (rememberPassword.checked) {
@@ -1460,38 +1425,33 @@ function checkPassword() {
             try {
 
                 localStorage.setItem(
-                    PASSWORD_STORAGE_KEY,
+                    PAGE_PASSWORD_KEY,
                     "true"
                 );
 
             } catch (error) {
 
                 console.log(
-                    "비밀번호 저장 실패:",
+                    "페이지 비밀번호 저장 실패:",
                     error
                 );
 
             }
 
         }
-
-
-        /*
-           기억하지 않기를 선택한 경우
-        */
 
         else {
 
             try {
 
                 localStorage.removeItem(
-                    PASSWORD_STORAGE_KEY
+                    PAGE_PASSWORD_KEY
                 );
 
             } catch (error) {
 
                 console.log(
-                    "저장값 삭제 실패:",
+                    "페이지 비밀번호 저장 삭제 실패:",
                     error
                 );
 
@@ -1499,10 +1459,6 @@ function checkPassword() {
 
         }
 
-
-        /*
-           메인 화면 열기
-        */
 
         unlockPage();
 
@@ -1510,10 +1466,6 @@ function checkPassword() {
 
     }
 
-
-    /* ==================================================
-       비밀번호가 틀림
-    ================================================== */
 
     passwordError.textContent =
         "비밀번호가 올바르지 않습니다.";
@@ -1526,37 +1478,180 @@ function checkPassword() {
 
 
 /* ==================================================
-   확인 버튼
+   관리자 비밀번호 입력
 ================================================== */
 
-passwordConfirm.addEventListener(
-    "click",
-    checkPassword
-);
+function askAdminPassword() {
+
+    /*
+       이미 관리자 비밀번호를 기억한 경우
+       바로 관리자 페이지로 이동
+    */
+
+    if (isAdminPasswordSaved()) {
+
+        window.location.href = ADMIN_URL;
+
+        return;
+
+    }
+
+
+    /*
+       관리자 비밀번호 입력창을 사용합니다.
+       기본 페이지 비밀번호 창을 재사용합니다.
+    */
+
+    passwordInput.value = "";
+
+    passwordError.textContent = "";
+
+    rememberPassword.checked = false;
+
+
+    /*
+       관리자용 화면으로 변경
+    */
+
+    document.getElementById(
+        "passwordTitle"
+    ).textContent = "전시대 관리자";
+
+    document.querySelector(
+        ".password-description"
+    ).innerHTML =
+        "관리자 페이지입니다.<br>관리자 비밀번호를 입력해 주세요.";
+
+
+    /*
+       관리자 확인 모드
+    */
+
+    passwordConfirm.onclick =
+        checkAdminPassword;
+
+
+    passwordInput.onkeydown =
+        function(event) {
+
+            if (event.key === "Enter") {
+
+                event.preventDefault();
+
+                checkAdminPassword();
+
+            }
+
+        };
+
+
+    /*
+       잠금 화면을 다시 표시
+    */
+
+    document.body.classList.remove(
+        "unlocked"
+    );
+
+    setTimeout(
+        function() {
+
+            passwordInput.focus();
+
+        },
+        100
+    );
+
+}
 
 
 /* ==================================================
-   Enter 키
+   관리자 비밀번호 확인
 ================================================== */
 
-passwordInput.addEventListener(
-    "keydown",
-    function(event) {
+function checkAdminPassword() {
 
-        if (event.key === "Enter") {
+    const enteredPassword =
+        passwordInput.value.trim();
 
-            event.preventDefault();
 
-            checkPassword();
+    if (!enteredPassword) {
+
+        passwordError.textContent =
+            "관리자 비밀번호를 입력해 주세요.";
+
+        passwordInput.focus();
+
+        return;
+
+    }
+
+
+    if (enteredPassword === ADMIN_PASSWORD) {
+
+
+        /*
+           관리자 비밀번호 기억
+        */
+
+        if (rememberPassword.checked) {
+
+            try {
+
+                localStorage.setItem(
+                    ADMIN_PASSWORD_KEY,
+                    "true"
+                );
+
+            } catch (error) {
+
+                console.log(
+                    "관리자 비밀번호 저장 실패:",
+                    error
+                );
+
+            }
 
         }
+
+
+        /*
+           관리자 페이지 이동
+        */
+
+        window.location.href = ADMIN_URL;
+
+        return;
+
+    }
+
+
+    passwordError.textContent =
+        "관리자 비밀번호가 올바르지 않습니다.";
+
+    passwordInput.value = "";
+
+    passwordInput.focus();
+
+}
+
+
+/* ==================================================
+   관리자 버튼
+================================================== */
+
+adminButton.addEventListener(
+    "click",
+    function() {
+
+        askAdminPassword();
 
     }
 );
 
 
 /* ==================================================
-   페이지 최초 실행
+   최초 페이지 실행
 ================================================== */
 
 window.addEventListener(
@@ -1565,13 +1660,11 @@ window.addEventListener(
 
 
         /*
-           이미 이 기기에서
-           비밀번호를 기억한 경우
-
-           → 비밀번호 창 없이 바로 열림
+           이미 페이지 비밀번호를 기억했다면
+           바로 메인 화면으로 들어갑니다.
         */
 
-        if (isPasswordSaved()) {
+        if (isPagePasswordSaved()) {
 
             unlockPage();
 
@@ -1582,8 +1675,7 @@ window.addEventListener(
 
         /*
            처음 방문한 경우
-
-           → 비밀번호 입력창 표시
+           비밀번호 창 표시
         */
 
         setTimeout(
@@ -1600,8 +1692,7 @@ window.addEventListener(
 
 
 /* ==================================================
-   Service Worker 등록
-   Android PWA / 오프라인
+   Service Worker
 ================================================== */
 
 if ("serviceWorker" in navigator) {
@@ -1640,7 +1731,7 @@ if ("serviceWorker" in navigator) {
 
 
 /* ==================================================
-   뒤로가기 시 화면 보정
+   뒤로가기
 ================================================== */
 
 window.addEventListener(
