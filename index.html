@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -14,6 +13,7 @@
 <meta name="theme-color" content="#1976d2">
 
 <meta name="mobile-web-app-capable" content="yes">
+
 <meta name="apple-mobile-web-app-capable" content="yes">
 
 <meta name="apple-mobile-web-app-status-bar-style"
@@ -83,13 +83,14 @@ body {
 
 /* ==================================================
    메인 페이지
-   ★ 처음에는 완전히 숨김
+   처음에는 숨김
 ================================================== */
 
 .page {
     display: none;
 
     width: 100%;
+
     min-height: 100vh;
     min-height: 100dvh;
 
@@ -165,7 +166,7 @@ body.unlocked .page {
             #0757b5 100%
         );
 
-    color: white;
+    color: #ffffff;
 
     text-decoration: none;
 
@@ -174,27 +175,35 @@ body.unlocked .page {
     box-shadow:
         0 10px 28px rgba(7, 87, 181, 0.25);
 
-    transition: transform .12s ease;
+    transition:
+        transform 0.12s ease,
+        box-shadow 0.12s ease;
 }
 
 .main-content {
     display: flex;
+
     align-items: center;
 
     gap: 16px;
+
+    min-width: 0;
 }
 
 .main-icon {
     width: 54px;
     height: 54px;
 
+    flex: 0 0 auto;
+
     display: flex;
+
     align-items: center;
     justify-content: center;
 
     border-radius: 17px;
 
-    background: rgba(255,255,255,.17);
+    background: rgba(255,255,255,0.17);
 
     font-size: 27px;
 }
@@ -202,16 +211,22 @@ body.unlocked .page {
 .main-title {
     font-size: 25px;
     font-weight: 800;
+
+    letter-spacing: -0.7px;
 }
 
 .arrow {
+    flex: 0 0 auto;
+
     font-size: 30px;
-    opacity: .9;
+    font-weight: 300;
+
+    opacity: 0.9;
 }
 
 
 /* ==================================================
-   버튼
+   버튼 영역
 ================================================== */
 
 .buttons {
@@ -225,6 +240,11 @@ body.unlocked .page {
     margin-top: 16px;
 }
 
+
+/* ==================================================
+   일반 버튼
+================================================== */
+
 .button {
     display: flex;
 
@@ -235,24 +255,32 @@ body.unlocked .page {
 
     padding: 17px;
 
-    color: #172033;
-    background: #fff;
-
-    border: 1px solid #d9e2ec;
-    border-radius: 20px;
-
     text-decoration: none;
 
-    box-shadow:
-        0 3px 12px rgba(16,42,67,.07);
+    color: #172033;
 
-    transition: transform .12s ease;
+    background: #ffffff;
+
+    border: 1px solid #d9e2ec;
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 3px 12px rgba(16, 42, 67, 0.07);
+
+    transition:
+        transform 0.12s ease,
+        box-shadow 0.12s ease;
+
+    -webkit-user-select: none;
+    user-select: none;
 
     cursor: pointer;
 }
 
 .button-left {
     display: flex;
+
     align-items: center;
 
     gap: 12px;
@@ -261,34 +289,40 @@ body.unlocked .page {
 }
 
 .icon {
+    flex: 0 0 auto;
+
     width: 42px;
     height: 42px;
 
-    flex: 0 0 auto;
-
     display: flex;
+
     align-items: center;
     justify-content: center;
 
     border-radius: 13px;
 
-    background: #e7f0ff;
-
     font-size: 21px;
+
+    background: #e7f0ff;
 }
 
 .button-text {
     font-size: 19px;
     font-weight: 750;
 
-    letter-spacing: -.5px;
+    letter-spacing: -0.5px;
 
     white-space: nowrap;
 }
 
 .button-arrow {
+    flex: 0 0 auto;
+
     font-size: 21px;
+
     color: #9db2c8;
+
+    margin-left: 5px;
 }
 
 
@@ -301,8 +335,6 @@ body.unlocked .page {
 
     min-height: 76px;
 
-    border: none;
-
     background:
         linear-gradient(
             135deg,
@@ -310,14 +342,16 @@ body.unlocked .page {
             #082b50 100%
         );
 
-    color: white;
+    color: #ffffff;
+
+    border: none;
 
     box-shadow:
-        0 7px 20px rgba(8,43,80,.20);
+        0 7px 20px rgba(8, 43, 80, 0.20);
 }
 
 .admin-button .icon {
-    background: rgba(255,255,255,.13);
+    background: rgba(255,255,255,0.13);
 }
 
 .admin-button .button-arrow {
@@ -326,12 +360,22 @@ body.unlocked .page {
 
 
 /* ==================================================
-   터치
+   터치 효과
 ================================================== */
 
 .button:active,
 .main-link:active {
-    transform: scale(.97);
+    transform: scale(0.97);
+}
+
+.button:hover {
+    box-shadow:
+        0 6px 18px rgba(16, 42, 67, 0.11);
+}
+
+.main-link:hover {
+    box-shadow:
+        0 12px 32px rgba(7, 87, 181, 0.30);
 }
 
 
@@ -339,17 +383,21 @@ body.unlocked .page {
    휴대폰
 ================================================== */
 
-@media (max-width:430px) {
+@media (max-width: 430px) {
 
     .page {
+        padding-top:
+            max(20px, env(safe-area-inset-top));
+
         padding-left:
             max(13px, env(safe-area-inset-left));
 
         padding-right:
             max(13px, env(safe-area-inset-right));
+    }
 
-        padding-top:
-            max(20px, env(safe-area-inset-top));
+    .header {
+        padding-bottom: 17px;
     }
 
     .title {
@@ -358,6 +406,7 @@ body.unlocked .page {
 
     .main-link {
         min-height: 100px;
+
         padding: 19px;
 
         border-radius: 21px;
@@ -366,6 +415,8 @@ body.unlocked .page {
     .main-icon {
         width: 48px;
         height: 48px;
+
+        border-radius: 15px;
 
         font-size: 24px;
     }
@@ -376,11 +427,13 @@ body.unlocked .page {
 
     .buttons {
         gap: 9px;
+
         margin-top: 13px;
     }
 
     .button {
         min-height: 84px;
+
         padding: 13px 12px;
 
         border-radius: 17px;
@@ -402,18 +455,60 @@ body.unlocked .page {
     .button-text {
         font-size: 17px;
     }
+
+    .button-arrow {
+        font-size: 18px;
+    }
+
+    .admin-button {
+        min-height: 68px;
+    }
 }
 
 
 /* ==================================================
-   비밀번호 화면
+   아주 작은 화면
+================================================== */
+
+@media (max-width: 360px) {
+
+    .title {
+        font-size: 20px;
+    }
+
+    .main-title {
+        font-size: 20px;
+    }
+
+    .button {
+        min-height: 80px;
+    }
+
+    .button-text {
+        font-size: 15px;
+    }
+
+    .icon {
+        width: 33px;
+        height: 33px;
+
+        font-size: 16px;
+    }
+}
+
+
+/* ==================================================
+   비밀번호 잠금 화면
 ================================================== */
 
 .password-overlay {
 
     position: fixed;
 
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 
     z-index: 99999;
 
@@ -430,6 +525,23 @@ body.unlocked .page {
             #102a43 0%,
             #0b3b68 100%
         );
+
+    opacity: 1;
+
+    visibility: visible;
+
+    transition:
+        opacity 0.2s ease,
+        visibility 0.2s ease;
+}
+
+.password-overlay.hidden {
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
 }
 
 
@@ -442,26 +554,26 @@ body.unlocked .page {
     width: 100%;
     max-width: 360px;
 
-    padding: 30px 24px 24px;
+    padding: 30px 24px 23px;
 
-    background: white;
+    background: #ffffff;
 
     border-radius: 26px;
 
     box-shadow:
-        0 25px 70px rgba(0,0,0,.30);
+        0 25px 70px rgba(0,0,0,0.30);
 
     text-align: center;
 
     animation:
-        passwordPopup .22s ease-out;
+        passwordPopup 0.22s ease-out;
 }
 
 @keyframes passwordPopup {
 
     from {
         opacity: 0;
-        transform: scale(.94) translateY(12px);
+        transform: scale(0.94) translateY(12px);
     }
 
     to {
@@ -483,6 +595,7 @@ body.unlocked .page {
     margin: 0 auto 16px;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
@@ -495,7 +608,7 @@ body.unlocked .page {
 
 
 /* ==================================================
-   비밀번호 제목
+   제목
 ================================================== */
 
 .password-title {
@@ -504,6 +617,8 @@ body.unlocked .page {
 
     font-size: 22px;
     font-weight: 800;
+
+    letter-spacing: -0.5px;
 
     color: #102a43;
 }
@@ -526,38 +641,46 @@ body.unlocked .page {
 
 
 /* ==================================================
-   입력
+   비밀번호 입력
 ================================================== */
 
 .password-input {
 
     width: 100%;
+
     height: 52px;
 
     padding: 0 16px;
 
     border: 1px solid #d5dfeb;
+
     border-radius: 14px;
 
     outline: none;
 
     background: #f7f9fc;
 
+    color: #172033;
+
     font-size: 19px;
 
     text-align: center;
 
     letter-spacing: 4px;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
 }
 
 .password-input:focus {
 
     border-color: #1976d2;
 
-    background: white;
+    background: #ffffff;
 
     box-shadow:
-        0 0 0 3px rgba(25,118,210,.12);
+        0 0 0 3px rgba(25,118,210,0.12);
 }
 
 
@@ -588,7 +711,11 @@ body.unlocked .page {
     width: 18px;
     height: 18px;
 
+    margin: 0;
+
     accent-color: #1976d2;
+
+    cursor: pointer;
 }
 
 
@@ -599,24 +726,38 @@ body.unlocked .page {
 .password-confirm {
 
     width: 100%;
+
     height: 49px;
 
     border: none;
+
     border-radius: 14px;
 
     background: #1976d2;
 
-    color: white;
+    color: #ffffff;
 
     font-size: 16px;
+
     font-weight: 700;
 
     cursor: pointer;
+
+    box-shadow:
+        0 6px 16px rgba(25,118,210,0.22);
+
+    transition:
+        transform 0.1s ease;
+}
+
+.password-confirm:active {
+
+    transform: scale(0.97);
 }
 
 
 /* ==================================================
-   오류
+   오류 메시지
 ================================================== */
 
 .password-error {
@@ -660,6 +801,30 @@ body.unlocked .page {
     display: flex;
 }
 
+
+/* ==================================================
+   메인 페이지 나타남
+================================================== */
+
+body.unlocked .page {
+
+    animation:
+        pageAppear 0.25s ease-out;
+}
+
+@keyframes pageAppear {
+
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 </style>
 </head>
 
@@ -668,14 +833,18 @@ body.unlocked .page {
 
 
 <!-- ==================================================
-     ★ 최초 접속 비밀번호
-     비밀번호 = 7216
+     최초 접속 비밀번호
+     ★ 비밀번호: 7216
 ================================================== -->
 
-<div class="password-overlay"
-     id="loginOverlay">
+<div
+    class="password-overlay"
+    id="loginOverlay">
 
-    <div class="password-box">
+    <div
+        class="password-box"
+        role="dialog"
+        aria-modal="true">
 
         <div class="password-icon">
             🔒
@@ -731,14 +900,18 @@ body.unlocked .page {
 
 
 <!-- ==================================================
-     ★ 관리자 비밀번호
-     비밀번호 = 7979
+     관리자 비밀번호
+     ★ 비밀번호: 7979
 ================================================== -->
 
-<div class="admin-password-overlay"
-     id="adminOverlay">
+<div
+    class="admin-password-overlay"
+    id="adminOverlay">
 
-    <div class="password-box">
+    <div
+        class="password-box"
+        role="dialog"
+        aria-modal="true">
 
         <div class="password-icon">
             ⚙️
@@ -794,7 +967,7 @@ body.unlocked .page {
 
 
 <!-- ==================================================
-     ★ 메인 페이지
+     메인 페이지
 ================================================== -->
 
 <main class="page">
@@ -812,7 +985,7 @@ body.unlocked .page {
 
 
 <!-- ==================================================
-     북부 회중 게시판
+     북부회중 게시판
 ================================================== -->
 
 <a
@@ -827,7 +1000,7 @@ body.unlocked .page {
         </div>
 
         <div class="main-title">
-            북부 회중 게시판
+            북부회중 게시판
         </div>
 
     </div>
@@ -854,14 +1027,20 @@ body.unlocked .page {
     target="_top">
 
     <div class="button-left">
-        <div class="icon">📅</div>
+
+        <div class="icon">
+            📅
+        </div>
 
         <span class="button-text">
             화요일
         </span>
+
     </div>
 
-    <span class="button-arrow">›</span>
+    <span class="button-arrow">
+        ›
+    </span>
 
 </a>
 
@@ -874,14 +1053,20 @@ body.unlocked .page {
     target="_top">
 
     <div class="button-left">
-        <div class="icon">📅</div>
+
+        <div class="icon">
+            📅
+        </div>
 
         <span class="button-text">
             수요일
         </span>
+
     </div>
 
-    <span class="button-arrow">›</span>
+    <span class="button-arrow">
+        ›
+    </span>
 
 </a>
 
@@ -894,14 +1079,20 @@ body.unlocked .page {
     target="_top">
 
     <div class="button-left">
-        <div class="icon">📅</div>
+
+        <div class="icon">
+            📅
+        </div>
 
         <span class="button-text">
             목요일
         </span>
+
     </div>
 
-    <span class="button-arrow">›</span>
+    <span class="button-arrow">
+        ›
+    </span>
 
 </a>
 
@@ -914,14 +1105,20 @@ body.unlocked .page {
     target="_top">
 
     <div class="button-left">
-        <div class="icon">📅</div>
+
+        <div class="icon">
+            📅
+        </div>
 
         <span class="button-text">
             금요일
         </span>
+
     </div>
 
-    <span class="button-arrow">›</span>
+    <span class="button-arrow">
+        ›
+    </span>
 
 </a>
 
@@ -934,14 +1131,20 @@ body.unlocked .page {
     target="_top">
 
     <div class="button-left">
-        <div class="icon">📅</div>
+
+        <div class="icon">
+            📅
+        </div>
 
         <span class="button-text">
             토요일
         </span>
+
     </div>
 
-    <span class="button-arrow">›</span>
+    <span class="button-arrow">
+        ›
+    </span>
 
 </a>
 
@@ -954,14 +1157,20 @@ body.unlocked .page {
     target="_top">
 
     <div class="button-left">
-        <div class="icon">📅</div>
+
+        <div class="icon">
+            📅
+        </div>
 
         <span class="button-text">
             일요일
         </span>
+
     </div>
 
-    <span class="button-arrow">›</span>
+    <span class="button-arrow">
+        ›
+    </span>
 
 </a>
 
@@ -974,14 +1183,20 @@ body.unlocked .page {
     target="_top">
 
     <div class="button-left">
-        <div class="icon">📞</div>
+
+        <div class="icon">
+            📞
+        </div>
 
         <span class="button-text">
             전화 증거
         </span>
+
     </div>
 
-    <span class="button-arrow">›</span>
+    <span class="button-arrow">
+        ›
+    </span>
 
 </a>
 
@@ -994,14 +1209,20 @@ body.unlocked .page {
     target="_top">
 
     <div class="button-left">
-        <div class="icon">✉️</div>
+
+        <div class="icon">
+            ✉️
+        </div>
 
         <span class="button-text">
             편지 봉사
         </span>
+
     </div>
 
-    <span class="button-arrow">›</span>
+    <span class="button-arrow">
+        ›
+    </span>
 
 </a>
 
@@ -1014,14 +1235,20 @@ body.unlocked .page {
     target="_top">
 
     <div class="button-left">
-        <div class="icon">👤</div>
+
+        <div class="icon">
+            👤
+        </div>
 
         <span class="button-text">
             개인 봉사
         </span>
+
     </div>
 
-    <span class="button-arrow">›</span>
+    <span class="button-arrow">
+        ›
+    </span>
 
 </a>
 
@@ -1034,14 +1261,20 @@ body.unlocked .page {
     target="_top">
 
     <div class="button-left">
-        <div class="icon">📝</div>
+
+        <div class="icon">
+            📝
+        </div>
 
         <span class="button-text">
             전시대 신청
         </span>
+
     </div>
 
-    <span class="button-arrow">›</span>
+    <span class="button-arrow">
+        ›
+    </span>
 
 </a>
 
@@ -1064,6 +1297,7 @@ body.unlocked .page {
         <span class="button-text">
             전시대 관리자
         </span>
+
     </div>
 
     <span class="button-arrow">
@@ -1086,27 +1320,35 @@ body.unlocked .page {
    ★★★ 비밀번호 설정 ★★★
 ================================================== */
 
+
 /*
-   일반 사용자 접속 비밀번호
+   일반 접속 비밀번호
+   ------------------
+   처음 페이지에 들어올 때 사용
 */
+
 const PAGE_PASSWORD = "7216";
 
 
 /*
    관리자 비밀번호
+   ----------------
+   전시대 관리자 버튼을 눌렀을 때 사용
 */
+
 const ADMIN_PASSWORD = "7979";
 
 
 /*
    관리자 Google Sheets 주소
 */
+
 const ADMIN_URL =
 "https://docs.google.com/spreadsheets/d/1eQHscrZpAWzrOo6QJw3pmyoeUijUoTKyfMmmPRPqkaU/edit?gid=1237649201#gid=1237649201";
 
 
 /* ==================================================
-   저장 이름
+   기억하기 저장 키
 ================================================== */
 
 const PAGE_REMEMBER_KEY =
@@ -1157,7 +1399,7 @@ document.getElementById("adminError");
 
 
 /* ==================================================
-   저장값 확인
+   일반 비밀번호 기억 여부
 ================================================== */
 
 function pageRemembered() {
@@ -1168,13 +1410,18 @@ function pageRemembered() {
             PAGE_REMEMBER_KEY
         ) === "yes";
 
-    } catch (e) {
+    } catch (error) {
 
         return false;
 
     }
+
 }
 
+
+/* ==================================================
+   관리자 비밀번호 기억 여부
+================================================== */
 
 function adminRemembered() {
 
@@ -1184,11 +1431,12 @@ function adminRemembered() {
             ADMIN_REMEMBER_KEY
         ) === "yes";
 
-    } catch (e) {
+    } catch (error) {
 
         return false;
 
     }
+
 }
 
 
@@ -1202,8 +1450,9 @@ function unlockPage() {
         "unlocked"
     );
 
-    loginOverlay.style.display =
-        "none";
+    loginOverlay.classList.add(
+        "hidden"
+    );
 
 }
 
@@ -1218,6 +1467,8 @@ function checkLoginPassword() {
         loginPassword.value.trim();
 
 
+    /* 빈칸 */
+
     if (!password) {
 
         loginError.textContent =
@@ -1226,8 +1477,11 @@ function checkLoginPassword() {
         loginPassword.focus();
 
         return;
+
     }
 
+
+    /* 비밀번호 오류 */
 
     if (password !== PAGE_PASSWORD) {
 
@@ -1239,10 +1493,13 @@ function checkLoginPassword() {
         loginPassword.focus();
 
         return;
+
     }
 
 
-    /* 기억하기 */
+    /* ==================================================
+       비밀번호 기억
+    ================================================== */
 
     if (rememberLogin.checked) {
 
@@ -1253,7 +1510,14 @@ function checkLoginPassword() {
                 "yes"
             );
 
-        } catch (e) {}
+        } catch (error) {
+
+            console.log(
+                "비밀번호 저장 실패",
+                error
+            );
+
+        }
 
     } else {
 
@@ -1263,12 +1527,15 @@ function checkLoginPassword() {
                 PAGE_REMEMBER_KEY
             );
 
-        } catch (e) {}
+        } catch (error) {}
 
     }
 
 
+    /* 페이지 열기 */
+
     unlockPage();
+
 }
 
 
@@ -1303,14 +1570,15 @@ loginPassword.addEventListener(
 
 
 /* ==================================================
-   관리자 창 열기
+   관리자 로그인 창 열기
 ================================================== */
 
 function openAdminLogin() {
 
+
     /*
-       관리자 비밀번호를 기억한 경우
-       바로 관리자 페이지로 이동
+       관리자 비밀번호를 기억하고 있다면
+       비밀번호를 묻지 않고 바로 이동
     */
 
     if (adminRemembered()) {
@@ -1319,8 +1587,11 @@ function openAdminLogin() {
             ADMIN_URL;
 
         return;
+
     }
 
+
+    /* 입력창 초기화 */
 
     adminPassword.value = "";
 
@@ -1328,7 +1599,15 @@ function openAdminLogin() {
 
     rememberAdmin.checked = false;
 
-    adminOverlay.classList.add("show");
+
+    /* 관리자 창 표시 */
+
+    adminOverlay.classList.add(
+        "show"
+    );
+
+
+    /* 입력창 포커스 */
 
     setTimeout(
         function() {
@@ -1338,6 +1617,7 @@ function openAdminLogin() {
         },
         100
     );
+
 }
 
 
@@ -1351,6 +1631,8 @@ function checkAdminPassword() {
         adminPassword.value.trim();
 
 
+    /* 빈칸 */
+
     if (!password) {
 
         adminError.textContent =
@@ -1359,8 +1641,11 @@ function checkAdminPassword() {
         adminPassword.focus();
 
         return;
+
     }
 
+
+    /* 비밀번호 오류 */
 
     if (password !== ADMIN_PASSWORD) {
 
@@ -1372,12 +1657,13 @@ function checkAdminPassword() {
         adminPassword.focus();
 
         return;
+
     }
 
 
-    /*
+    /* ==================================================
        관리자 비밀번호 기억
-    */
+    ================================================== */
 
     if (rememberAdmin.checked) {
 
@@ -1388,7 +1674,14 @@ function checkAdminPassword() {
                 "yes"
             );
 
-        } catch (e) {}
+        } catch (error) {
+
+            console.log(
+                "관리자 비밀번호 저장 실패",
+                error
+            );
+
+        }
 
     } else {
 
@@ -1398,17 +1691,16 @@ function checkAdminPassword() {
                 ADMIN_REMEMBER_KEY
             );
 
-        } catch (e) {}
+        } catch (error) {}
 
     }
 
 
-    /*
-       관리자 페이지 이동
-    */
+    /* 관리자 페이지 이동 */
 
     window.location.href =
         ADMIN_URL;
+
 }
 
 
@@ -1455,16 +1747,17 @@ adminPassword.addEventListener(
 
 
 /* ==================================================
-   페이지 처음 열었을 때
+   페이지 최초 실행
 ================================================== */
 
 window.addEventListener(
     "DOMContentLoaded",
     function() {
 
+
         /*
-           이미 기억되어 있으면
-           비밀번호 없이 바로 열기
+           일반 비밀번호를 기억하고 있으면
+           바로 메인 페이지
         */
 
         if (pageRemembered()) {
@@ -1472,12 +1765,13 @@ window.addEventListener(
             unlockPage();
 
             return;
+
         }
 
 
         /*
-           처음 접속
-           → 바로 비밀번호 입력
+           처음 방문하면
+           비밀번호 입력창에 포커스
         */
 
         setTimeout(
@@ -1494,45 +1788,24 @@ window.addEventListener(
 
 
 /* ==================================================
-   Service Worker
+   뒤로가기 / BFCache 대응
 ================================================== */
 
-if ("serviceWorker" in navigator) {
+window.addEventListener(
+    "pageshow",
+    function(event) {
 
-    window.addEventListener(
-        "load",
-        function() {
+        if (event.persisted) {
 
-            navigator.serviceWorker
-                .register("./sw.js")
-                .then(
-                    function(registration) {
-
-                        console.log(
-                            "Service Worker 등록 완료",
-                            registration.scope
-                        );
-
-                    }
-                )
-                .catch(
-                    function(error) {
-
-                        console.log(
-                            "Service Worker 등록 실패",
-                            error
-                        );
-
-                    }
-                );
+            window.scrollTo(0, 0);
 
         }
-    );
 
-}
+    }
+);
 
 </script>
 
+
 </body>
 </html>
-```
