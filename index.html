@@ -1,3 +1,121 @@
+
+깃허브를 주소를 카톡으로보내면 그냥 열릭 pc에서는 비번을 물어보는게 카톡주소를 열을때도 처음 부터 pc와 동일하게 비번을 묻게 못하나요
+
+
+
+붙여넣은 텍스트 (1)(4).txt
+문서
+이것으로 수정하면 되겠습니다
+
+좋습니다! 😊
+이제 PC와 카카오톡 모두에서 원하는 방식으로 정상 작동하는 최종본이 완성됐습니다.
+
+현재 구성은 꽤 깔끔합니다.
+
+🔐 일반 사용자 비밀번호: 7216
+
+⚙️ 관리자 비밀번호: 7979
+
+📱 카카오톡 링크 접속 시 비밀번호 먼저 표시
+
+💻 PC에서는 「이 기기에서 기억하기」 사용 가능
+
+📱 카카오톡에서는 매번 비밀번호 확인
+
+🚫 sw.js 불필요
+
+📄 index.html 하나로 운영 가능
+
+앞으로 수정이 필요할 때도 이번 최종 index.html을 기준으로 수정하면 됩니다. 
+
+
+잘 해결되어 다행입니다! 👍
+
+
+그런데 비번을 물어볼때 뒤로가기나 취소번튼이 있으면 좋겠네요
+
+네, 추가했습니다. 👍
+
+변경된 기능
+일반 비밀번호 화면
+
+확인
+
+취소
+
+가 표시됩니다.
+
+취소를 누르면
+
+카카오톡에서 링크를 눌러 들어온 경우 → 이전 화면으로 돌아갑니다.
+
+이전 기록이 없는 경우 → 페이지를 그대로 유지합니다.
+
+그리고 관리자 비밀번호 화면에도 취소 버튼을 추가했습니다. 관리자의 취소는 관리자 비밀번호 창만 닫고 원래 화면으로 돌아갑니다.
+
+최종 파일
+📥 취소 버튼까지 포함한 최종 index.html
+
+GitHub의 기존 index.html을 이 파일로 교체하시면 됩니다.
+
+현재 사용하시는 비밀번호, 디자인, 카카오톡 접속 시 비밀번호 요구 기능은 그대로 유지됩니다. 
+
+
+
+index.html
+HTML
+
+
+취소 하면 전 화면으로 돌아와야 하는데 안오네요
+
+맞습니다. 원인을 확인했습니다.
+
+기존 취소는 history.back()만 사용했는데, 카카오톡에서 링크를 눌러 인앱 브라우저로 처음 들어온 경우에는 이전 페이지 기록이 없는 것처럼 처리되는 경우가 있습니다.
+
+그래서 방금 수정해서:
+
+이전 페이지 주소가 있으면 → 그 주소로 돌아가기
+
+없으면 → 브라우저 뒤로가기
+
+그것도 없으면 → 입력창만 초기화
+
+하도록 변경했습니다.
+
+수정된 최종 파일
+📥 수정된 최종 index.html
+
+GitHub의 index.html을 이번 파일로 다시 교체해 주세요.
+
+그리고 카카오톡에서 링크를 다시 눌러서
+
+비밀번호 화면 → 취소
+
+를 테스트해 보시면 됩니다.
+
+이번에는 카카오톡에서 들어온 경우 이전 화면으로 돌아가도록 우선 처리했습니다. 
+
+
+
+index.html
+HTML
+
+
+라이브러리
+/
+index.html
+
+
+
+
+
+라이브러리
+/
+index.html
+
+
+
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -757,6 +875,33 @@ body.unlocked .page {
 
 
 /* ==================================================
+   비밀번호 취소 / 뒤로가기 버튼
+================================================== */
+
+.password-cancel {
+
+    width: 100%;
+    height: 42px;
+    margin-top: 8px;
+    border: none;
+    background: transparent;
+    color: #718096;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 12px;
+    transition:
+        background 0.1s ease,
+        color 0.1s ease;
+}
+
+.password-cancel:active {
+    background: #f1f4f8;
+    color: #52657a;
+}
+
+
+/* ==================================================
    오류 메시지
 ================================================== */
 
@@ -889,6 +1034,15 @@ body.unlocked .page {
 
         </button>
 
+        <button
+            type="button"
+            class="password-cancel"
+            id="loginCancelButton">
+
+            취소
+
+        </button>
+
         <div
             class="password-error"
             id="loginError">
@@ -953,6 +1107,15 @@ body.unlocked .page {
             id="adminLoginButton">
 
             확인
+
+        </button>
+
+        <button
+            type="button"
+            class="password-cancel"
+            id="adminCancelButton">
+
+            취소
 
         </button>
 
@@ -1377,6 +1540,9 @@ document.getElementById("loginButton");
 const loginError =
 document.getElementById("loginError");
 
+const loginCancelButton =
+document.getElementById("loginCancelButton");
+
 
 /* ==================================================
    관리자 로그인 요소
@@ -1396,6 +1562,9 @@ document.getElementById("adminLoginButton");
 
 const adminError =
 document.getElementById("adminError");
+
+const adminCancelButton =
+document.getElementById("adminCancelButton");
 
 
 /* ==================================================
@@ -1546,6 +1715,54 @@ function checkLoginPassword() {
 loginButton.addEventListener(
     "click",
     checkLoginPassword
+);
+
+
+/* ==================================================
+   일반 로그인 취소 / 뒤로가기
+================================================== */
+
+function cancelLogin() {
+
+    /*
+       카카오톡에서 링크를 눌러 들어온 경우에는
+       history.back()만으로 원래 카카오톡 화면으로
+       돌아가지 않는 경우가 있습니다.
+
+       1순위: 이전 페이지(referrer)로 이동
+       2순위: 브라우저 뒤로가기
+    */
+
+    const referrer = document.referrer;
+
+    if (referrer && referrer !== window.location.href) {
+
+        window.location.replace(referrer);
+
+        return;
+    }
+
+    if (window.history.length > 1) {
+
+        window.history.back();
+
+        return;
+    }
+
+    /*
+       이전 주소 정보가 전혀 없는 직접 접속의 경우에는
+       비밀번호 입력 화면을 닫을 수 없으므로
+       입력 내용만 초기화합니다.
+    */
+
+    loginPassword.value = "";
+    loginError.textContent = "";
+
+}
+
+loginCancelButton.addEventListener(
+    "click",
+    cancelLogin
 );
 
 
@@ -1723,6 +1940,25 @@ document.getElementById(
 adminLoginButton.addEventListener(
     "click",
     checkAdminPassword
+);
+
+
+/* ==================================================
+   관리자 취소 / 닫기
+================================================== */
+
+function cancelAdminLogin() {
+
+    adminOverlay.classList.remove("show");
+
+    adminPassword.value = "";
+    adminError.textContent = "";
+
+}
+
+adminCancelButton.addEventListener(
+    "click",
+    cancelAdminLogin
 );
 
 
