@@ -1,55 +1,3 @@
-
-
-붙여넣은 텍스트 (1)(3).txt
-문서
-이렇게 되어 있어요
-
-26e1de50-752b-4c04-8da3-b3bc88e2e206.png
-
-네, 사진을 보니 문제가 확실히 보입니다.
-
-지금 삼성폰에서 보이는 것은 원래의 전자카드 화면이 아니라, HTML 코드가 웹페이지에 글자로 그대로 출력되고 있습니다.
-
-즉, 지금은 Google Sheets 문제가 아니라 index.html 파일 자체가 잘못 저장/업로드된 상태입니다.
-
-사진에서 확인되는 증상
-화면에 이런 식으로 보이고 있습니다.
-
-네. 그러면 원인이 정확히 좁혀졌습니다.
-GitHub 페이지 → 정상
-...
-href="https://docs.google.com/..."
-이것은 브라우저가 HTML을 실행한 것이 아니라 HTML 내용을 일반 텍스트로 표시하고 있는 상태입니다.
-
-제가 앞에서 만들어 드린 파일을 교체하는 과정에서 문제가 생긴 것 같습니다. 죄송합니다.
-
-지금은 이렇게 하지 마세요
-❌ 현재 파일을 다시 덮어쓰지 마세요.
-❌ 지금 보이는 화면에서 계속 수정하지 마세요.
-
-원래 정상적으로 작동하던 index.html로 먼저 되돌리는 것이 가장 안전합니다.
-
-그 다음 제가 현재 정상 버전의 코드에서 딱 3개 링크만 수정한 진짜 HTML 파일을 다시 만들어 드리겠습니다.
-
-그리고 이번에는 제가 만든 파일을 단순히 다운로드해서 이름만 바꾸는 방식이 아니라, 실제 HTML 문서가 정상적으로 <!DOCTYPE html>부터 시작하는지 확인한 후 드리겠습니다.
-
-한 가지 확인해 주세요
-지금 GitHub에서 index.html을 열었을 때도 코드가 정상적으로 보이나요?
-
-즉 GitHub 편집 화면에서 맨 첫 줄이:
-
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-이렇게 되어 있나요?
-
-아니면 GitHub의 웹페이지 자체가 지금 사진처럼 글자로 표시되나요?
-
-👉 GitHub 편집 화면의 index.html 첫 부분을 캡처해서 한 장 보내주세요.
-
-그 사진을 보면 제가 어디에서 파일이 잘못된 것인지 바로 잡아서, 이번에는 기존 기능을 그대로 살린 전체 코드를 만들어 드리겠습니다.
-
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -62,202 +10,25 @@ href="https://docs.google.com/..."
                user-scalable=no,
                viewport-fit=cover">
 
-네, 이 부분은 정상입니다. 👍
-
-지금 보내주신 GitHub index.html의 첫 부분이
-
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-
-<meta name="viewport"
-      content="width=device-width,
-               initial-scale=1.0,
-               maximum-scale=1.0,
-               user-scalable=no,
-               viewport-fit=cover">
-라면 HTML 파일 자체의 시작 부분은 올바르게 되어 있습니다.
-
-그리고 아까 보여주신 삼성폰 화면은 중요한 단서가 하나 있습니다.
-
-아까 화면에 나온 내용
-화면에
-
-네. 그러면 원인이 정확히 좁혀졌습니다. GitHub 페이지 → 정상...
-
-이라고 나왔죠.
-
-이건 현재 index.html의 HTML 코드가 잘못 해석된 것이 아닙니다.
-
-오히려 제가 이전 답변에서 설명문을 드린 내용 자체가 웹페이지 내용으로 들어가 버린 것에 가깝습니다.
-
-즉 지금 확인해야 할 것은:
-
-GitHub 저장소의 index.html
-        ↓
-실제로 어떤 내용이 들어 있는지
-        ↓
-GitHub Pages가 그 파일을 제대로 읽고 있는지
-입니다.
-
-지금은 기존 파일을 다시 건드리지 마세요
-현재 GitHub의 index.html 첫 부분이 위와 같이 정상이라면, 지금 파일 전체를 다시 교체할 필요가 없습니다.
-
-제가 앞에서 파일을 만들어 드리는 과정에서 문제가 생겼습니다.
-
-이번에는 방법을 바꾸겠습니다.
-
-가장 안전한 방법
-현재 GitHub에서 정상적으로 작동하던 index.html을 그대로 유지하고,
-
-딱 3곳만 수정합니다.
-
-① 북부회중 게시판
-기존:
-
-<a
-    class="main-link"
-    href="https://docs.google.com/spreadsheets/d/1Z-tXk1lHjDKJ9QfvNfPFXRUSL8awENpLzRRczfown9E/edit?gid=1903762694#gid=1903762694"
-    target="_top">
-이것을:
-
-<a
-    class="main-link"
-    href="https://docs.google.com/spreadsheets/d/1Z-tXk1lHjDKJ9QfvNfPFXRUSL8awENpLzRRczfown9E/edit?gid=1903762694#gid=1903762694"
-    onclick="openGoogleSheet(event, this.href)">
-로 변경합니다.
-
-② 전시대 신청
-기존:
-
-target="_top">
-을 해당 링크에서만
-
-onclick="openGoogleSheet(event, this.href)">
-로 변경합니다.
-
-③ JavaScript 추가
-<script> 안쪽에 다음 함수를 하나 추가합니다.
-
-function openGoogleSheet(event, url) {
-
-    if (event) {
-        event.preventDefault();
-    }
-
-    window.location.assign(url);
-}
-그런데 전시대 관리자도 안 열린다고 하셨죠.
-이것도 기존:
-
-window.location.href = ADMIN_URL;
-을
-
-openGoogleSheet(null, ADMIN_URL);
-로 바꾸면 됩니다.
-
-중요한 점
-지금 보내주신 첫 부분은 문제가 없습니다.
-
-따라서 지금은 제가 전체 코드를 다시 만들어서 드리는 것보다, 현재 GitHub에 있는 정상적인 index.html 전체를 기준으로 정확히 3곳만 수정하는 것이 훨씬 안전합니다.
-
-그리고 이번에는 제가 설명문이 HTML 파일에 섞이는 일이 없도록, 사용자가 그대로 복사할 수 있는 순수 HTML 코드만 만들어 드리겠습니다.
-
-현재 GitHub index.html의 아래쪽 <script> 부분까지 포함해서 전체 내용을 올려주시면, 제가 그 원본을 그대로 유지하면서 북부회중 게시판 + 전시대 신청 + 전시대 관리자 이동 부분만 수정한 완성본을 만들어 드리겠습니다.
-
-
-그냥 최종본의 코드를 짜 주세요
-
-네. 이번에는 현재 정상적으로 사용하시던 원본을 그대로 기준으로 해서 최종본을 만들었습니다.
-
-수정한 것은 딱 3가지입니다.
-
-북부회중 게시판
-
-?gid=1903762694#gid=1903762694
-
-→ #gid=1903762694 형태로 정리
-
-JavaScript 직접 이동
-
-전시대 신청
-
-동일하게 수정
-
-전시대 관리자
-
-동일한 직접 이동 방식으로 수정
-
-나머지는 그대로 유지했습니다.
-
-일반 비밀번호 7216
-
-관리자 비밀번호 7979
-
-이 기기에서 기억하기
-
-카카오톡 접속 시 비밀번호
-
-취소 버튼
-
-기존 디자인
-
-화요일~개인 봉사 링크
-
-아이콘/manifest
-
-최종 index.html
-이 파일을 그대로 GitHub의 기존 index.html과 교체하시면 됩니다.
-
-📥 최종 index.html 다운로드
-
-중요: 이번 파일은 제가 검증해서 <!DOCTYPE html>부터 </html>까지 정상적인 HTML 파일로 만들었습니다. 앞에서 문제가 되었던 설명문이나 [https://...](...) 같은 형식은 들어 있지 않습니다.
-
-GitHub에 올린 뒤 Commit → 1~2분 기다린 후 삼성폰에서 다시 테스트해 주세요.
-
-테스트 순서는:
-
-북부회중 게시판 → 전시대 신청 → 전시대 관리자
-
-순서로 해보시면 됩니다. 
-
-
-
-index.html
-HTML
-
-
-라이브러리
-/
-index.html
-
-
-
-
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-
-<meta name="viewport"
-      content="width=device-width,
-               initial-scale=1.0,
-               maximum-scale=1.0,
-               user-scalable=no,
-               viewport-fit=cover">
+<!-- =========================
+     기본 설정
+========================= -->
 
 <meta name="theme-color" content="#1976d2">
 
-<meta name="mobile-web-app-capable" content="yes">
+<meta name="description"
+      content="서울 북부 회중 전자카드">
 
-<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable"
+      content="yes">
 
-<meta name="apple-mobile-web-app-status-bar-style"
-      content="default">
-
-<meta name="apple-mobile-web-app-title"
+<meta name="application-name"
       content="북부전자카드">
+
+
+<!-- =========================
+     Android / PWA
+========================= -->
 
 <link rel="manifest" href="./manifest.json">
 
@@ -271,18 +42,33 @@ index.html
       sizes="512x512"
       href="./icon-512.png">
 
+
+<!-- =========================
+     iPhone / iPad
+========================= -->
+
+<meta name="apple-mobile-web-app-capable"
+      content="yes">
+
+<meta name="apple-mobile-web-app-status-bar-style"
+      content="default">
+
+<meta name="apple-mobile-web-app-title"
+      content="북부전자카드">
+
 <link rel="apple-touch-icon"
       sizes="192x192"
       href="./icon-192.png">
+
 
 <title>서울 북부 회중</title>
 
 
 <style>
 
-/* ==================================================
-   기본
-================================================== */
+/* =========================
+   기본 초기화
+========================= */
 
 * {
     box-sizing: border-box;
@@ -315,16 +101,15 @@ body {
     color: #172033;
 
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
 }
 
 
-/* ==================================================
-   메인 페이지
-================================================== */
+/* =========================
+   전체 페이지
+========================= */
 
 .page {
-    display: none;
-
     width: 100%;
 
     min-height: 100vh;
@@ -343,14 +128,10 @@ body {
         max(16px, env(safe-area-inset-left));
 }
 
-body.unlocked .page {
-    display: block;
-}
 
-
-/* ==================================================
+/* =========================
    가운데 영역
-================================================== */
+========================= */
 
 .container {
     width: 100%;
@@ -359,9 +140,9 @@ body.unlocked .page {
 }
 
 
-/* ==================================================
+/* =========================
    제목
-================================================== */
+========================= */
 
 .header {
     padding: 8px 4px 20px;
@@ -380,9 +161,9 @@ body.unlocked .page {
 }
 
 
-/* ==================================================
+/* =========================
    메인 게시판
-================================================== */
+========================= */
 
 .main-link {
     display: flex;
@@ -414,6 +195,9 @@ body.unlocked .page {
     transition:
         transform 0.12s ease,
         box-shadow 0.12s ease;
+
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .main-content {
@@ -461,9 +245,9 @@ body.unlocked .page {
 }
 
 
-/* ==================================================
+/* =========================
    버튼 영역
-================================================== */
+========================= */
 
 .buttons {
     display: grid;
@@ -477,9 +261,9 @@ body.unlocked .page {
 }
 
 
-/* ==================================================
+/* =========================
    일반 버튼
-================================================== */
+========================= */
 
 .button {
     display: flex;
@@ -510,8 +294,6 @@ body.unlocked .page {
 
     -webkit-user-select: none;
     user-select: none;
-
-    cursor: pointer;
 }
 
 .button-left {
@@ -542,6 +324,36 @@ body.unlocked .page {
     background: #e7f0ff;
 }
 
+
+/* =========================
+   아이콘 배경
+========================= */
+
+.purple .icon {
+    background: #e5efff;
+}
+
+.blue .icon {
+    background: #e1ecff;
+}
+
+.gray .icon {
+    background: #e8eef5;
+}
+
+.orange .icon {
+    background: #e5efff;
+}
+
+.green .icon {
+    background: #e3edff;
+}
+
+
+/* =========================
+   버튼 글자
+========================= */
+
 .button-text {
     font-size: 19px;
     font-weight: 750;
@@ -562,9 +374,9 @@ body.unlocked .page {
 }
 
 
-/* ==================================================
+/* =========================
    관리자 버튼
-================================================== */
+========================= */
 
 .admin-button {
     grid-column: 1 / -1;
@@ -584,6 +396,8 @@ body.unlocked .page {
 
     box-shadow:
         0 7px 20px rgba(8, 43, 80, 0.20);
+
+    cursor: pointer;
 }
 
 .admin-button .icon {
@@ -595,9 +409,9 @@ body.unlocked .page {
 }
 
 
-/* ==================================================
+/* =========================
    터치 효과
-================================================== */
+========================= */
 
 .button:active,
 .main-link:active {
@@ -615,9 +429,9 @@ body.unlocked .page {
 }
 
 
-/* ==================================================
-   휴대폰
-================================================== */
+/* =========================
+   작은 휴대폰
+========================= */
 
 @media (max-width: 430px) {
 
@@ -702,9 +516,9 @@ body.unlocked .page {
 }
 
 
-/* ==================================================
+/* =========================
    아주 작은 화면
-================================================== */
+========================= */
 
 @media (max-width: 360px) {
 
@@ -733,11 +547,42 @@ body.unlocked .page {
 }
 
 
+/* =========================
+   가로 화면 방지 보정
+========================= */
+
+@media (orientation: landscape) and (max-height: 500px) {
+
+    .page {
+        padding-top: 18px;
+        padding-bottom: 18px;
+    }
+
+    .header {
+        padding-bottom: 12px;
+    }
+
+    .title {
+        font-size: 27px;
+    }
+
+    .main-link {
+        min-height: 78px;
+    }
+
+    .button {
+        min-height: 70px;
+    }
+}
+
+
 /* ==================================================
-   비밀번호 잠금 화면
+   관리자 비밀번호 팝업
 ================================================== */
 
 .password-overlay {
+
+    display: none;
 
     position: fixed;
 
@@ -746,9 +591,7 @@ body.unlocked .page {
     right: 0;
     bottom: 0;
 
-    z-index: 99999;
-
-    display: flex;
+    z-index: 9999;
 
     align-items: center;
     justify-content: center;
@@ -756,60 +599,40 @@ body.unlocked .page {
     padding: 20px;
 
     background:
-        linear-gradient(
-            135deg,
-            #102a43 0%,
-            #0b3b68 100%
-        );
+        rgba(8, 24, 42, 0.58);
 
-    opacity: 1;
-
-    visibility: visible;
-
-    transition:
-        opacity 0.2s ease,
-        visibility 0.2s ease;
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
 }
 
-.password-overlay.hidden {
-
-    opacity: 0;
-
-    visibility: hidden;
-
-    pointer-events: none;
+.password-overlay.show {
+    display: flex;
 }
 
-
-/* ==================================================
-   비밀번호 박스
-================================================== */
 
 .password-box {
 
     width: 100%;
     max-width: 360px;
 
-    padding: 30px 24px 23px;
+    padding: 27px 23px 22px;
 
     background: #ffffff;
 
-    border-radius: 26px;
+    border-radius: 25px;
 
     box-shadow:
-        0 25px 70px rgba(0,0,0,0.30);
-
-    text-align: center;
+        0 20px 60px rgba(0,0,0,0.25);
 
     animation:
-        passwordPopup 0.22s ease-out;
+        passwordPopup 0.18s ease-out;
 }
 
 @keyframes passwordPopup {
 
     from {
         opacity: 0;
-        transform: scale(0.94) translateY(12px);
+        transform: scale(0.94) translateY(10px);
     }
 
     to {
@@ -819,90 +642,76 @@ body.unlocked .page {
 }
 
 
-/* ==================================================
-   잠금 아이콘
-================================================== */
-
 .password-icon {
 
-    width: 62px;
-    height: 62px;
+    width: 54px;
+    height: 54px;
 
-    margin: 0 auto 16px;
+    margin: 0 auto 14px;
 
     display: flex;
 
     align-items: center;
     justify-content: center;
 
-    border-radius: 19px;
+    border-radius: 17px;
 
     background: #e8f1ff;
 
-    font-size: 29px;
+    font-size: 25px;
 }
 
-
-/* ==================================================
-   제목
-================================================== */
 
 .password-title {
 
     margin: 0;
 
-    font-size: 22px;
-    font-weight: 800;
+    text-align: center;
 
-    letter-spacing: -0.5px;
+    font-size: 21px;
+    font-weight: 800;
 
     color: #102a43;
 }
 
 
-/* ==================================================
-   설명
-================================================== */
-
 .password-description {
 
-    margin: 9px 0 20px;
+    margin: 8px 0 19px;
+
+    text-align: center;
 
     font-size: 14px;
 
-    line-height: 1.6;
-
     color: #718096;
+
+    line-height: 1.5;
 }
 
-
-/* ==================================================
-   비밀번호 입력
-================================================== */
 
 .password-input {
 
     width: 100%;
 
-    height: 52px;
+    height: 50px;
 
-    padding: 0 16px;
+    padding: 0 15px;
 
     border: 1px solid #d5dfeb;
 
     border-radius: 14px;
 
+    background: #f7f9fc;
+
     outline: none;
 
-    background: #f7f9fc;
+    font-size: 18px;
 
     color: #172033;
 
-    font-size: 19px;
-
     text-align: center;
 
-    letter-spacing: 4px;
+    letter-spacing: 3px;
 
     transition:
         border-color 0.15s ease,
@@ -913,27 +722,22 @@ body.unlocked .page {
 
     border-color: #1976d2;
 
-    background: #ffffff;
-
     box-shadow:
         0 0 0 3px rgba(25,118,210,0.12);
+
+    background: #ffffff;
 }
 
-
-/* ==================================================
-   기억하기
-================================================== */
 
 .remember-row {
 
     display: flex;
 
     align-items: center;
-    justify-content: center;
 
     gap: 9px;
 
-    margin: 15px 0 19px;
+    margin: 14px 2px 18px;
 
     font-size: 14px;
 
@@ -947,157 +751,65 @@ body.unlocked .page {
     width: 18px;
     height: 18px;
 
-    margin: 0;
-
     accent-color: #1976d2;
 
     cursor: pointer;
 }
 
 
-/* ==================================================
-   확인 버튼
-================================================== */
+.password-buttons {
 
-.password-confirm {
+    display: grid;
 
-    width: 100%;
+    grid-template-columns: 1fr 1fr;
 
-    height: 49px;
+    gap: 9px;
+}
+
+
+.password-btn {
+
+    height: 47px;
 
     border: none;
 
-    border-radius: 14px;
-
-    background: #1976d2;
-
-    color: #ffffff;
+    border-radius: 13px;
 
     font-size: 16px;
 
     font-weight: 700;
 
     cursor: pointer;
-
-    box-shadow:
-        0 6px 16px rgba(25,118,210,0.22);
-
-    transition:
-        transform 0.1s ease;
 }
 
-.password-confirm:active {
-
-    transform: scale(0.97);
-}
-
-
-/* ==================================================
-   비밀번호 취소
-================================================== */
 
 .password-cancel {
 
-    width: 100%;
-
-    height: 42px;
-
-    margin-top: 8px;
-
-    border: none;
-
-    background: transparent;
-
-    color: #718096;
-
-    font-size: 14px;
-
-    font-weight: 600;
-
-    cursor: pointer;
-
-    border-radius: 12px;
-
-    transition:
-        background 0.1s ease,
-        color 0.1s ease;
-}
-
-.password-cancel:active {
-
-    background: #f1f4f8;
+    background: #edf2f7;
 
     color: #52657a;
 }
 
 
-/* ==================================================
-   오류 메시지
-================================================== */
+.password-confirm {
+
+    background: #1976d2;
+
+    color: #ffffff;
+}
+
 
 .password-error {
 
-    min-height: 21px;
+    min-height: 20px;
 
-    margin-top: 10px;
+    margin-top: 9px;
+
+    text-align: center;
 
     font-size: 13px;
 
     color: #d32f2f;
-}
-
-
-/* ==================================================
-   관리자 비밀번호 창
-================================================== */
-
-.admin-password-overlay {
-
-    position: fixed;
-
-    inset: 0;
-
-    z-index: 100000;
-
-    display: none;
-
-    align-items: center;
-    justify-content: center;
-
-    padding: 20px;
-
-    background:
-        rgba(10,31,52,.72);
-
-    backdrop-filter: blur(5px);
-}
-
-.admin-password-overlay.show {
-    display: flex;
-}
-
-
-/* ==================================================
-   메인 페이지 나타남
-================================================== */
-
-body.unlocked .page {
-
-    animation:
-        pageAppear 0.25s ease-out;
-}
-
-@keyframes pageAppear {
-
-    from {
-        opacity: 0;
-        transform: translateY(5px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 </style>
@@ -1106,167 +818,14 @@ body.unlocked .page {
 
 <body>
 
-
-<!-- ==================================================
-     최초 접속 비밀번호
-     비밀번호: 7216
-================================================== -->
-
-<div
-    class="password-overlay"
-    id="loginOverlay">
-
-    <div
-        class="password-box"
-        role="dialog"
-        aria-modal="true">
-
-        <div class="password-icon">
-            🔒
-        </div>
-
-        <h2 class="password-title">
-            서울 북부 회중
-        </h2>
-
-        <p class="password-description">
-            전자카드를 사용하려면<br>
-            비밀번호를 입력해 주세요.
-        </p>
-
-        <input
-            type="password"
-            id="loginPassword"
-            class="password-input"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="비밀번호"
-            maxlength="20">
-
-        <label class="remember-row">
-
-            <input
-                type="checkbox"
-                id="rememberLogin">
-
-            <span>
-                이 기기에서 기억하기
-            </span>
-
-        </label>
-
-        <button
-            type="button"
-            class="password-confirm"
-            id="loginButton">
-
-            확인
-
-        </button>
-
-        <button
-            type="button"
-            class="password-cancel"
-            id="loginCancelButton">
-
-            취소
-
-        </button>
-
-        <div
-            class="password-error"
-            id="loginError">
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- ==================================================
-     관리자 비밀번호
-     비밀번호: 7979
-================================================== -->
-
-<div
-    class="admin-password-overlay"
-    id="adminOverlay">
-
-    <div
-        class="password-box"
-        role="dialog"
-        aria-modal="true">
-
-        <div class="password-icon">
-            ⚙️
-        </div>
-
-        <h2 class="password-title">
-            전시대 관리자
-        </h2>
-
-        <p class="password-description">
-            관리자 페이지입니다.<br>
-            관리자 비밀번호를 입력해 주세요.
-        </p>
-
-        <input
-            type="password"
-            id="adminPassword"
-            class="password-input"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="관리자 비밀번호"
-            maxlength="20">
-
-        <label class="remember-row">
-
-            <input
-                type="checkbox"
-                id="rememberAdmin">
-
-            <span>
-                이 기기에서 기억하기
-            </span>
-
-        </label>
-
-        <button
-            type="button"
-            class="password-confirm"
-            id="adminLoginButton">
-
-            확인
-
-        </button>
-
-        <button
-            type="button"
-            class="password-cancel"
-            id="adminCancelButton">
-
-            취소
-
-        </button>
-
-        <div
-            class="password-error"
-            id="adminError">
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- ==================================================
-     메인 페이지
-================================================== -->
-
 <main class="page">
 
 <div class="container">
 
+
+<!-- =========================
+     제목
+========================= -->
 
 <header class="header">
 
@@ -1277,19 +836,14 @@ body.unlocked .page {
 </header>
 
 
-<!-- ==================================================
+<!-- =========================
      북부회중 게시판
-     
-     ★ 수정:
-     ?gid=1903762694#gid=1903762694
-     →
-     #gid=1903762694
-================================================== -->
+========================= -->
 
 <a
     class="main-link"
-    href="https://docs.google.com/spreadsheets/d/1Z-tXk1lHjDKJ9QfvNfPFXRUSL8awENpLzRRczfown9E/edit#gid=1903762694"
-    onclick="openGoogleSheet(event, this.href)">
+    href="https://docs.google.com/spreadsheets/d/1Z-tXk1lHjDKJ9QfvNfPFXRUSL8awENpLzRRczfown9E/edit?gid=1903762694#gid=1903762694"
+    target="_top">
 
     <div class="main-content">
 
@@ -1310,9 +864,9 @@ body.unlocked .page {
 </a>
 
 
-<!-- ==================================================
+<!-- =========================
      메뉴
-================================================== -->
+========================= -->
 
 <section class="buttons">
 
@@ -1320,7 +874,7 @@ body.unlocked .page {
 <!-- 화요일 -->
 
 <a
-    class="button"
+    class="button purple"
     href="https://docs.google.com/spreadsheets/d/1Qup_YoEKWxplnGioeA5r4BQfMZP3DQBKOVzU3OCxarM/edit?gid=0#gid=0"
     target="_top">
 
@@ -1346,7 +900,7 @@ body.unlocked .page {
 <!-- 수요일 -->
 
 <a
-    class="button"
+    class="button blue"
     href="https://docs.google.com/spreadsheets/d/1UEdmbFROuAe1rny6-HN6998ObACrme-mhmC7QXBBUHE/edit?gid=0#gid=0"
     target="_top">
 
@@ -1372,7 +926,7 @@ body.unlocked .page {
 <!-- 목요일 -->
 
 <a
-    class="button"
+    class="button gray"
     href="https://docs.google.com/spreadsheets/d/1JpNcenBexX6tJVujE53o4R4G9NRwUJ_QIVk8nCKOT1w/edit?gid=0#gid=0"
     target="_top">
 
@@ -1398,7 +952,7 @@ body.unlocked .page {
 <!-- 금요일 -->
 
 <a
-    class="button"
+    class="button gray"
     href="https://docs.google.com/spreadsheets/d/1ixb-jhy3HEtuJ8oJvII9TRp1VwV0plR1CxFaqjYdBTo/edit?gid=0#gid=0"
     target="_top">
 
@@ -1424,7 +978,7 @@ body.unlocked .page {
 <!-- 토요일 -->
 
 <a
-    class="button"
+    class="button purple"
     href="https://docs.google.com/spreadsheets/d/1jF9CUYw-Hyg71YwxRRVPvWgZ0OG86CI4TIqpOXnnlUA/edit?gid=0#gid=0"
     target="_top">
 
@@ -1450,7 +1004,7 @@ body.unlocked .page {
 <!-- 일요일 -->
 
 <a
-    class="button"
+    class="button purple"
     href="https://docs.google.com/spreadsheets/d/1LhsyRYL04sOXDxstABVhvNcJ4eG6AxnEoa3jMiAahdg/edit?gid=0#gid=0"
     target="_top">
 
@@ -1476,7 +1030,7 @@ body.unlocked .page {
 <!-- 전화 증거 -->
 
 <a
-    class="button"
+    class="button orange"
     href="https://docs.google.com/spreadsheets/d/1axP-z7SiAx6vAr97R7SwD-0yP4Yd19JtEwoF1ApYaJY/edit?gid=0#gid=0"
     target="_top">
 
@@ -1502,7 +1056,7 @@ body.unlocked .page {
 <!-- 편지 봉사 -->
 
 <a
-    class="button"
+    class="button blue"
     href="https://docs.google.com/spreadsheets/d/1bGcu0AaT2iPOw2a3379wScaIM5s4ut-O9Umj3Fco4Uc/edit?gid=0#gid=0"
     target="_top">
 
@@ -1528,7 +1082,7 @@ body.unlocked .page {
 <!-- 개인 봉사 -->
 
 <a
-    class="button"
+    class="button purple"
     href="https://docs.google.com/spreadsheets/d/10uhO1PXHa4zPdxqc7oNQ_WLtlsj5w8vwZ7PIZkb35II/edit?gid=0#gid=0"
     target="_top">
 
@@ -1551,19 +1105,12 @@ body.unlocked .page {
 </a>
 
 
-<!-- ==================================================
-     전시대 신청
-     
-     ★ 수정:
-     ?gid=1888339369#gid=1888339369
-     →
-     #gid=1888339369
-================================================== -->
+<!-- 전시대 신청 -->
 
 <a
-    class="button"
-    href="https://docs.google.com/spreadsheets/d/13biGx4c_LIhM7wLaZDLdbHAs5-egmXA9Io7naDJln-w/edit#gid=1888339369"
-    onclick="openGoogleSheet(event, this.href)">
+    class="button green"
+    href="https://docs.google.com/spreadsheets/d/13biGx4c_LIhM7wLaZDLdbHAs5-egmXA9Io7naDJln-w/edit?gid=1888339369#gid=1888339369"
+    target="_top">
 
     <div class="button-left">
 
@@ -1584,9 +1131,9 @@ body.unlocked .page {
 </a>
 
 
-<!-- ==================================================
-     전시대 관리자
-================================================== -->
+<!-- =========================
+     관리자
+========================= -->
 
 <button
     type="button"
@@ -1614,122 +1161,177 @@ body.unlocked .page {
 
 </section>
 
+
 </div>
 
 </main>
 
 
+<!-- ==================================================
+     비밀번호 입력 팝업
+================================================== -->
+
+<div
+    class="password-overlay"
+    id="passwordOverlay">
+
+    <div
+        class="password-box"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="passwordTitle">
+
+        <div class="password-icon">
+            🔒
+        </div>
+
+        <h2
+            class="password-title"
+            id="passwordTitle">
+
+            관리자 확인
+
+        </h2>
+
+        <p class="password-description">
+
+            전시대 관리자 페이지입니다.<br>
+            비밀번호를 입력해 주세요.
+
+        </p>
+
+
+        <input
+            type="password"
+            id="passwordInput"
+            class="password-input"
+            inputmode="numeric"
+            autocomplete="current-password"
+            placeholder="비밀번호"
+            maxlength="20">
+
+
+        <label class="remember-row">
+
+            <input
+                type="checkbox"
+                id="rememberPassword">
+
+            <span>
+                이 기기에서 기억하기
+            </span>
+
+        </label>
+
+
+        <div class="password-buttons">
+
+            <button
+                type="button"
+                class="password-btn password-cancel"
+                id="passwordCancel">
+
+                취소
+
+            </button>
+
+            <button
+                type="button"
+                class="password-btn password-confirm"
+                id="passwordConfirm">
+
+                확인
+
+            </button>
+
+        </div>
+
+
+        <div
+            class="password-error"
+            id="passwordError">
+        </div>
+
+    </div>
+
+</div>
+
+
 <script>
 
 /* ==================================================
-   Google Sheets 직접 이동
-   삼성 휴대폰/카카오톡 등에서 링크 처리 차이를 줄입니다.
+   관리자 설정
 ================================================== */
 
-function openGoogleSheet(event, url) {
+/*
+   ★★★ 관리자 비밀번호 ★★★
 
-    if (event) {
-        event.preventDefault();
-    }
+   현재 비밀번호: 1234
 
-    if (!url) {
-        return;
-    }
+   원하는 비밀번호로 변경하세요.
 
-    window.location.assign(url);
-}
+   예:
+   const ADMIN_PASSWORD = "5678";
+*/
 
-
-/* ==================================================
-   비밀번호 설정
-================================================== */
-
-const PAGE_PASSWORD = "7216";
-
-const ADMIN_PASSWORD = "7979";
+const ADMIN_PASSWORD = "1234";
 
 
-/* ==================================================
+/*
    관리자 Google Sheets 주소
-
-   ★ 수정:
-   ?gid=1237649201#gid=1237649201
-   →
-   #gid=1237649201
-================================================== */
+*/
 
 const ADMIN_URL =
-"https://docs.google.com/spreadsheets/d/1eQHscrZpAWzrOo6QJw3pmyoeUijUoTKyfMmmPRPqkaU/edit#gid=1237649201";
+    "https://docs.google.com/spreadsheets/d/1eQHscrZpAWzrOo6QJw3pmyoeUijUoTKyfMmmPRPqkaU/edit?gid=1237649201#gid=1237649201";
+
+
+/*
+   비밀번호 기억용 저장 이름
+
+   이 이름은 변경하지 않아도 됩니다.
+*/
+
+const PASSWORD_STORAGE_KEY =
+    "bukbu_admin_password_saved";
 
 
 /* ==================================================
-   기억하기 저장 키
+   요소 가져오기
 ================================================== */
 
-const PAGE_REMEMBER_KEY =
-"bukbu_page_remember";
+const adminButton =
+    document.getElementById("adminButton");
 
-const ADMIN_REMEMBER_KEY =
-"bukbu_admin_remember";
+const passwordOverlay =
+    document.getElementById("passwordOverlay");
+
+const passwordInput =
+    document.getElementById("passwordInput");
+
+const passwordConfirm =
+    document.getElementById("passwordConfirm");
+
+const passwordCancel =
+    document.getElementById("passwordCancel");
+
+const rememberPassword =
+    document.getElementById("rememberPassword");
+
+const passwordError =
+    document.getElementById("passwordError");
 
 
 /* ==================================================
-   일반 로그인 요소
+   저장된 비밀번호 확인
 ================================================== */
 
-const loginOverlay =
-document.getElementById("loginOverlay");
-
-const loginPassword =
-document.getElementById("loginPassword");
-
-const rememberLogin =
-document.getElementById("rememberLogin");
-
-const loginButton =
-document.getElementById("loginButton");
-
-const loginError =
-document.getElementById("loginError");
-
-const loginCancelButton =
-document.getElementById("loginCancelButton");
-
-
-/* ==================================================
-   관리자 로그인 요소
-================================================== */
-
-const adminOverlay =
-document.getElementById("adminOverlay");
-
-const adminPassword =
-document.getElementById("adminPassword");
-
-const rememberAdmin =
-document.getElementById("rememberAdmin");
-
-const adminLoginButton =
-document.getElementById("adminLoginButton");
-
-const adminError =
-document.getElementById("adminError");
-
-const adminCancelButton =
-document.getElementById("adminCancelButton");
-
-
-/* ==================================================
-   일반 비밀번호 기억 여부
-================================================== */
-
-function pageRemembered() {
+function isPasswordSaved() {
 
     try {
 
         return localStorage.getItem(
-            PAGE_REMEMBER_KEY
-        ) === "yes";
+            PASSWORD_STORAGE_KEY
+        ) === "true";
 
     } catch (error) {
 
@@ -1741,413 +1343,313 @@ function pageRemembered() {
 
 
 /* ==================================================
-   관리자 비밀번호 기억 여부
+   관리자 페이지 열기
 ================================================== */
 
-function adminRemembered() {
+function openAdminPage() {
 
-    try {
-
-        return localStorage.getItem(
-            ADMIN_REMEMBER_KEY
-        ) === "yes";
-
-    } catch (error) {
-
-        return false;
-
-    }
+    window.location.href = ADMIN_URL;
 
 }
 
 
 /* ==================================================
-   메인 페이지 열기
+   비밀번호 창 열기
 ================================================== */
 
-function unlockPage() {
+function openPasswordBox() {
 
-    document.body.classList.add(
-        "unlocked"
-    );
+    passwordError.textContent = "";
 
-    loginOverlay.classList.add(
-        "hidden"
-    );
+    passwordInput.value = "";
+
+    rememberPassword.checked =
+        isPasswordSaved();
+
+    passwordOverlay.classList.add("show");
+
+    setTimeout(function() {
+
+        passwordInput.focus();
+
+    }, 100);
 
 }
 
 
 /* ==================================================
-   일반 비밀번호 확인
+   비밀번호 창 닫기
 ================================================== */
 
-function checkLoginPassword() {
+function closePasswordBox() {
 
-    const password =
-        loginPassword.value.trim();
+    passwordOverlay.classList.remove("show");
+
+    passwordInput.value = "";
+
+    passwordError.textContent = "";
+
+}
 
 
-    if (!password) {
+/* ==================================================
+   비밀번호 확인
+================================================== */
 
-        loginError.textContent =
+function checkPassword() {
+
+    const enteredPassword =
+        passwordInput.value.trim();
+
+
+    /* 비밀번호가 비어있는 경우 */
+
+    if (!enteredPassword) {
+
+        passwordError.textContent =
             "비밀번호를 입력해 주세요.";
 
-        loginPassword.focus();
+        passwordInput.focus();
 
         return;
 
     }
 
 
-    if (password !== PAGE_PASSWORD) {
+    /* 비밀번호가 맞는 경우 */
 
-        loginError.textContent =
-            "비밀번호가 올바르지 않습니다.";
-
-        loginPassword.value = "";
-
-        loginPassword.focus();
-
-        return;
-
-    }
-
-
-    if (rememberLogin.checked) {
-
-        try {
-
-            localStorage.setItem(
-                PAGE_REMEMBER_KEY,
-                "yes"
-            );
-
-        } catch (error) {
-
-            console.log(
-                "비밀번호 저장 실패",
-                error
-            );
-
-        }
-
-    } else {
-
-        try {
-
-            localStorage.removeItem(
-                PAGE_REMEMBER_KEY
-            );
-
-        } catch (error) {}
-
-    }
-
-
-    unlockPage();
-
-}
-
-
-/* ==================================================
-   일반 로그인 버튼
-================================================== */
-
-loginButton.addEventListener(
-    "click",
-    checkLoginPassword
-);
-
-
-/* ==================================================
-   일반 로그인 취소
-================================================== */
-
-function cancelLogin() {
-
-    const referrer =
-        document.referrer;
-
-    if (
-        referrer &&
-        referrer !== window.location.href
-    ) {
-
-        window.location.replace(referrer);
-
-        return;
-    }
-
-
-    if (window.history.length > 1) {
-
-        window.history.back();
-
-        return;
-    }
-
-
-    loginPassword.value = "";
-
-    loginError.textContent = "";
-
-}
-
-loginCancelButton.addEventListener(
-    "click",
-    cancelLogin
-);
-
-
-/* ==================================================
-   일반 로그인 Enter
-================================================== */
-
-loginPassword.addEventListener(
-    "keydown",
-    function(event) {
-
-        if (event.key === "Enter") {
-
-            event.preventDefault();
-
-            checkLoginPassword();
-
-        }
-
-    }
-);
-
-
-/* ==================================================
-   관리자 로그인 창 열기
-================================================== */
-
-function openAdminLogin() {
-
-    if (adminRemembered()) {
-
-        window.location.href =
-            ADMIN_URL;
-
-        return;
-
-    }
-
-
-    adminPassword.value = "";
-
-    adminError.textContent = "";
-
-    rememberAdmin.checked = false;
-
-
-    adminOverlay.classList.add(
-        "show"
-    );
-
-
-    setTimeout(
-        function() {
-
-            adminPassword.focus();
-
-        },
-        100
-    );
-
-}
-
-
-/* ==================================================
-   관리자 비밀번호 확인
-================================================== */
-
-function checkAdminPassword() {
-
-    const password =
-        adminPassword.value.trim();
-
-
-    if (!password) {
-
-        adminError.textContent =
-            "관리자 비밀번호를 입력해 주세요.";
-
-        adminPassword.focus();
-
-        return;
-
-    }
-
-
-    if (password !== ADMIN_PASSWORD) {
-
-        adminError.textContent =
-            "관리자 비밀번호가 올바르지 않습니다.";
-
-        adminPassword.value = "";
-
-        adminPassword.focus();
-
-        return;
-
-    }
-
-
-    if (rememberAdmin.checked) {
-
-        try {
-
-            localStorage.setItem(
-                ADMIN_REMEMBER_KEY,
-                "yes"
-            );
-
-        } catch (error) {
-
-            console.log(
-                "관리자 비밀번호 저장 실패",
-                error
-            );
-
-        }
-
-    } else {
-
-        try {
-
-            localStorage.removeItem(
-                ADMIN_REMEMBER_KEY
-            );
-
-        } catch (error) {}
-
-    }
-
-
-    openGoogleSheet(null, ADMIN_URL);
-
-}
-
-
-/* ==================================================
-   관리자 버튼
-================================================== */
-
-document.getElementById(
-    "adminButton"
-).addEventListener(
-    "click",
-    openAdminLogin
-);
-
-
-/* ==================================================
-   관리자 확인
-================================================== */
-
-adminLoginButton.addEventListener(
-    "click",
-    checkAdminPassword
-);
-
-
-/* ==================================================
-   관리자 취소
-================================================== */
-
-function cancelAdminLogin() {
-
-    adminOverlay.classList.remove(
-        "show"
-    );
-
-    adminPassword.value = "";
-
-    adminError.textContent = "";
-
-}
-
-adminCancelButton.addEventListener(
-    "click",
-    cancelAdminLogin
-);
-
-
-/* ==================================================
-   관리자 Enter
-================================================== */
-
-adminPassword.addEventListener(
-    "keydown",
-    function(event) {
-
-        if (event.key === "Enter") {
-
-            event.preventDefault();
-
-            checkAdminPassword();
-
-        }
-
-    }
-);
-
-
-/* ==================================================
-   페이지 최초 실행
-================================================== */
-
-window.addEventListener(
-    "DOMContentLoaded",
-    function() {
-
-        const userAgent =
-            navigator.userAgent || "";
-
-        const isKakaoTalk =
-            /KAKAOTALK|KakaoTalk/i.test(
-                userAgent
-            );
+    if (enteredPassword === ADMIN_PASSWORD) {
 
 
         /*
-           PC/일반 브라우저에서는
-           '이 기기에서 기억하기' 사용 가능
-
-           카카오톡에서는
-           매번 비밀번호 표시
+           '이 기기에서 기억하기'를 선택한 경우
         */
 
-        if (
-            pageRemembered() &&
-            !isKakaoTalk
-        ) {
+        if (rememberPassword.checked) {
 
-            unlockPage();
+            try {
+
+                localStorage.setItem(
+                    PASSWORD_STORAGE_KEY,
+                    "true"
+                );
+
+            } catch (error) {
+
+                console.log(
+                    "비밀번호 저장 실패:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        /*
+           체크하지 않았다면
+           기존 저장값을 삭제
+        */
+
+        else {
+
+            try {
+
+                localStorage.removeItem(
+                    PASSWORD_STORAGE_KEY
+                );
+
+            } catch (error) {
+
+                console.log(
+                    "저장된 비밀번호 삭제 실패:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        closePasswordBox();
+
+        openAdminPage();
+
+        return;
+
+    }
+
+
+    /* 비밀번호가 틀린 경우 */
+
+    passwordError.textContent =
+        "비밀번호가 올바르지 않습니다.";
+
+    passwordInput.value = "";
+
+    passwordInput.focus();
+
+}
+
+
+/* ==================================================
+   관리자 버튼 클릭
+================================================== */
+
+adminButton.addEventListener(
+    "click",
+    function() {
+
+
+        /*
+           이미 이 기기에서 기억된 경우
+
+           비밀번호 입력 없이 바로 이동
+        */
+
+        if (isPasswordSaved()) {
+
+            openAdminPage();
 
             return;
 
         }
 
 
-        setTimeout(
-            function() {
+        /*
+           기억되지 않은 경우
+           비밀번호 입력창 표시
+        */
 
-                loginPassword.focus();
-
-            },
-            250
-        );
+        openPasswordBox();
 
     }
 );
 
 
 /* ==================================================
-   뒤로가기 / BFCache 대응
+   확인 버튼
+================================================== */
+
+passwordConfirm.addEventListener(
+    "click",
+    checkPassword
+);
+
+
+/* ==================================================
+   취소 버튼
+================================================== */
+
+passwordCancel.addEventListener(
+    "click",
+    closePasswordBox
+);
+
+
+/* ==================================================
+   Enter 키로 확인
+================================================== */
+
+passwordInput.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (event.key === "Enter") {
+
+            event.preventDefault();
+
+            checkPassword();
+
+        }
+
+    }
+);
+
+
+/* ==================================================
+   팝업 바깥쪽 클릭 시 닫기
+================================================== */
+
+passwordOverlay.addEventListener(
+    "click",
+    function(event) {
+
+        if (
+            event.target === passwordOverlay
+        ) {
+
+            closePasswordBox();
+
+        }
+
+    }
+);
+
+
+/* ==================================================
+   ESC 키로 닫기
+================================================== */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Escape" &&
+            passwordOverlay.classList.contains("show")
+        ) {
+
+            closePasswordBox();
+
+        }
+
+    }
+);
+
+
+/* ==================================================
+   Service Worker 등록
+   Android PWA / 오프라인
+================================================== */
+
+if ("serviceWorker" in navigator) {
+
+    window.addEventListener(
+        "load",
+        function() {
+
+            navigator.serviceWorker
+                .register("./sw.js")
+                .then(
+                    function(registration) {
+
+                        console.log(
+                            "Service Worker 등록 완료:",
+                            registration.scope
+                        );
+
+                    }
+                )
+                .catch(
+                    function(error) {
+
+                        console.log(
+                            "Service Worker 등록 실패:",
+                            error
+                        );
+
+                    }
+                );
+
+        }
+    );
+
+}
+
+
+/* ==================================================
+   뒤로가기 시 화면 보정
 ================================================== */
 
 window.addEventListener(
