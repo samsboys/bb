@@ -83,7 +83,6 @@ body {
 
 /* ==================================================
    메인 페이지
-   처음에는 숨김
 ================================================== */
 
 .page {
@@ -757,28 +756,40 @@ body.unlocked .page {
 
 
 /* ==================================================
-   비밀번호 취소 / 뒤로가기 버튼
+   비밀번호 취소
 ================================================== */
 
 .password-cancel {
 
     width: 100%;
+
     height: 42px;
+
     margin-top: 8px;
+
     border: none;
+
     background: transparent;
+
     color: #718096;
+
     font-size: 14px;
+
     font-weight: 600;
+
     cursor: pointer;
+
     border-radius: 12px;
+
     transition:
         background 0.1s ease,
         color 0.1s ease;
 }
 
 .password-cancel:active {
+
     background: #f1f4f8;
+
     color: #52657a;
 }
 
@@ -861,7 +872,7 @@ body.unlocked .page {
 
 <!-- ==================================================
      최초 접속 비밀번호
-     ★ 비밀번호: 7216
+     비밀번호: 7216
 ================================================== -->
 
 <div
@@ -937,7 +948,7 @@ body.unlocked .page {
 
 <!-- ==================================================
      관리자 비밀번호
-     ★ 비밀번호: 7979
+     비밀번호: 7979
 ================================================== -->
 
 <div
@@ -1031,11 +1042,16 @@ body.unlocked .page {
 
 <!-- ==================================================
      북부회중 게시판
+     
+     ★ 수정:
+     ?gid=1903762694#gid=1903762694
+     →
+     #gid=1903762694
 ================================================== -->
 
 <a
     class="main-link"
-    href="https://docs.google.com/spreadsheets/d/1Z-tXk1lHjDKJ9QfvNfPFXRUSL8awENpLzRRczfown9E/edit?gid=1903762694#gid=1903762694"
+    href="https://docs.google.com/spreadsheets/d/1Z-tXk1lHjDKJ9QfvNfPFXRUSL8awENpLzRRczfown9E/edit#gid=1903762694"
     target="_top">
 
     <div class="main-content">
@@ -1298,11 +1314,18 @@ body.unlocked .page {
 </a>
 
 
-<!-- 전시대 신청 -->
+<!-- ==================================================
+     전시대 신청
+     
+     ★ 수정:
+     ?gid=1888339369#gid=1888339369
+     →
+     #gid=1888339369
+================================================== -->
 
 <a
     class="button"
-    href="https://docs.google.com/spreadsheets/d/13biGx4c_LIhM7wLaZDLdbHAs5-egmXA9Io7naDJln-w/edit?gid=1888339369#gid=1888339369"
+    href="https://docs.google.com/spreadsheets/d/13biGx4c_LIhM7wLaZDLdbHAs5-egmXA9Io7naDJln-w/edit#gid=1888339369"
     target="_top">
 
     <div class="button-left">
@@ -1362,34 +1385,25 @@ body.unlocked .page {
 <script>
 
 /* ==================================================
-   ★★★ 비밀번호 설정 ★★★
+   비밀번호 설정
 ================================================== */
 
-
-/*
-   일반 접속 비밀번호
-   ------------------
-   처음 페이지에 들어올 때 사용
-*/
-
 const PAGE_PASSWORD = "7216";
-
-
-/*
-   관리자 비밀번호
-   ----------------
-   전시대 관리자 버튼을 눌렀을 때 사용
-*/
 
 const ADMIN_PASSWORD = "7979";
 
 
-/*
+/* ==================================================
    관리자 Google Sheets 주소
-*/
+
+   ★ 수정:
+   ?gid=1237649201#gid=1237649201
+   →
+   #gid=1237649201
+================================================== */
 
 const ADMIN_URL =
-"https://docs.google.com/spreadsheets/d/1eQHscrZpAWzrOo6QJw3pmyoeUijUoTKyfMmmPRPqkaU/edit?gid=1237649201#gid=1237649201";
+"https://docs.google.com/spreadsheets/d/1eQHscrZpAWzrOo6QJw3pmyoeUijUoTKyfMmmPRPqkaU/edit#gid=1237649201";
 
 
 /* ==================================================
@@ -1518,8 +1532,6 @@ function checkLoginPassword() {
         loginPassword.value.trim();
 
 
-    /* 빈칸 */
-
     if (!password) {
 
         loginError.textContent =
@@ -1531,8 +1543,6 @@ function checkLoginPassword() {
 
     }
 
-
-    /* 비밀번호 오류 */
 
     if (password !== PAGE_PASSWORD) {
 
@@ -1547,10 +1557,6 @@ function checkLoginPassword() {
 
     }
 
-
-    /* ==================================================
-       비밀번호 기억
-    ================================================== */
 
     if (rememberLogin.checked) {
 
@@ -1583,8 +1589,6 @@ function checkLoginPassword() {
     }
 
 
-    /* 페이지 열기 */
-
     unlockPage();
 
 }
@@ -1601,28 +1605,24 @@ loginButton.addEventListener(
 
 
 /* ==================================================
-   일반 로그인 취소 / 뒤로가기
+   일반 로그인 취소
 ================================================== */
 
 function cancelLogin() {
 
-    /*
-       카카오톡에서 링크를 눌러 들어온 경우에는
-       history.back()만으로 원래 카카오톡 화면으로
-       돌아가지 않는 경우가 있습니다.
+    const referrer =
+        document.referrer;
 
-       1순위: 이전 페이지(referrer)로 이동
-       2순위: 브라우저 뒤로가기
-    */
-
-    const referrer = document.referrer;
-
-    if (referrer && referrer !== window.location.href) {
+    if (
+        referrer &&
+        referrer !== window.location.href
+    ) {
 
         window.location.replace(referrer);
 
         return;
     }
+
 
     if (window.history.length > 1) {
 
@@ -1631,13 +1631,9 @@ function cancelLogin() {
         return;
     }
 
-    /*
-       이전 주소 정보가 전혀 없는 직접 접속의 경우에는
-       비밀번호 입력 화면을 닫을 수 없으므로
-       입력 내용만 초기화합니다.
-    */
 
     loginPassword.value = "";
+
     loginError.textContent = "";
 
 }
@@ -1674,12 +1670,6 @@ loginPassword.addEventListener(
 
 function openAdminLogin() {
 
-
-    /*
-       관리자 비밀번호를 기억하고 있다면
-       비밀번호를 묻지 않고 바로 이동
-    */
-
     if (adminRemembered()) {
 
         window.location.href =
@@ -1690,8 +1680,6 @@ function openAdminLogin() {
     }
 
 
-    /* 입력창 초기화 */
-
     adminPassword.value = "";
 
     adminError.textContent = "";
@@ -1699,14 +1687,10 @@ function openAdminLogin() {
     rememberAdmin.checked = false;
 
 
-    /* 관리자 창 표시 */
-
     adminOverlay.classList.add(
         "show"
     );
 
-
-    /* 입력창 포커스 */
 
     setTimeout(
         function() {
@@ -1730,8 +1714,6 @@ function checkAdminPassword() {
         adminPassword.value.trim();
 
 
-    /* 빈칸 */
-
     if (!password) {
 
         adminError.textContent =
@@ -1743,8 +1725,6 @@ function checkAdminPassword() {
 
     }
 
-
-    /* 비밀번호 오류 */
 
     if (password !== ADMIN_PASSWORD) {
 
@@ -1759,10 +1739,6 @@ function checkAdminPassword() {
 
     }
 
-
-    /* ==================================================
-       관리자 비밀번호 기억
-    ================================================== */
 
     if (rememberAdmin.checked) {
 
@@ -1795,8 +1771,6 @@ function checkAdminPassword() {
     }
 
 
-    /* 관리자 페이지 이동 */
-
     window.location.href =
         ADMIN_URL;
 
@@ -1816,7 +1790,7 @@ document.getElementById(
 
 
 /* ==================================================
-   관리자 확인 버튼
+   관리자 확인
 ================================================== */
 
 adminLoginButton.addEventListener(
@@ -1826,14 +1800,17 @@ adminLoginButton.addEventListener(
 
 
 /* ==================================================
-   관리자 취소 / 닫기
+   관리자 취소
 ================================================== */
 
 function cancelAdminLogin() {
 
-    adminOverlay.classList.remove("show");
+    adminOverlay.classList.remove(
+        "show"
+    );
 
     adminPassword.value = "";
+
     adminError.textContent = "";
 
 }
@@ -1872,25 +1849,27 @@ window.addEventListener(
     "DOMContentLoaded",
     function() {
 
+        const userAgent =
+            navigator.userAgent || "";
 
-        /*
-           일반 비밀번호를 기억하고 있으면
-           바로 메인 페이지
-        */
-
-        /*
-           카카오톡 인앱 브라우저에서는
-           '이 기기에서 기억하기'가 되어 있어도
-           항상 비밀번호를 먼저 묻습니다.
-
-           PC/일반 브라우저에서는 기존처럼
-           기억하기를 선택한 경우 바로 입장합니다.
-        */
-        const userAgent = navigator.userAgent || "";
         const isKakaoTalk =
-            /KAKAOTALK|KakaoTalk/i.test(userAgent);
+            /KAKAOTALK|KakaoTalk/i.test(
+                userAgent
+            );
 
-        if (pageRemembered() && !isKakaoTalk) {
+
+        /*
+           PC/일반 브라우저에서는
+           '이 기기에서 기억하기' 사용 가능
+
+           카카오톡에서는
+           매번 비밀번호 표시
+        */
+
+        if (
+            pageRemembered() &&
+            !isKakaoTalk
+        ) {
 
             unlockPage();
 
@@ -1898,11 +1877,6 @@ window.addEventListener(
 
         }
 
-
-        /*
-           처음 방문하면
-           비밀번호 입력창에 포커스
-        */
 
         setTimeout(
             function() {
