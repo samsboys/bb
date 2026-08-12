@@ -1,3 +1,240 @@
+
+
+붙여넣은 텍스트 (1)(3).txt
+문서
+이렇게 되어 있어요
+
+26e1de50-752b-4c04-8da3-b3bc88e2e206.png
+
+네, 사진을 보니 문제가 확실히 보입니다.
+
+지금 삼성폰에서 보이는 것은 원래의 전자카드 화면이 아니라, HTML 코드가 웹페이지에 글자로 그대로 출력되고 있습니다.
+
+즉, 지금은 Google Sheets 문제가 아니라 index.html 파일 자체가 잘못 저장/업로드된 상태입니다.
+
+사진에서 확인되는 증상
+화면에 이런 식으로 보이고 있습니다.
+
+네. 그러면 원인이 정확히 좁혀졌습니다.
+GitHub 페이지 → 정상
+...
+href="https://docs.google.com/..."
+이것은 브라우저가 HTML을 실행한 것이 아니라 HTML 내용을 일반 텍스트로 표시하고 있는 상태입니다.
+
+제가 앞에서 만들어 드린 파일을 교체하는 과정에서 문제가 생긴 것 같습니다. 죄송합니다.
+
+지금은 이렇게 하지 마세요
+❌ 현재 파일을 다시 덮어쓰지 마세요.
+❌ 지금 보이는 화면에서 계속 수정하지 마세요.
+
+원래 정상적으로 작동하던 index.html로 먼저 되돌리는 것이 가장 안전합니다.
+
+그 다음 제가 현재 정상 버전의 코드에서 딱 3개 링크만 수정한 진짜 HTML 파일을 다시 만들어 드리겠습니다.
+
+그리고 이번에는 제가 만든 파일을 단순히 다운로드해서 이름만 바꾸는 방식이 아니라, 실제 HTML 문서가 정상적으로 <!DOCTYPE html>부터 시작하는지 확인한 후 드리겠습니다.
+
+한 가지 확인해 주세요
+지금 GitHub에서 index.html을 열었을 때도 코드가 정상적으로 보이나요?
+
+즉 GitHub 편집 화면에서 맨 첫 줄이:
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+이렇게 되어 있나요?
+
+아니면 GitHub의 웹페이지 자체가 지금 사진처럼 글자로 표시되나요?
+
+👉 GitHub 편집 화면의 index.html 첫 부분을 캡처해서 한 장 보내주세요.
+
+그 사진을 보면 제가 어디에서 파일이 잘못된 것인지 바로 잡아서, 이번에는 기존 기능을 그대로 살린 전체 코드를 만들어 드리겠습니다.
+
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width,
+               initial-scale=1.0,
+               maximum-scale=1.0,
+               user-scalable=no,
+               viewport-fit=cover">
+
+네, 이 부분은 정상입니다. 👍
+
+지금 보내주신 GitHub index.html의 첫 부분이
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width,
+               initial-scale=1.0,
+               maximum-scale=1.0,
+               user-scalable=no,
+               viewport-fit=cover">
+라면 HTML 파일 자체의 시작 부분은 올바르게 되어 있습니다.
+
+그리고 아까 보여주신 삼성폰 화면은 중요한 단서가 하나 있습니다.
+
+아까 화면에 나온 내용
+화면에
+
+네. 그러면 원인이 정확히 좁혀졌습니다. GitHub 페이지 → 정상...
+
+이라고 나왔죠.
+
+이건 현재 index.html의 HTML 코드가 잘못 해석된 것이 아닙니다.
+
+오히려 제가 이전 답변에서 설명문을 드린 내용 자체가 웹페이지 내용으로 들어가 버린 것에 가깝습니다.
+
+즉 지금 확인해야 할 것은:
+
+GitHub 저장소의 index.html
+        ↓
+실제로 어떤 내용이 들어 있는지
+        ↓
+GitHub Pages가 그 파일을 제대로 읽고 있는지
+입니다.
+
+지금은 기존 파일을 다시 건드리지 마세요
+현재 GitHub의 index.html 첫 부분이 위와 같이 정상이라면, 지금 파일 전체를 다시 교체할 필요가 없습니다.
+
+제가 앞에서 파일을 만들어 드리는 과정에서 문제가 생겼습니다.
+
+이번에는 방법을 바꾸겠습니다.
+
+가장 안전한 방법
+현재 GitHub에서 정상적으로 작동하던 index.html을 그대로 유지하고,
+
+딱 3곳만 수정합니다.
+
+① 북부회중 게시판
+기존:
+
+<a
+    class="main-link"
+    href="https://docs.google.com/spreadsheets/d/1Z-tXk1lHjDKJ9QfvNfPFXRUSL8awENpLzRRczfown9E/edit?gid=1903762694#gid=1903762694"
+    target="_top">
+이것을:
+
+<a
+    class="main-link"
+    href="https://docs.google.com/spreadsheets/d/1Z-tXk1lHjDKJ9QfvNfPFXRUSL8awENpLzRRczfown9E/edit?gid=1903762694#gid=1903762694"
+    onclick="openGoogleSheet(event, this.href)">
+로 변경합니다.
+
+② 전시대 신청
+기존:
+
+target="_top">
+을 해당 링크에서만
+
+onclick="openGoogleSheet(event, this.href)">
+로 변경합니다.
+
+③ JavaScript 추가
+<script> 안쪽에 다음 함수를 하나 추가합니다.
+
+function openGoogleSheet(event, url) {
+
+    if (event) {
+        event.preventDefault();
+    }
+
+    window.location.assign(url);
+}
+그런데 전시대 관리자도 안 열린다고 하셨죠.
+이것도 기존:
+
+window.location.href = ADMIN_URL;
+을
+
+openGoogleSheet(null, ADMIN_URL);
+로 바꾸면 됩니다.
+
+중요한 점
+지금 보내주신 첫 부분은 문제가 없습니다.
+
+따라서 지금은 제가 전체 코드를 다시 만들어서 드리는 것보다, 현재 GitHub에 있는 정상적인 index.html 전체를 기준으로 정확히 3곳만 수정하는 것이 훨씬 안전합니다.
+
+그리고 이번에는 제가 설명문이 HTML 파일에 섞이는 일이 없도록, 사용자가 그대로 복사할 수 있는 순수 HTML 코드만 만들어 드리겠습니다.
+
+현재 GitHub index.html의 아래쪽 <script> 부분까지 포함해서 전체 내용을 올려주시면, 제가 그 원본을 그대로 유지하면서 북부회중 게시판 + 전시대 신청 + 전시대 관리자 이동 부분만 수정한 완성본을 만들어 드리겠습니다.
+
+
+그냥 최종본의 코드를 짜 주세요
+
+네. 이번에는 현재 정상적으로 사용하시던 원본을 그대로 기준으로 해서 최종본을 만들었습니다.
+
+수정한 것은 딱 3가지입니다.
+
+북부회중 게시판
+
+?gid=1903762694#gid=1903762694
+
+→ #gid=1903762694 형태로 정리
+
+JavaScript 직접 이동
+
+전시대 신청
+
+동일하게 수정
+
+전시대 관리자
+
+동일한 직접 이동 방식으로 수정
+
+나머지는 그대로 유지했습니다.
+
+일반 비밀번호 7216
+
+관리자 비밀번호 7979
+
+이 기기에서 기억하기
+
+카카오톡 접속 시 비밀번호
+
+취소 버튼
+
+기존 디자인
+
+화요일~개인 봉사 링크
+
+아이콘/manifest
+
+최종 index.html
+이 파일을 그대로 GitHub의 기존 index.html과 교체하시면 됩니다.
+
+📥 최종 index.html 다운로드
+
+중요: 이번 파일은 제가 검증해서 <!DOCTYPE html>부터 </html>까지 정상적인 HTML 파일로 만들었습니다. 앞에서 문제가 되었던 설명문이나 [https://...](...) 같은 형식은 들어 있지 않습니다.
+
+GitHub에 올린 뒤 Commit → 1~2분 기다린 후 삼성폰에서 다시 테스트해 주세요.
+
+테스트 순서는:
+
+북부회중 게시판 → 전시대 신청 → 전시대 관리자
+
+순서로 해보시면 됩니다. 
+
+
+
+index.html
+HTML
+
+
+라이브러리
+/
+index.html
+
+
+
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -1385,9 +1622,8 @@ body.unlocked .page {
 <script>
 
 /* ==================================================
-   Google Sheets 이동
-   삼성 휴대폰/카카오톡 등에서 링크 처리 차이를 줄이기 위해
-   일반 링크(target="_top") 대신 현재 창에서 직접 이동
+   Google Sheets 직접 이동
+   삼성 휴대폰/카카오톡 등에서 링크 처리 차이를 줄입니다.
 ================================================== */
 
 function openGoogleSheet(event, url) {
@@ -1400,11 +1636,7 @@ function openGoogleSheet(event, url) {
         return;
     }
 
-    try {
-        window.location.assign(url);
-    } catch (error) {
-        window.location.href = url;
-    }
+    window.location.assign(url);
 }
 
 
