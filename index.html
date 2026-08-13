@@ -326,6 +326,45 @@ body.unlocked .page {
 
 
 /* ==================================================
+   관리자 메뉴 표시
+================================================== */
+
+const adminMenuOverlay =
+    document.getElementById("adminMenuOverlay");
+
+const adminMenuClose =
+    document.getElementById("adminMenuClose");
+
+function showAdminMenu() {
+
+    adminOverlay.classList.remove("show");
+
+    adminMenuOverlay.classList.add("show");
+
+}
+
+function closeAdminMenu() {
+
+    adminMenuOverlay.classList.remove("show");
+
+}
+
+adminMenuClose.addEventListener(
+    "click",
+    closeAdminMenu
+);
+
+adminMenuOverlay.addEventListener(
+    "click",
+    function(event) {
+        if (event.target === adminMenuOverlay) {
+            closeAdminMenu();
+        }
+    }
+);
+
+
+/* ==================================================
    관리자 버튼
 ================================================== */
 
@@ -841,6 +880,87 @@ body.unlocked .page {
 
 
 /* ==================================================
+   전시대 관리자 메뉴
+================================================== */
+
+.admin-menu-overlay {
+
+    position: fixed;
+    inset: 0;
+    z-index: 100001;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(10,31,52,.72);
+    backdrop-filter: blur(5px);
+}
+
+.admin-menu-overlay.show {
+    display: flex;
+}
+
+.admin-menu-box {
+    width: min(100%, 420px);
+    background: #ffffff;
+    border-radius: 22px;
+    padding: 22px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.25);
+}
+
+.admin-menu-title {
+    margin: 0;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.admin-menu-subtitle {
+    margin: 7px 0 18px;
+    text-align: center;
+    color: #68707d;
+    font-size: 13px;
+}
+
+.admin-menu-link {
+    width: 100%;
+    min-height: 58px;
+    margin-top: 9px;
+    padding: 0 16px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-decoration: none;
+    color: #172033;
+    background: #f3f6fa;
+    font-size: 16px;
+    font-weight: 750;
+}
+
+.admin-menu-link.sheet {
+    background: #eaf2ff;
+}
+
+.admin-menu-link .menu-arrow {
+    font-size: 22px;
+    color: #6f88a3;
+}
+
+.admin-menu-close {
+    width: 100%;
+    min-height: 50px;
+    margin-top: 14px;
+    border: 0;
+    border-radius: 14px;
+    background: #edf1f5;
+    color: #333;
+    font-size: 16px;
+    font-weight: 750;
+    cursor: pointer;
+}
+
+/* ==================================================
    메인 페이지 나타남
 ================================================== */
 
@@ -1016,6 +1136,56 @@ body.unlocked .page {
             class="password-error"
             id="adminError">
         </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     전시대 관리자 메뉴
+     관리자 비밀번호 인증 후 두 항목만 표시
+================================================== -->
+
+<div
+    class="admin-menu-overlay"
+    id="adminMenuOverlay">
+
+    <div
+        class="admin-menu-box"
+        role="dialog"
+        aria-modal="true">
+
+        <h2 class="admin-menu-title">
+            ⚙️ 전시대 관리자
+        </h2>
+
+        <p class="admin-menu-subtitle">
+            원하시는 관리 기능을 선택해 주세요.
+        </p>
+
+        <a
+            class="admin-menu-link sheet"
+            id="adminSheetLink"
+            href="https://docs.google.com/spreadsheets/d/1eQHscrZpAWzrOo6QJw3pmyoeUijUoTKyfMmmPRPqkaU/edit#gid=1237649201">
+            <span>📊 전시대 관리자용 시트</span>
+            <span class="menu-arrow">›</span>
+        </a>
+
+        <a
+            class="admin-menu-link"
+            id="exhibitionLink"
+            href="./exhibition.html">
+            <span>📋 전시대 임명</span>
+            <span class="menu-arrow">›</span>
+        </a>
+
+        <button
+            type="button"
+            class="admin-menu-close"
+            id="adminMenuClose">
+            닫기
+        </button>
 
     </div>
 
@@ -1322,79 +1492,6 @@ body.unlocked .page {
      →
      #gid=1888339369
 ================================================== -->
-
-<!-- ==================================================
-     전시대 신청
-     기존 구글 시트 + 전시대 임명
-================================================== -->
-
-<div class="button" style="display:block; cursor:default;">
-
-    <div style="
-        display:flex;
-        align-items:center;
-        gap:12px;
-        margin-bottom:12px;
-    ">
-        <div class="icon">
-            📝
-        </div>
-
-        <span class="button-text">
-            전시대 신청
-        </span>
-    </div>
-
-    <div style="
-        display:flex;
-        flex-direction:column;
-        gap:8px;
-    ">
-
-        <a
-            href="https://docs.google.com/spreadsheets/d/1eQHscrZpAWzrOo6QJw3pmyoeUijUoTKyfMmmPRPqkaU/edit#gid=1237649201"
-            target="_top"
-            style="
-                display:flex;
-                align-items:center;
-                justify-content:space-between;
-                min-height:48px;
-                padding:0 14px;
-                border-radius:12px;
-                background:#eaf2ff;
-                color:#172033;
-                text-decoration:none;
-                font-size:16px;
-                font-weight:700;
-            ">
-            <span>⚙️ 전시대 관리자</span>
-            <span style="font-size:20px;color:#6f88a3;">›</span>
-        </a>
-
-        <a
-            href="./exhibition.html"
-            target="_top"
-            style="
-                display:flex;
-                align-items:center;
-                justify-content:space-between;
-                min-height:48px;
-                padding:0 14px;
-                border-radius:12px;
-                background:#f3f5f8;
-                color:#172033;
-                text-decoration:none;
-                font-size:16px;
-                font-weight:700;
-            ">
-            <span>📋 전시대 임명표 만들기</span>
-            <span style="font-size:20px;color:#6f88a3;">›</span>
-        </a>
-
-    </div>
-
-</div>
-
 
 <!-- ==================================================
      전시대 관리자
@@ -1721,8 +1818,7 @@ function openAdminLogin() {
 
     if (adminRemembered()) {
 
-        window.location.href =
-            ADMIN_URL;
+        showAdminMenu();
 
         return;
 
@@ -1820,7 +1916,7 @@ function checkAdminPassword() {
     }
 
 
-    window.location.href = ADMIN_URL;
+    showAdminMenu();
 
 }
 
