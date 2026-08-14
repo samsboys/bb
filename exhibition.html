@@ -88,20 +88,37 @@ body {
     color: white;
 }
 
-/* 시간 */
+/* 시간 선택 버튼 3개 */
 .time-row {
-    display: flex;
-    gap: 10px;
-    align-items: center;
+    display: grid;
+    grid-template-columns: 1.05fr 1fr 1fr;
+    gap: 8px;
 }
 
-input[type="time"] {
+.time-select {
     width: 100%;
-    padding: 14px;
+    min-height: 52px;
+    padding: 0 10px;
     border: 1px solid #d9dee7;
-    border-radius: 12px;
-    font-size: 18px;
+    border-radius: 13px;
+    font-size: 17px;
+    font-weight: 800;
+    color: #202124;
     background: #fff;
+    text-align: center;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    background-image: linear-gradient(45deg, transparent 50%, #7b8794 50%), linear-gradient(135deg, #7b8794 50%, transparent 50%);
+    background-position: calc(100% - 15px) 22px, calc(100% - 10px) 22px;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+}
+
+.time-select:focus {
+    outline: none;
+    border-color: #2864e8;
+    box-shadow: 0 0 0 3px rgba(40,100,232,.10);
 }
 
 /* 이름 */
@@ -242,6 +259,11 @@ input[type="time"] {
 .hidden {
     display: none !important;
 }
+
+@media (max-width: 360px) {
+    .time-row { gap: 6px; }
+    .time-select { font-size: 15px; padding: 0 6px; }
+}
 </style>
 </head>
 
@@ -287,11 +309,19 @@ input[type="time"] {
         <div class="card-title">② 시작 시간</div>
 
         <div class="time-row">
-            <input type="time"
-                   id="startTime"
-                   value="10:00"
-                   onchange="updateEndInfo()">
+
+            <select id="startAmPm" class="time-select" onchange="syncStartTime()" aria-label="오전 오후">
+                <option value="AM" selected>오전</option>
+                <option value="PM">오후</option>
+            </select>
+
+            <select id="startHour" class="time-select" onchange="syncStartTime()" aria-label="시간"></select>
+
+            <select id="startMinute" class="time-select" onchange="syncStartTime()" aria-label="분"></select>
+
         </div>
+
+        <input type="hidden" id="startTime" value="10:00">
 
         <div class="notice" id="timeInfo">
             인원을 먼저 선택해 주세요.
@@ -423,6 +453,53 @@ function createNameInputs() {
    - 6명: 10분 간격
    - 7명: 10분 간격
 */
+
+/* 시간 선택 버튼 초기화 */
+function initTimeSelectors() {
+
+    const hourSelect = document.getElementById("startHour");
+    const minuteSelect = document.getElementById("startMinute");
+
+    for (let h = 1; h <= 12; h++) {
+        const option = document.createElement("option");
+        option.value = String(h);
+        option.textContent = `${h}시`;
+        if (h === 10) option.selected = true;
+        hourSelect.appendChild(option);
+    }
+
+    for (let m = 0; m < 60; m++) {
+        const option = document.createElement("option");
+        const value = String(m).padStart(2, "0");
+        option.value = value;
+        option.textContent = `${value}분`;
+        if (m === 0) option.selected = true;
+        minuteSelect.appendChild(option);
+    }
+
+    syncStartTime();
+}
+
+
+/* 3개의 시간 버튼을 실제 시작시간으로 변환 */
+function syncStartTime() {
+
+    const ampm = document.getElementById("startAmPm").value;
+    let hour = Number(document.getElementById("startHour").value);
+    const minute = document.getElementById("startMinute").value;
+
+    if (ampm === "AM") {
+        if (hour === 12) hour = 0;
+    } else {
+        if (hour !== 12) hour += 12;
+    }
+
+    document.getElementById("startTime").value =
+        `${String(hour).padStart(2,"0")}:${minute}`;
+
+    updateEndInfo();
+}
+
 
 /* 종료시간 정보 */
 function updateEndInfo() {
@@ -584,13 +661,13 @@ function makeSchedule() {
     if (peopleCount === 7) {
 
         const pairs = [
-            [0, 1, 0],    // 1번, 2번 : 10:00
-            [2, 3, 20],   // 3번, 4번 : 10:20
-            [4, 5, 40],   // 5번, 6번 : 10:40
-            [6, 0, 60],   // 7번, 1번 : 11:00
-            [1, 2, 75],   // 2번, 3번 : 11:15
-            [3, 4, 90],   // 4번, 5번 : 11:30
-            [5, 6, 105]   // 6번, 7번 : 11:45
+            [0, 1, 0],    // 1번, 2번 : 시작
+            [2, 3, 15],   // 3번, 4번 : +15분
+            [4, 5, 30],   // 5번, 6번 : +15분
+            [6, 0, 45],   // 7번, 1번 : +15분
+            [1, 2, 60],   // 2번, 3번 : +15분
+            [3, 4, 80],   // 4번, 5번 : +20분
+            [5, 6, 100]   // 6번, 7번 : +20분
         ];
 
         pairs.forEach(([i1, i2, offset]) => {
@@ -791,6 +868,8 @@ async function copySchedule() {
         alert("전시대 임명표가 복사되었습니다.");
     }
 }
+
+initTimeSelectors();
 
 </script>
 
