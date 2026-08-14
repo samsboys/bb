@@ -329,660 +329,6 @@ body.unlocked .page {
    관리자 메뉴 표시
 ================================================== */
 
-const adminMenuOverlay =
-    document.getElementById("adminMenuOverlay");
-
-const adminMenuClose =
-    document.getElementById("adminMenuClose");
-
-function showAdminMenu() {
-
-    adminOverlay.classList.remove("show");
-
-    adminMenuOverlay.classList.add("show");
-
-}
-
-function closeAdminMenu() {
-
-    adminMenuOverlay.classList.remove("show");
-
-}
-
-adminMenuClose.addEventListener(
-    "click",
-    closeAdminMenu
-);
-
-adminMenuOverlay.addEventListener(
-    "click",
-    function(event) {
-        if (event.target === adminMenuOverlay) {
-            closeAdminMenu();
-        }
-    }
-);
-
-
-/* ==================================================
-   관리자 버튼
-================================================== */
-
-.admin-button {
-    grid-column: 1 / -1;
-
-    min-height: 76px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #123f70 0%,
-            #082b50 100%
-        );
-
-    color: #ffffff;
-
-    border: none;
-
-    box-shadow:
-        0 7px 20px rgba(8, 43, 80, 0.20);
-}
-
-.admin-button .icon {
-    background: rgba(255,255,255,0.13);
-}
-
-.admin-button .button-arrow {
-    color: #a9c0d8;
-}
-
-
-/* ==================================================
-   터치 효과
-================================================== */
-
-.button:active,
-.main-link:active {
-    transform: scale(0.97);
-}
-
-.button:hover {
-    box-shadow:
-        0 6px 18px rgba(16, 42, 67, 0.11);
-}
-
-.main-link:hover {
-    box-shadow:
-        0 12px 32px rgba(7, 87, 181, 0.30);
-}
-
-
-/* ==================================================
-   휴대폰
-================================================== */
-
-@media (max-width: 430px) {
-
-    .page {
-        padding-top:
-            max(20px, env(safe-area-inset-top));
-
-        padding-left:
-            max(13px, env(safe-area-inset-left));
-
-        padding-right:
-            max(13px, env(safe-area-inset-right));
-    }
-
-    .header {
-        padding-bottom: 17px;
-    }
-
-    .title {
-        font-size: 22px;
-    }
-
-    .main-link {
-        min-height: 100px;
-
-        padding: 19px;
-
-        border-radius: 21px;
-    }
-
-    .main-icon {
-        width: 48px;
-        height: 48px;
-
-        border-radius: 15px;
-
-        font-size: 24px;
-    }
-
-    .main-title {
-        font-size: 22px;
-    }
-
-    .buttons {
-        gap: 9px;
-
-        margin-top: 13px;
-    }
-
-    .button {
-        min-height: 84px;
-
-        padding: 13px 12px;
-
-        border-radius: 17px;
-    }
-
-    .button-left {
-        gap: 9px;
-    }
-
-    .icon {
-        width: 36px;
-        height: 36px;
-
-        border-radius: 11px;
-
-        font-size: 18px;
-    }
-
-    .button-text {
-        font-size: 17px;
-    }
-
-    .button-arrow {
-        font-size: 18px;
-    }
-
-    .admin-button {
-        min-height: 68px;
-    }
-}
-
-
-/* ==================================================
-   아주 작은 화면
-================================================== */
-
-@media (max-width: 360px) {
-
-    .title {
-        font-size: 20px;
-    }
-
-    .main-title {
-        font-size: 20px;
-    }
-
-    .button {
-        min-height: 80px;
-    }
-
-    .button-text {
-        font-size: 15px;
-    }
-
-    .icon {
-        width: 33px;
-        height: 33px;
-
-        font-size: 16px;
-    }
-}
-
-
-/* ==================================================
-   비밀번호 잠금 화면
-================================================== */
-
-.password-overlay {
-
-    position: fixed;
-
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    z-index: 99999;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    padding: 20px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #102a43 0%,
-            #0b3b68 100%
-        );
-
-    opacity: 1;
-
-    visibility: visible;
-
-    transition:
-        opacity 0.2s ease,
-        visibility 0.2s ease;
-}
-
-.password-overlay.hidden {
-
-    opacity: 0;
-
-    visibility: hidden;
-
-    pointer-events: none;
-}
-
-
-/* ==================================================
-   비밀번호 박스
-================================================== */
-
-.password-box {
-
-    width: 100%;
-    max-width: 360px;
-
-    padding: 30px 24px 23px;
-
-    background: #ffffff;
-
-    border-radius: 26px;
-
-    box-shadow:
-        0 25px 70px rgba(0,0,0,0.30);
-
-    text-align: center;
-
-    animation:
-        passwordPopup 0.22s ease-out;
-}
-
-@keyframes passwordPopup {
-
-    from {
-        opacity: 0;
-        transform: scale(0.94) translateY(12px);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-
-/* ==================================================
-   잠금 아이콘
-================================================== */
-
-.password-icon {
-
-    width: 62px;
-    height: 62px;
-
-    margin: 0 auto 16px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 19px;
-
-    background: #e8f1ff;
-
-    font-size: 29px;
-}
-
-
-/* ==================================================
-   제목
-================================================== */
-
-.password-title {
-
-    margin: 0;
-
-    font-size: 22px;
-    font-weight: 800;
-
-    letter-spacing: -0.5px;
-
-    color: #102a43;
-}
-
-
-/* ==================================================
-   설명
-================================================== */
-
-.password-description {
-
-    margin: 9px 0 20px;
-
-    font-size: 14px;
-
-    line-height: 1.6;
-
-    color: #718096;
-}
-
-
-/* ==================================================
-   비밀번호 입력
-================================================== */
-
-.password-input {
-
-    width: 100%;
-
-    height: 52px;
-
-    padding: 0 16px;
-
-    border: 1px solid #d5dfeb;
-
-    border-radius: 14px;
-
-    outline: none;
-
-    background: #f7f9fc;
-
-    color: #172033;
-
-    font-size: 19px;
-
-    text-align: center;
-
-    letter-spacing: 4px;
-
-    transition:
-        border-color 0.15s ease,
-        box-shadow 0.15s ease;
-}
-
-.password-input:focus {
-
-    border-color: #1976d2;
-
-    background: #ffffff;
-
-    box-shadow:
-        0 0 0 3px rgba(25,118,210,0.12);
-}
-
-
-/* ==================================================
-   기억하기
-================================================== */
-
-.remember-row {
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    gap: 9px;
-
-    margin: 15px 0 19px;
-
-    font-size: 14px;
-
-    color: #52657a;
-
-    cursor: pointer;
-}
-
-.remember-row input {
-
-    width: 18px;
-    height: 18px;
-
-    margin: 0;
-
-    accent-color: #1976d2;
-
-    cursor: pointer;
-}
-
-
-/* ==================================================
-   확인 버튼
-================================================== */
-
-.password-confirm {
-
-    width: 100%;
-
-    height: 49px;
-
-    border: none;
-
-    border-radius: 14px;
-
-    background: #1976d2;
-
-    color: #ffffff;
-
-    font-size: 16px;
-
-    font-weight: 700;
-
-    cursor: pointer;
-
-    box-shadow:
-        0 6px 16px rgba(25,118,210,0.22);
-
-    transition:
-        transform 0.1s ease;
-}
-
-.password-confirm:active {
-
-    transform: scale(0.97);
-}
-
-
-/* ==================================================
-   비밀번호 취소
-================================================== */
-
-.password-cancel {
-
-    width: 100%;
-
-    height: 42px;
-
-    margin-top: 8px;
-
-    border: none;
-
-    background: transparent;
-
-    color: #718096;
-
-    font-size: 14px;
-
-    font-weight: 600;
-
-    cursor: pointer;
-
-    border-radius: 12px;
-
-    transition:
-        background 0.1s ease,
-        color 0.1s ease;
-}
-
-.password-cancel:active {
-
-    background: #f1f4f8;
-
-    color: #52657a;
-}
-
-
-/* ==================================================
-   오류 메시지
-================================================== */
-
-.password-error {
-
-    min-height: 21px;
-
-    margin-top: 10px;
-
-    font-size: 13px;
-
-    color: #d32f2f;
-}
-
-
-/* ==================================================
-   관리자 비밀번호 창
-================================================== */
-
-.admin-password-overlay {
-
-    position: fixed;
-
-    inset: 0;
-
-    z-index: 100000;
-
-    display: none;
-
-    align-items: center;
-    justify-content: center;
-
-    padding: 20px;
-
-    background:
-        rgba(10,31,52,.72);
-
-    backdrop-filter: blur(5px);
-}
-
-.admin-password-overlay.show {
-    display: flex;
-}
-
-
-/* ==================================================
-   전시대 관리자 메뉴
-================================================== */
-
-.admin-menu-overlay {
-
-    position: fixed;
-    inset: 0;
-    z-index: 100001;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    background: rgba(10,31,52,.72);
-    backdrop-filter: blur(5px);
-}
-
-.admin-menu-overlay.show {
-    display: flex;
-}
-
-.admin-menu-box {
-    width: min(100%, 420px);
-    background: #ffffff;
-    border-radius: 22px;
-    padding: 22px;
-    box-shadow: 0 20px 60px rgba(0,0,0,.25);
-}
-
-.admin-menu-title {
-    margin: 0;
-    text-align: center;
-    font-size: 22px;
-    font-weight: 800;
-}
-
-.admin-menu-subtitle {
-    margin: 7px 0 18px;
-    text-align: center;
-    color: #68707d;
-    font-size: 13px;
-}
-
-.admin-menu-link {
-    width: 100%;
-    min-height: 58px;
-    margin-top: 9px;
-    padding: 0 16px;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    text-decoration: none;
-    color: #172033;
-    background: #f3f6fa;
-    font-size: 16px;
-    font-weight: 750;
-}
-
-.admin-menu-link.sheet {
-    background: #eaf2ff;
-}
-
-.admin-menu-link .menu-arrow {
-    font-size: 22px;
-    color: #6f88a3;
-}
-
-.admin-menu-close {
-    width: 100%;
-    min-height: 50px;
-    margin-top: 14px;
-    border: 0;
-    border-radius: 14px;
-    background: #edf1f5;
-    color: #333;
-    font-size: 16px;
-    font-weight: 750;
-    cursor: pointer;
-}
-
-/* ==================================================
-   메인 페이지 나타남
-================================================== */
-
-body.unlocked .page {
-
-    animation:
-        pageAppear 0.25s ease-out;
-}
-
-@keyframes pageAppear {
-
-    from {
-        opacity: 0;
-        transform: translateY(5px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 </style>
 </head>
 
@@ -1531,6 +877,48 @@ body.unlocked .page {
 <script>
 
 /* ==================================================
+   관리자 메뉴
+================================================== */
+
+const adminMenuOverlay =
+    document.getElementById("adminMenuOverlay");
+
+const adminMenuClose =
+    document.getElementById("adminMenuClose");
+
+function showAdminMenu() {
+    if (!adminMenuOverlay) return;
+    if (adminOverlay) {
+        adminOverlay.classList.remove("show");
+    }
+    adminMenuOverlay.classList.add("show");
+}
+
+function closeAdminMenu() {
+    if (!adminMenuOverlay) return;
+    adminMenuOverlay.classList.remove("show");
+}
+
+if (adminMenuClose) {
+    adminMenuClose.addEventListener(
+        "click",
+        closeAdminMenu
+    );
+}
+
+if (adminMenuOverlay) {
+    adminMenuOverlay.addEventListener(
+        "click",
+        function(event) {
+            if (event.target === adminMenuOverlay) {
+                closeAdminMenu();
+            }
+        }
+    );
+}
+
+
+/* ==================================================
    비밀번호 설정
 ================================================== */
 
@@ -2052,6 +1440,21 @@ window.addEventListener(
     }
 );
 
+</script>
+
+<script>
+/*
+ * GitHub Pages / 일반 브라우저 대응
+ * localStorage 또는 선택적 기능에서 오류가 발생해도
+ * 기본 페이지가 빈 화면으로 남지 않도록 합니다.
+ */
+window.addEventListener("error", function(event) {
+    console.error("페이지 오류:", event.error || event.message);
+});
+
+window.addEventListener("unhandledrejection", function(event) {
+    console.error("비동기 오류:", event.reason);
+});
 </script>
 
 
