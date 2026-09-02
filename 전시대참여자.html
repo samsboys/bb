@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>전시대 참여자</title>
+
+<style>
+
+/* =========================================================
+   기본
+========================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Noto Sans KR",
+    sans-serif;
+
+  color: #ffffff;
+
+  background:
+    linear-gradient(
+      135deg,
+      #16222e,
+      #263b4a
+    );
+}
+
+
+/* =========================================================
+   상단
+========================================================= */
+
+.header {
+  width: 100%;
+
+  padding:
+    28px 20px;
+
+  text-align: center;
+
+  background:
+    rgba(18, 31, 42, 0.88);
+
+  border-bottom:
+    1px solid rgba(255,255,255,0.08);
+
+  backdrop-filter:
+    blur(10px);
+}
+
+.header h1 {
+  margin: 0;
+
+  font-size: 30px;
+
+  font-weight: 700;
+
+  letter-spacing: -1px;
+}
+
+.reference-date {
+  margin-top: 8px;
+  transform: translateX(15px);
+
+  font-size: 14px;
+
+  opacity: 0.7;
+}
+
+
+/* =========================================================
+   컨테이너
+========================================================= */
+
+.container {
+  width: 100%;
+
+  max-width: 1400px;
+
+  margin: 0 auto;
+
+  padding:
+    25px
+    20px
+    70px;
+}
+
+
+/* =========================================================
+   버튼
+========================================================= */
+
+.actions {
+  display: flex;
+
+  justify-content: flex-end;
+
+  gap: 10px;
+
+  margin-bottom: 28px;
+}
+
+.action-button {
+  border: none;
+
+  border-radius: 10px;
+
+  padding:
+    11px 18px;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  color: #ffffff;
+
+  background:
+    rgba(255,255,255,0.12);
+
+  transition:
+    background 0.2s,
+    transform 0.1s;
+}
+
+.action-button:hover {
+  background:
+    rgba(255,255,255,0.20);
+}
+
+.action-button:active {
+  transform: scale(0.97);
+}
+
+
+/* =========================================================
+   섹션
+========================================================= */
+
+.section {
+  margin-bottom: 42px;
+}
+
+.section-title {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  margin-bottom: 18px;
+
+  padding-bottom: 12px;
+
+  border-bottom:
+    1px solid rgba(255,255,255,0.15);
+}
+
+.section-title h2 {
+  margin: 0;
+
+  font-size: 23px;
+
+  font-weight: 700;
+}
+
+.total-count {
+  padding:
+    6px 12px;
+
+  border-radius: 20px;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  background:
+    rgba(255,255,255,0.10);
+}
+
+
+/* =========================================================
+   집단 그리드
+========================================================= */
+
+.group-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 16px;
+}
+
+
+/* =========================================================
+   카드
+========================================================= */
+
+.group-card,
+.other-card,
+.reference-card {
+  overflow: hidden;
+
+  border-radius: 16px;
+
+  border:
+    1px solid rgba(255,255,255,0.10);
+
+  background:
+    rgba(255,255,255,0.08);
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.12);
+}
+
+
+/* =========================================================
+   집단 카드 제목
+========================================================= */
+
+.group-header {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  padding:
+    14px 16px;
+
+  background:
+    rgba(255,255,255,0.08);
+
+  border-bottom:
+    1px solid rgba(255,255,255,0.08);
+}
+
+.group-name {
+  font-size: 16px;
+
+  font-weight: 700;
+}
+
+.group-count {
+  font-size: 14px;
+
+  opacity: 0.85;
+}
+
+
+/* =========================================================
+   이름 목록
+========================================================= */
+
+.name-list {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+  padding: 14px;
+
+  min-height: 64px;
+}
+
+.name {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding:
+    8px 12px;
+
+  border-radius: 8px;
+
+  font-size: 14px;
+
+  background:
+    rgba(255,255,255,0.09);
+
+  border:
+    1px solid rgba(255,255,255,0.06);
+}
+
+
+/* =========================================================
+   빈 데이터
+========================================================= */
+
+.empty-message {
+  width: 100%;
+
+  padding: 18px;
+
+  text-align: center;
+
+  color:
+    rgba(255,255,255,0.55);
+}
+
+
+/* =========================================================
+   참고사항
+========================================================= */
+
+.reference-list {
+  padding:
+    8px 18px;
+}
+
+.reference-item {
+  padding:
+    14px 4px;
+
+  line-height: 1.7;
+
+  border-bottom:
+    1px solid rgba(255,255,255,0.08);
+}
+
+.reference-item:last-child {
+  border-bottom: none;
+}
+
+
+/* =========================================================
+   로딩 / 오류
+========================================================= */
+
+.loading,
+.error {
+  padding:
+    80px 20px;
+
+  text-align: center;
+
+  color:
+    rgba(255,255,255,0.7);
+}
+
+.error {
+  color:
+    #ffb4b4;
+}
+
+
+/* =========================================================
+   모바일
+========================================================= */
+
+@media (max-width: 1000px) {
+
+  .group-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+
+@media (max-width: 600px) {
+
+  .header h1 {
+    font-size: 25px;
+  }
+
+  .container {
+    padding:
+      20px
+      14px
+      60px;
+  }
+
+  .group-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-title h2 {
+    font-size: 20px;
+  }
+
+  .action-button {
+    padding:
+      10px 15px;
+  }
+
+}
+
+
+/* =========================================================
+   작은 화면에서 버튼
+========================================================= */
+
+@media (max-width: 400px) {
+
+  .actions {
+    justify-content: space-between;
+  }
+
+  .action-button {
+    flex: 1;
+  }
+
+}
+
+
+/* =========================================================
+   설정 / 밝게·어둡게 / 글자 크기
+========================================================= */
+
+.settings-button {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  color: #ffffff;
+  background: rgba(255,255,255,0.12);
+  z-index: 10;
+}
+
+.settings-panel {
+  display: none;
+  position: absolute;
+  top: 66px;
+  right: 18px;
+  width: 220px;
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(18,31,42,0.97);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  z-index: 20;
+  text-align: left;
+}
+
+.settings-panel.show {
+  display: block;
+}
+
+.settings-title {
+  margin-bottom: 12px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.settings-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.settings-row button {
+  flex: 1;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 6px;
+  cursor: pointer;
+  color: #ffffff;
+  background: rgba(255,255,255,0.10);
+  font-size: 13px;
+}
+
+.settings-row button.active {
+  background: rgba(255,255,255,0.22);
+}
+
+.font-size-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.font-size-row button {
+  width: 38px;
+  height: 34px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #ffffff;
+  background: rgba(255,255,255,0.10);
+  font-size: 16px;
+}
+
+.font-size-value {
+  flex: 1;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* 밝게 */
+body.light {
+  color: #222222;
+  background: linear-gradient(135deg, #f4f7fa, #ffffff);
+}
+
+body.light .header {
+  background: rgba(255,255,255,0.92);
+  border-bottom-color: rgba(0,0,0,0.08);
+}
+
+body.light .action-button,
+body.light .settings-button {
+  color: #222222;
+  background: rgba(0,0,0,0.07);
+}
+
+body.light .action-button:hover,
+body.light .settings-button:hover {
+  background: rgba(0,0,0,0.12);
+}
+
+body.light .group-card,
+body.light .other-card,
+body.light .reference-card {
+  border-color: rgba(0,0,0,0.14);
+  background: rgba(255,255,255,0.90);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+body.light .group-card {
+  border-color: rgba(0,0,0,0.20);
+}
+
+body.light .group-header {
+  background: rgba(0,0,0,0.04);
+  border-bottom-color: rgba(0,0,0,0.08);
+}
+
+body.light .name {
+  background: rgba(0,0,0,0.04);
+  border-color: rgba(0,0,0,0.12);
+}
+
+body.light .total-count {
+  background: rgba(0,0,0,0.06);
+}
+
+body.light .section-title {
+  border-bottom-color: rgba(0,0,0,0.12);
+}
+
+body.light .empty-message,
+body.light .loading,
+body.light .error,
+body.light .reference-date {
+  color: rgba(0,0,0,0.55);
+}
+
+body.light .reference-item {
+  border-bottom-color: rgba(0,0,0,0.12);
+}
+
+body.light .settings-panel {
+  background: rgba(255,255,255,0.98);
+  border-color: rgba(0,0,0,0.10);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  color: #222222;
+}
+
+body.light .settings-row button,
+body.light .font-size-row button {
+  color: #222222;
+  background: rgba(0,0,0,0.06);
+}
+
+body.light .settings-row button.active {
+  background: rgba(0,0,0,0.13);
+}
+
+body.light .settings-button {
+  background: rgba(0,0,0,0.06);
+}
+
+/* 타이틀 옆 전시대 신청자 아이콘 */
+.title-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+  font-size: 26px;
+  vertical-align: middle;
+}
+
+@media (max-width: 600px) {
+  .settings-button {
+    top: 12px;
+    right: 12px;
+  }
+
+  .settings-panel {
+    top: 58px;
+    right: 12px;
+  }
+
+  .title-icon {
+    font-size: 22px;
+  }
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     상단
+========================================================= -->
+
+<header class="header">
+
+  <h1>
+    <span class="title-icon" aria-label="전시대 신청자">👥</span>
+    전시대 참여자
+  </h1>
+
+  <button
+    class="settings-button"
+    onclick="toggleSettings()"
+    aria-label="설정">
+    ⚙️
+  </button>
+
+  <div id="settingsPanel" class="settings-panel">
+
+    <div class="settings-title">설정</div>
+
+    <div class="settings-row">
+      <button id="lightButton" onclick="setTheme('light')">☀️ 밝게</button>
+      <button id="darkButton" onclick="setTheme('dark')">🌙 어둡게</button>
+    </div>
+
+    <div class="font-size-row">
+      <button onclick="changeFontSize(-5)">−</button>
+      <div id="fontSizeValue" class="font-size-value">100%</div>
+      <button onclick="changeFontSize(5)">＋</button>
+    </div>
+
+  </div>
+
+  <div
+    id="referenceDate"
+    class="reference-date">
+  </div>
+
+</header>
+
+
+
+<!-- =========================================================
+     본문
+========================================================= -->
+
+<main class="container">
+
+
+  <!-- =======================================================
+       버튼
+  ======================================================= -->
+
+  <div class="actions">
+
+    <button
+      class="action-button"
+      onclick="loadData()">
+      새로고침
+    </button>
+
+
+    <button
+      class="action-button"
+      onclick="goBack()">
+      뒤로가기
+    </button>
+
+  </div>
+
+
+
+  <!-- =======================================================
+       데이터 출력
+  ======================================================= -->
+
+  <div id="app">
+
+    <div class="loading">
+      데이터를 불러오는 중입니다...
+    </div>
+
+  </div>
+
+
+</main>
+
+
+
+<script>
+
+/* =========================================================
+   Apps Script API 주소
+========================================================= */
+
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbxQ0gv4Nk0b-V7lBQRutvKlgMEca7rp3GTEhZagD4bELDn0K9KOYgm7GVI4zJ8CDEiL/exec";
+
+
+/* =========================================================
+   집단
+========================================================= */
+
+const GROUPS = [
+  "A집단",
+  "B집단",
+  "C집단",
+  "D집단"
+];
+
+
+/* =========================================================
+   시작
+========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function() {
+
+    loadData();
+
+  }
+);
+
+
+/* =========================================================
+   데이터 불러오기
+========================================================= */
+
+async function loadData() {
+
+  const app =
+    document.getElementById("app");
+
+  app.innerHTML = `
+    <div class="loading">
+      데이터를 불러오는 중입니다...
+    </div>
+  `;
+
+
+  try {
+
+    /* -------------------------------------------------------
+       API 호출
+    ------------------------------------------------------- */
+
+    const response =
+      await fetch(
+        API_URL +
+        "?t=" +
+        Date.now()
+      );
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        "서버 응답 오류: " +
+        response.status
+      );
+
+    }
+
+
+    /* -------------------------------------------------------
+       JSON 변환
+    ------------------------------------------------------- */
+
+    const data =
+      await response.json();
+
+
+    console.log(
+      "전시대 참여자 API:",
+      data
+    );
+
+
+    /* -------------------------------------------------------
+       API 오류 확인
+    ------------------------------------------------------- */
+
+    if (
+      !data ||
+      data.success !== true
+    ) {
+
+      throw new Error(
+        data?.message ||
+        data?.error ||
+        "데이터를 가져오지 못했습니다."
+      );
+
+    }
+
+
+    /* -------------------------------------------------------
+       화면 출력
+    ------------------------------------------------------- */
+
+    renderData(data);
+
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "데이터 로드 오류:",
+      error
+    );
+
+
+    app.innerHTML = `
+
+      <div class="error">
+
+        데이터를 불러오는 중
+        오류가 발생했습니다.
+
+        <br><br>
+
+        ${escapeHtml(error.message)}
+
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+/* =========================================================
+   전체 화면 출력
+========================================================= */
+
+function renderData(data) {
+
+
+  /* =======================================================
+     API 데이터 그대로 사용
+  ======================================================= */
+
+  const participants =
+    Array.isArray(data.participants)
+      ? data.participants
+      : [];
+
+
+  const otherParticipants =
+    Array.isArray(data.otherParticipants)
+      ? data.otherParticipants
+      : [];
+
+
+  const nonParticipants =
+    Array.isArray(data.nonParticipants)
+      ? data.nonParticipants
+      : [];
+
+
+  const references =
+    Array.isArray(data.references)
+      ? data.references
+      : [];
+
+
+  /* =======================================================
+     기준일
+  ======================================================= */
+
+  const referenceDate =
+    data.referenceDate || "";
+
+
+  document.getElementById(
+    "referenceDate"
+  ).textContent =
+    referenceDate;
+
+
+  /* =======================================================
+     화면 HTML
+  ======================================================= */
+
+  let html = "";
+
+
+  /* =======================================================
+     참여자
+  ======================================================= */
+
+  html += `
+
+    <section class="section">
+
+      <div class="section-title">
+
+        <h2>
+          참여자
+        </h2>
+
+        <div class="total-count">
+          ${participants.length}명
+        </div>
+
+      </div>
+
+
+      <div class="group-grid">
+
+  `;
+
+
+  GROUPS.forEach(
+    function(group) {
+
+      const people =
+        participants.filter(
+          function(person) {
+
+            return normalizeGroup(
+              person.group
+            ) === normalizeGroup(group);
+
+          }
+        );
+
+
+      html += `
+
+        <div class="group-card">
+
+          <div class="group-header">
+
+            <span class="group-name">
+              ${escapeHtml(group)}
+            </span>
+
+            <span class="group-count">
+              ${people.length}명
+            </span>
+
+          </div>
+
+
+          <div class="name-list">
+
+      `;
+
+
+      if (
+        people.length === 0
+      ) {
+
+        html += `
+
+          <div class="empty-message">
+            참여자가 없습니다.
+          </div>
+
+        `;
+
+      }
+
+      else {
+
+        people.forEach(
+          function(person) {
+
+            html += `
+
+              <div class="name">
+                ${escapeHtml(person.name)}
+              </div>
+
+            `;
+
+          }
+        );
+
+      }
+
+
+      html += `
+
+          </div>
+
+        </div>
+
+      `;
+
+    }
+  );
+
+
+  html += `
+
+      </div>
+
+    </section>
+
+  `;
+
+
+  /* =======================================================
+     타 회중 참여자
+  ======================================================= */
+
+  html += `
+
+    <section class="section">
+
+      <div class="section-title">
+
+        <h2>
+          타 회중 참여자
+        </h2>
+
+        <div class="total-count">
+          ${otherParticipants.length}명
+        </div>
+
+      </div>
+
+
+      <div class="other-card">
+
+        <div class="name-list">
+
+  `;
+
+
+  if (
+    otherParticipants.length === 0
+  ) {
+
+    html += `
+
+      <div class="empty-message">
+        타 회중 참여자가 없습니다.
+      </div>
+
+    `;
+
+  }
+
+  else {
+
+    otherParticipants.forEach(
+      function(person) {
+
+        html += `
+
+          <div class="name">
+            ${escapeHtml(person.name)}
+          </div>
+
+        `;
+
+      }
+    );
+
+  }
+
+
+  html += `
+
+        </div>
+
+      </div>
+
+    </section>
+
+  `;
+
+
+  /* =======================================================
+     미 참여자
+  ======================================================= */
+
+  html += `
+
+    <section class="section">
+
+      <div class="section-title">
+
+        <h2>
+          미 참여자
+        </h2>
+
+        <div class="total-count">
+          ${nonParticipants.length}명
+        </div>
+
+      </div>
+
+
+      <div class="group-grid">
+
+  `;
+
+
+  GROUPS.forEach(
+    function(group) {
+
+      const people =
+        nonParticipants.filter(
+          function(person) {
+
+            return normalizeGroup(
+              person.group
+            ) === normalizeGroup(group);
+
+          }
+        );
+
+
+      html += `
+
+        <div class="group-card">
+
+          <div class="group-header">
+
+            <span class="group-name">
+              ${escapeHtml(group)}
+            </span>
+
+            <span class="group-count">
+              ${people.length}명
+            </span>
+
+          </div>
+
+
+          <div class="name-list">
+
+      `;
+
+
+      if (
+        people.length === 0
+      ) {
+
+        html += `
+
+          <div class="empty-message">
+            미 참여자가 없습니다.
+          </div>
+
+        `;
+
+      }
+
+      else {
+
+        people.forEach(
+          function(person) {
+
+            html += `
+
+              <div class="name">
+                ${escapeHtml(person.name)}
+              </div>
+
+            `;
+
+          }
+        );
+
+      }
+
+
+      html += `
+
+          </div>
+
+        </div>
+
+      `;
+
+    }
+  );
+
+
+  html += `
+
+      </div>
+
+    </section>
+
+  `;
+
+
+  /* =======================================================
+     참고 사항
+  ======================================================= */
+
+  html += `
+
+    <section class="section">
+
+      <div class="section-title">
+
+        <h2>
+          참고 사항
+        </h2>
+
+        <div class="total-count">
+          ${references.length}건
+        </div>
+
+      </div>
+
+
+      <div class="reference-card">
+
+        <div class="reference-list">
+
+  `;
+
+
+  if (
+    references.length === 0
+  ) {
+
+    html += `
+
+      <div class="empty-message">
+        참고 사항이 없습니다.
+      </div>
+
+    `;
+
+  }
+
+  else {
+
+    references.forEach(
+      function(reference) {
+
+        html += `
+
+          <div class="reference-item">
+            ${escapeHtml(reference)}
+          </div>
+
+        `;
+
+      }
+    );
+
+  }
+
+
+  html += `
+
+        </div>
+
+      </div>
+
+    </section>
+
+  `;
+
+
+  /* =======================================================
+     화면 적용
+  ======================================================= */
+
+  document.getElementById(
+    "app"
+  ).innerHTML =
+    html;
+
+}
+
+
+/* =========================================================
+   집단명 정리
+========================================================= */
+
+function normalizeGroup(group) {
+
+  return String(
+    group || ""
+  )
+  .replace(
+    /\s+/g,
+    ""
+  )
+  .trim();
+
+}
+
+
+/* =========================================================
+   HTML 문자 처리
+========================================================= */
+
+function escapeHtml(text) {
+
+  return String(
+    text ?? ""
+  )
+
+  .replace(
+    /&/g,
+    "&amp;"
+  )
+
+  .replace(
+    /</g,
+    "&lt;"
+  )
+
+  .replace(
+    />/g,
+    "&gt;"
+  )
+
+  .replace(
+    /"/g,
+    "&quot;"
+  )
+
+  .replace(
+    /'/g,
+    "&#039;"
+  );
+
+}
+
+
+/* =========================================================
+   뒤로가기
+========================================================= */
+
+function goBack() {
+
+  if (
+    window.history.length > 1
+  ) {
+
+    window.history.back();
+
+  }
+
+  else {
+
+    window.location.href =
+      "전시대관리자.html";
+
+  }
+
+}
+
+
+/* =========================================================
+   설정 기능
+========================================================= */
+
+const SETTINGS_THEME_KEY = "전시대참여자_theme";
+const SETTINGS_FONT_KEY = "전시대참여자_fontSize";
+
+function applySettings() {
+
+  const theme =
+    localStorage.getItem(SETTINGS_THEME_KEY) || "dark";
+
+  const fontSize =
+    Number(localStorage.getItem(SETTINGS_FONT_KEY)) || 100;
+
+  document.body.classList.toggle(
+    "light",
+    theme === "light"
+  );
+
+  document.body.style.setProperty(
+    "--font-scale",
+    fontSize / 100
+  );
+
+  document.body.style.zoom =
+    String(fontSize / 100);
+
+  document.getElementById("fontSizeValue").textContent =
+    fontSize + "%";
+
+  document.getElementById("darkButton").classList.toggle(
+    "active",
+    theme === "dark"
+  );
+
+  document.getElementById("lightButton").classList.toggle(
+    "active",
+    theme === "light"
+  );
+}
+
+function setTheme(theme) {
+
+  localStorage.setItem(
+    SETTINGS_THEME_KEY,
+    theme
+  );
+
+  applySettings();
+}
+
+function changeFontSize(amount) {
+
+  let fontSize =
+    Number(localStorage.getItem(SETTINGS_FONT_KEY)) || 100;
+
+  fontSize += amount;
+
+  if (fontSize < 80) fontSize = 80;
+  if (fontSize > 150) fontSize = 150;
+
+  localStorage.setItem(
+    SETTINGS_FONT_KEY,
+    fontSize
+  );
+
+  applySettings();
+}
+
+function toggleSettings() {
+
+  document.getElementById(
+    "settingsPanel"
+  ).classList.toggle("show");
+}
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function() {
+
+    applySettings();
+
+  }
+);
+
+document.addEventListener(
+  "click",
+  function(event) {
+
+    const panel =
+      document.getElementById("settingsPanel");
+
+    const button =
+      document.querySelector(".settings-button");
+
+    if (
+      panel &&
+      panel.classList.contains("show") &&
+      !panel.contains(event.target) &&
+      !button.contains(event.target)
+    ) {
+
+      panel.classList.remove("show");
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
+</html>
