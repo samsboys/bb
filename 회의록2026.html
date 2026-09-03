@@ -4,28 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#286b5b">
-
-<title>회의록 2026</title>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-
-<style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{scroll-behavior:smooth}
-
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
-  background:#f3f5f4;
-  color:#26302d;
-  font-size:15px;
-  line-height:1.65;
-}
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="theme-color" content="#286b5b">
 <title>회의록 2026</title>
 
 <!-- Google Identity Services -->
@@ -100,6 +78,24 @@ body.dark .settings-row button,body.dark .font-size-row button{background:#26332
 @media(max-width:600px){.page-title{font-size:28px}.card-title{font-size:17px}.date-box{flex-basis:60px;width:60px;min-width:60px;padding-right:11px}.date-month{font-size:12px}.date-day{font-size:17px}.meeting-item{font-size:14px;line-height:1.35!important;margin-bottom:8px!important}.part-label{font-size:14px;font-weight:900;padding:8px 9px;text-align:left}.part-body{font-size:14px;padding:8px 9px}.meeting-item.agenda .part-label,.meeting-item.content .part-label{font-size:14.5px;font-weight:900}}
 body{transform-origin:top left}
 
+/* Google 계정 변경 버튼 */
+.account-button{border:0;background:transparent;font-size:20px;cursor:pointer;width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;transition:.15s}
+.account-button:hover{background:rgba(40,107,91,.10)}
+.account-button:active{transform:scale(.95)}
+body.dark .account-button:hover{background:rgba(145,208,187,.12)}
+
+/* 계정 변경 안내창 */
+#accountChangeGate{position:fixed;inset:0;z-index:1100;background:rgba(18,23,21,.48);display:none;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(3px)}
+.account-change-box{width:min(390px,100%);background:#fff;border:1px solid #d9e2de;border-radius:18px;padding:28px 22px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.18)}
+.account-change-title{font-size:20px;font-weight:900;color:#286b5b;margin-bottom:8px}
+.account-change-message{font-size:14px;color:#66736d;line-height:1.55;margin-bottom:18px}
+#accountChangeGoogleButton{display:flex;justify-content:center;min-height:44px}
+.account-change-close{margin-top:14px;border:1px solid #d4ddd9;background:#f5f7f6;color:#52605a;border-radius:10px;padding:9px 18px;font-size:13px;cursor:pointer}
+body.dark .account-change-box{background:#1a211e;border-color:#35403b}
+body.dark .account-change-title{color:#91d0bb}
+body.dark .account-change-message{color:#a9b4af}
+body.dark .account-change-close{background:#242d29;border-color:#3b4742;color:#c3ccc8}
+
 /* 인증 대기 화면 */
 #authGate{position:fixed;inset:0;z-index:1000;background:#f3f5f4;display:flex;align-items:center;justify-content:center;padding:24px}
 .auth-box{width:min(380px,100%);background:#fff;border:1px solid #d9e2de;border-radius:18px;padding:28px 22px;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.08)}
@@ -126,6 +122,18 @@ body.dark .auth-message{color:#a9b4af}
   </div>
 </div>
 
+<!-- 현재 Google 계정을 바꾸는 화면 -->
+<div id="accountChangeGate">
+  <div class="account-change-box">
+    <div class="account-change-title">Google 계정 변경</div>
+    <div id="accountChangeMessage" class="account-change-message">
+      다른 Google 계정으로 회의록에 로그인할 수 있습니다.
+    </div>
+    <div id="accountChangeGoogleButton"></div>
+    <button class="account-change-close" onclick="closeAccountChange()">취소</button>
+  </div>
+</div>
+
 <header>
   <div class="header-inner">
     <button class="back" onclick="goBack()" aria-label="뒤로가기">‹</button>
@@ -133,6 +141,7 @@ body.dark .auth-message{color:#a9b4af}
       <div class="page-title">회의록</div>
       <div class="page-subtitle">서울북부회중 회의 기록 · 2026</div>
     </div>
+    <button id="accountButton" class="account-button" onclick="changeGoogleAccount()" aria-label="Google 계정 변경" title="Google 계정 변경">👤</button>
     <button class="settings-button" onclick="toggleSettings()" aria-label="설정">⚙️</button>
     <div id="settingsPanel" class="settings-panel">
       <div class="settings-title">설정</div>
@@ -278,6 +287,68 @@ function renderGoogleButton() {
    Google ID Token을 Apps Script로 전달
 ========================================================= */
 
+let currentGoogleEmail = "";
+let accountChangeMode = false;
+
+/* =========================================================
+   Google 계정 변경
+   - 현재 자동 선택을 잠시 끕니다.
+   - 새 Google 계정의 ID Token을 다시 서버에 보내
+     서버에서 허용된 계정인지 확인합니다.
+========================================================= */
+function changeGoogleAccount() {
+  if (!window.google || !google.accounts || !google.accounts.id) {
+    alert("Google 로그인 기능을 아직 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.");
+    return;
+  }
+
+  accountChangeMode = true;
+  googleAuthFinished = false;
+
+  const gate = document.getElementById("accountChangeGate");
+  const message = document.getElementById("accountChangeMessage");
+  const button = document.getElementById("accountChangeGoogleButton");
+
+  if (gate) gate.style.display = "flex";
+  if (message) {
+    message.textContent = currentGoogleEmail
+      ? `현재 로그인: ${currentGoogleEmail}\n\n다른 Google 계정을 선택해 주세요.`
+      : "다른 Google 계정을 선택해 주세요.";
+  }
+  if (button) button.innerHTML = "";
+
+  /*
+   * 명시적으로 계정을 바꾸는 경우에는 자동 선택을 끕니다.
+   *
+   * 여기서는 prompt()를 다시 호출하지 않습니다.
+   * 계정 변경용 Google 버튼 자체가 Google 계정 선택/로그인을
+   * 처리하도록 합니다. prompt()까지 함께 호출하면 일부 환경에서
+   * OAuth 오류 화면으로 이동하는 경우가 있기 때문입니다.
+   */
+  google.accounts.id.disableAutoSelect();
+
+  google.accounts.id.renderButton(button, {
+    theme: document.body.classList.contains("dark") ? "filled_black" : "outline",
+    size: "large",
+    type: "standard",
+    text: "signin_with",
+    shape: "rectangular",
+    width: 280,
+    locale: "ko"
+  });
+}
+
+function closeAccountChange() {
+  accountChangeMode = false;
+  const gate = document.getElementById("accountChangeGate");
+  if (gate) gate.style.display = "none";
+
+  /* 다음 일반 로그인에서는 다시 자동 선택이 가능하도록 합니다. */
+  if (window.google && google.accounts && google.accounts.id) {
+    google.accounts.id.disableAutoSelect();
+  }
+}
+
 async function handleGoogleCredential(response) {
   const message = document.getElementById("authMessage");
   const error = document.getElementById("authError");
@@ -327,6 +398,12 @@ async function handleGoogleCredential(response) {
 
     if (data.authorized !== true) {
       googleAuthFinished = true;
+      if (accountChangeMode) {
+        const changeMessage = document.getElementById("accountChangeMessage");
+        if (changeMessage) {
+          changeMessage.textContent = data.message || "이 Google 계정은 회의록 열람 권한이 없습니다.";
+        }
+      }
       message.textContent = "접근 권한이 없습니다.";
       error.textContent =
         data.message ||
@@ -335,6 +412,18 @@ async function handleGoogleCredential(response) {
     }
 
     googleAuthFinished = true;
+    currentGoogleEmail = data.email || "";
+
+    if (accountChangeMode) {
+      accountChangeMode = false;
+      const gate = document.getElementById("accountChangeGate");
+      if (gate) gate.style.display = "none";
+
+      /* 계정 변경 후에는 선택한 계정을 다음 로그인에서 우선 사용할 수 있게 합니다. */
+      if (window.google && google.accounts && google.accounts.id) {
+        google.accounts.id.enableAutoSelect();
+      }
+    }
 
     /*
      * 인증 성공 후에만 회의록 데이터를 사용합니다.
@@ -976,992 +1065,6 @@ window.addEventListener("scroll",function() {
   document.getElementById("topButton").style.display =
     window.scrollY > 500 ? "block" : "none";
 });
-</script>
-
-</body>
-</html>
-
-header{
-  position:sticky;
-  top:0;
-  z-index:100;
-  background:rgba(255,255,255,.96);
-  backdrop-filter:blur(12px);
-  border-bottom:1px solid #dce4e0;
-}
-
-.header-inner{
-  max-width:900px;
-  margin:auto;
-  padding:10px 14px;
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.home-button{
-  width:42px;
-  height:42px;
-  border:0;
-  border-radius:12px;
-  background:#edf3f0;
-  color:#286b5b;
-  font-size:22px;
-  font-weight:bold;
-  cursor:pointer;
-}
-.back{
-  width:42px;
-  height:42px;
-  border:0;
-  border-radius:12px;
-  background:#edf3f0;
-  color:#286b5b;
-  font-size:25px;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.title-area{flex:1;min-width:0}
-
-.page-title{
-  font-size:21px;
-  font-weight:800;
-  letter-spacing:-.04em;
-}
-
-.page-subtitle{
-  margin-top:1px;
-  font-size:11px;
-  color:#7a8580;
-}
-
-main{
-  max-width:900px;
-  margin:auto;
-  padding:14px 12px 80px;
-}
-
-.toolbar{
-  display:flex;
-  gap:8px;
-  margin-bottom:8px;
-}
-
-.search{
-  flex:1;
-  min-width:0;
-  height:42px;
-  padding:0 13px;
-  border:1px solid #d7e0dc;
-  border-radius:11px;
-  background:white;
-  font-size:14px;
-  outline:none;
-}
-
-.select{
-  width:76px;
-  height:42px;
-  padding:0 8px;
-  border:1px solid #d7e0dc;
-  border-radius:11px;
-  background:white;
-  font-size:13px;
-}
-
-.status{
-  margin:8px 2px 12px;
-  font-size:12px;
-  color:#74807b;
-}
-
-.month-title{
-  margin:22px 0 9px;
-  padding-left:2px;
-  font-size:14px;
-  font-weight:800;
-  color:#286b5b;
-}
-
-.card{
-  margin-bottom:10px;
-  background:white;
-  border:1px solid #d9e2de;
-  border-radius:15px;
-  overflow:hidden;
-  box-shadow:0 2px 7px rgba(0,0,0,.035);
-}
-
-.card-head{
-  padding:11px 12px;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  cursor:pointer;
-  user-select:none;
-}
-
-.date-badge{
-  width:52px;
-  min-width:52px;
-  height:52px;
-  border-radius:11px;
-  background:#edf5f2;
-  color:#286b5b;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-}
-
-.badge-month{
-  font-size:11px;
-  font-weight:700;
-  line-height:1.2;
-}
-
-.badge-day{
-  margin-top:1px;
-  font-size:19px;
-  font-weight:850;
-  line-height:1.15;
-}
-
-.card-main{flex:1;min-width:0}
-
-.card-title{
-  font-size:15px;
-  font-weight:800;
-  color:#27312e;
-  line-height:1.4;
-  letter-spacing:-.02em;
-  word-break:keep-all;
-}
-
-.card-time{
-  margin-top:3px;
-  font-size:13px;
-  color:#68756f;
-  font-weight:600;
-}
-
-.chevron{
-  width:20px;
-  text-align:center;
-  color:#74807b;
-  font-size:15px;
-  transition:transform .2s;
-}
-
-.card.open .chevron{transform:rotate(180deg)}
-
-.card-content{
-  display:none;
-  border-top:1px solid #e6ece9;
-  padding:13px 13px 18px;
-}
-
-.card.open .card-content{display:block}
-
-.info-box{
-  background:#f6f8f7;
-  border-radius:11px;
-  padding:8px 11px;
-  margin-bottom:16px;
-}
-
-.info-row{
-  display:grid;
-  grid-template-columns:76px 1fr;
-  gap:8px;
-  padding:5px 0;
-  font-size:13px;
-}
-
-.info-label{
-  font-weight:800;
-  color:#51605a;
-}
-
-.info-value{
-  color:#303a36;
-  word-break:break-word;
-}
-
-.section-label{
-  display:inline-flex;
-  align-items:center;
-  margin:12px 0 9px;
-  padding:7px 14px;
-  border-radius:9px;
-  background:#e4f1ec;
-  color:#286b5b;
-  border:1px solid #d0e5dc;
-  box-shadow:0 2px 5px rgba(40,107,91,.08);
-  font-size:14px;
-  font-weight:900;
-}
-
-.section-label.content-label{
-  background:#ebeff7;
-  color:#4c607f;
-  border-color:#dce3ef;
-  box-shadow:0 2px 5px rgba(76,96,127,.08);
-}
-
-.bullet-list,
-.content-list{
-  margin:0;
-  padding:0;
-  list-style:none;
-}
-
-.bullet-list{
-  margin-bottom:15px;
-}
-
-.bullet-list li{
-  position:relative;
-  padding-left:18px;
-  margin:8px 0;
-  font-size:14px;
-  color:#36403c;
-  white-space:pre-wrap;
-  word-break:break-word;
-}
-
-.bullet-list li::before{
-  content:"●";
-  position:absolute;
-  left:0;
-  top:0;
-  color:#3b8472;
-  font-size:10px;
-}
-
-.content-item{
-  position:relative;
-  padding-left:18px;
-  margin-bottom:15px;
-}
-
-.content-item::before{
-  content:"●";
-  position:absolute;
-  left:0;
-  top:0;
-  color:#607795;
-  font-size:10px;
-}
-
-.content-topic{
-  margin-bottom:5px;
-  font-size:14px;
-  font-weight:800;
-  color:#37414d;
-}
-
-.content-detail{
-  font-size:14px;
-  color:#46504c;
-  white-space:pre-wrap;
-  word-break:break-word;
-}
-
-.content-subline{
-  position:relative;
-  padding-left:14px;
-  margin:4px 0;
-}
-
-.content-subline::before{
-  content:"●";
-  position:absolute;
-  left:0;
-  top:0;
-  font-size:8px;
-  color:#7c8d87;
-}
-
-.empty{
-  background:white;
-  border:1px solid #dce4e0;
-  border-radius:14px;
-  padding:22px 16px;
-  color:#6d7873;
-}
-
-.top-button{
-  position:fixed;
-  right:16px;
-  bottom:18px;
-  width:45px;
-  height:45px;
-  border:0;
-  border-radius:50%;
-  background:#286b5b;
-  color:white;
-  font-size:19px;
-  box-shadow:0 4px 14px rgba(0,0,0,.18);
-  display:none;
-  cursor:pointer;
-}
-
-@media(min-width:700px){
-  main{padding-left:20px;padding-right:20px}
-  .card-head{padding:15px 17px}
-  .card-content{padding:16px 18px 22px}
-}
-
-body.dark{
-  background:#121715;
-  color:#edf3f0;
-}
-
-body.dark header{
-  background:rgba(25,31,28,.97);
-  border-color:#303a36;
-}
-
-body.dark .page-title{color:#f0f5f2}
-body.dark .page-subtitle{color:#9ba7a1}
-
-body.dark .home-button,
-body.dark .back{
-  background:#26332e;
-  color:#8fd0b9;
-}
-
-body.dark .search,
-body.dark .select{
-  background:#1c2421;
-  color:#edf3f0;
-  border-color:#394640;
-}
-
-body.dark .card{
-  background:#1a211e;
-  border-color:#35403b;
-}
-
-body.dark .card-title{color:#eef3f0}
-body.dark .card-time{color:#a9b4af}
-
-body.dark .date-badge{
-  background:#24352e;
-  color:#91d0bb;
-}
-
-body.dark .card-content{border-color:#303a36}
-body.dark .info-box{background:#222b27}
-body.dark .info-label{color:#bdcbc5}
-body.dark .info-value{color:#edf3f0}
-body.dark .bullet-list li{color:#d7e0dc}
-body.dark .content-topic{color:#dce5e9}
-body.dark .content-detail{color:#c8d1cd}
-
-body.dark .content-subline::before{
-  color:#aab9b3;
-}
-
-.auth-screen{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;background:#f3f5f4}
-.auth-home-button{position:fixed;top:16px;left:16px;z-index:10001;width:42px;height:42px;border:0;border-radius:12px;background:#edf3f0;color:#286b5b;font-size:22px;font-weight:bold;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-body.dark .auth-home-button{background:#24352e;color:#91d0bb}
-.auth-box{width:min(420px,100%);background:#fff;border:1px solid #d9e2de;border-radius:18px;padding:28px 22px;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.08)}
-.auth-icon{font-size:38px;margin-bottom:8px}.auth-title{font-size:22px;font-weight:850;color:#286b5b}
-.auth-text{margin:8px 0 20px;font-size:13px;color:#68756f;line-height:1.6}.auth-status{margin-top:14px;font-size:13px;color:#68756f;min-height:22px}
-.auth-email{margin-top:8px;font-size:12px;color:#286b5b;word-break:break-all}
-body.dark .auth-screen{background:#121715}.auth-box{background:#fff}
-body.dark .auth-box{background:#1a211e;border-color:#35403b}.body.dark .auth-title{color:#91d0bb}
-body.dark .auth-text,body.dark .auth-status{color:#a9b4af}
-
-</style>
-</head>
-
-<body>
-
-<div id="authScreen" class="auth-screen">
-  <button class="auth-home-button" onclick="goHome()" aria-label="홈으로">⌂</button>
-  <div class="auth-box">
-    <div class="auth-icon">🔐</div>
-    <div class="auth-title">회의록</div>
-    <div class="auth-text">승인된 Google 계정으로 로그인해야<br>회의록을 볼 수 있습니다.</div>
-    <div id="googleButton"></div>
-    <div id="authStatus" class="auth-status">Google 계정 확인 중...</div>
-    <div id="authEmail" class="auth-email"></div>
-  </div>
-</div>
-
-
-<header>
-  <div class="header-inner">
-
-    <button class="home-button" onclick="goHome()" aria-label="홈으로">⌂</button>
-    <button class="back" onclick="goBack()" aria-label="뒤로가기">‹</button>
-
-    <div class="title-area">
-      <div class="page-title">회의록</div>
-      <div class="page-subtitle">서울북부회중 회의 기록 · 2026</div>
-    </div>
-
-  </div>
-</header>
-
-<main>
-
-  <div class="toolbar">
-
-    <input
-      id="search"
-      class="search"
-      type="search"
-      placeholder="회의록 검색..."
-      oninput="render()">
-
-    <select
-      id="year"
-      class="select"
-      onchange="render()">
-      <option value="all">전체</option>
-    </select>
-
-  </div>
-
-  <div id="status" class="status"></div>
-
-  <div id="list"></div>
-
-</main>
-
-<button
-  id="topButton"
-  class="top-button"
-  onclick="window.scrollTo({top:0,behavior:'smooth'})">
-  ↑
-</button>
-
-
-<script>
-
-/* ============================================================
-   회의록 데이터 직접 내장
-============================================================ */
-
-const meetings = [];
-let authenticatedEmail = "";
-
-
-/* ============================================================
-   승인된 Google 계정 인증
-============================================================ */
-const MEETINGS_API = "https://YOUR-WORKER.workers.dev/";
-const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
-
-function setAuthStatus(message, isError=false){
-  const el=document.getElementById("authStatus");
-  if(el){el.textContent=message;el.style.color=isError?"#b33a3a":"";}
-}
-function showAuthScreen(){document.getElementById("authScreen").style.display="flex";}
-function hideAuthScreen(){document.getElementById("authScreen").style.display="none";}
-
-async function handleGoogleCredential(response){
-  try{
-    setAuthStatus("접근 권한을 확인하고 있습니다...");
-    const result=await fetch(MEETINGS_API,{
-      method:"GET",
-      headers:{"Authorization":"Bearer "+response.credential},
-      cache:"no-store"
-    });
-    const data=await result.json().catch(()=>({}));
-    if(!result.ok || !data.success) throw new Error(data.error||"접근 권한이 없습니다.");
-
-    authenticatedEmail=data.email||"";
-    document.getElementById("authEmail").textContent=authenticatedEmail;
-    meetings.length=0;
-    meetings.push(...(Array.isArray(data.meetings)?data.meetings:[]));
-
-    hideAuthScreen();
-    buildYears();
-    render();
-  }catch(error){
-    console.error(error);
-    setAuthStatus(error.message||"로그인에 실패했습니다.",true);
-  }
-}
-
-function initGoogleLogin(){
-  if(!window.google || !google.accounts || !google.accounts.id){
-    setTimeout(initGoogleLogin,300);
-    return;
-  }
-  if(GOOGLE_CLIENT_ID.includes("YOUR_GOOGLE_CLIENT_ID") || MEETINGS_API.includes("YOUR-WORKER")){
-    setAuthStatus("설정이 필요합니다: Google Client ID와 Worker 주소를 입력하세요.",true);
-    return;
-  }
-  google.accounts.id.initialize({
-    client_id:GOOGLE_CLIENT_ID,
-    callback:handleGoogleCredential,
-    auto_select:false,
-    cancel_on_tap_outside:true
-  });
-  google.accounts.id.renderButton(document.getElementById("googleButton"),{
-    theme:"outline",size:"large",width:280,text:"signin_with",shape:"rect"
-  });
-  setAuthStatus("Google 계정으로 로그인해 주세요.");
-}
-
-/* ============================================================
-   HTML 문자 보호
-============================================================ */
-
-function esc(value){
-
-  return String(value ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#39;");
-
-}
-
-
-/* ============================================================
-   메인화면 설정 연결
-============================================================ */
-
-function applyMainSettings(){
-
-  const darkValues = ["dark","true","1","enabled"];
-
-  const themeKeys = [
-    "theme",
-    "darkMode",
-    "dark-mode",
-    "mode",
-    "appearance"
-  ];
-
-  for(const key of themeKeys){
-
-    const value = localStorage.getItem(key);
-
-    if(value && darkValues.includes(String(value).toLowerCase())){
-      document.body.classList.add("dark");
-      break;
-    }
-
-  }
-
-  const fontKeys = [
-    "fontSize",
-    "font-size",
-    "textSize",
-    "text-size"
-  ];
-
-  for(const key of fontKeys){
-
-    const value = localStorage.getItem(key);
-
-    if(!value) continue;
-
-    const number = parseFloat(value);
-
-    if(!isNaN(number)){
-      document.documentElement.style.fontSize = number + "px";
-      break;
-    }
-
-  }
-
-}
-
-window.addEventListener("storage", applyMainSettings);
-
-
-/* ============================================================
-   날짜
-============================================================ */
-
-function getMonthDay(date){
-
-  const match = String(date).match(/^(\d{4})-(\d{2})-(\d{2})$/);
-
-  if(!match) return {month:"",day:""};
-
-  return {
-    month:String(Number(match[2])),
-    day:String(Number(match[3]))
-  };
-
-}
-
-
-function getMonthTitle(date){
-
-  const match = String(date).match(/^(\d{4})-(\d{2})-(\d{2})$/);
-
-  if(!match) return "기타";
-
-  return Number(match[1]) + "년 " + Number(match[2]) + "월";
-
-}
-
-
-function getTime(datetime){
-
-  const match = String(datetime || "").match(/(\d{1,2}):(\d{2})/);
-
-  if(!match) return "";
-
-  let hour = Number(match[1]);
-  const minute = match[2];
-
-  const period = hour >= 12 ? "오후" : "오전";
-
-  let displayHour = hour % 12;
-
-  if(displayHour === 0) displayHour = 12;
-
-  return period + " " + displayHour + ":" + minute;
-
-}
-
-
-/* ============================================================
-   연도
-============================================================ */
-
-function buildYears(){
-
-  const select = document.getElementById("year");
-
-  const years = [...new Set(
-    meetings.map(m => m.date.slice(0,4))
-  )].sort((a,b)=>Number(b)-Number(a));
-
-  select.innerHTML = '<option value="all">전체</option>';
-
-  years.forEach(year=>{
-    select.innerHTML += `<option value="${year}">${year}년</option>`;
-  });
-
-}
-
-
-/* ============================================================
-   정보
-============================================================ */
-
-function infoRow(label,value){
-
-  if(
-    value === undefined ||
-    value === null ||
-    String(value).trim() === ""
-  ){
-    return "";
-  }
-
-  return `
-    <div class="info-row">
-      <div class="info-label">${esc(label)}</div>
-      <div class="info-value">${esc(value)}</div>
-    </div>
-  `;
-
-}
-
-
-/* ============================================================
-   안건
-============================================================ */
-
-function renderAgenda(agenda){
-
-  if(!Array.isArray(agenda) || !agenda.length) return "";
-
-  const items = agenda
-    .flatMap(item => String(item).split(/\r?\n/))
-    .map(item => item.trim())
-    .filter(Boolean);
-
-  return `
-    <div class="section-label">안건</div>
-
-    <ul class="bullet-list">
-      ${items.map(item=>`
-        <li>${esc(item.replace(/^●\s*/,""))}</li>
-      `).join("")}
-    </ul>
-  `;
-
-}
-
-
-/* ============================================================
-   회의 내용
-============================================================ */
-
-function renderContent(content){
-
-  if(!Array.isArray(content) || !content.length) return "";
-
-  return `
-    <div class="section-label content-label">회의 내용</div>
-
-    <div class="content-list">
-
-      ${content.map(item=>{
-
-        const lines = String(item.detail || "")
-          .split(/\r?\n/)
-          .map(line => line.trim())
-          .filter(Boolean);
-
-        return `
-
-          <div class="content-item">
-
-            ${item.topic && item.topic !== "회의 내용" ? `
-              <div class="content-topic">
-                ${esc(item.topic)}
-              </div>
-            ` : ""}
-
-            ${lines.map(line=>`
-              <div class="content-subline">
-                ${esc(line.replace(/^●\s*/,""))}
-              </div>
-            `).join("")}
-
-          </div>
-
-        `;
-
-      }).join("")}
-
-    </div>
-  `;
-
-}
-
-
-/* ============================================================
-   카드
-============================================================ */
-
-function toggleCard(card){
-
-  card.classList.toggle("open");
-
-}
-
-
-/* ============================================================
-   렌더링
-============================================================ */
-
-function render(){
-
-  const search =
-    document.getElementById("search")
-      .value
-      .trim()
-      .toLowerCase();
-
-  const selectedYear =
-    document.getElementById("year").value;
-
-
-  let data = meetings.filter(meeting=>{
-
-    const searchText =
-      JSON.stringify(meeting).toLowerCase();
-
-    const matchSearch =
-      !search || searchText.includes(search);
-
-    const matchYear =
-      selectedYear === "all" ||
-      meeting.date.startsWith(selectedYear);
-
-    return matchSearch && matchYear;
-
-  });
-
-
-  data.sort((a,b)=>
-    b.date.localeCompare(a.date)
-  );
-
-
-  document.getElementById("status").textContent =
-    `총 ${data.length}건 · 최신 회의록이 먼저 표시됩니다.`;
-
-
-  const list = document.getElementById("list");
-
-
-  if(!data.length){
-
-    list.innerHTML =
-      '<div class="empty">회의록이 없습니다.</div>';
-
-    return;
-
-  }
-
-
-  let previousMonth = "";
-
-
-  list.innerHTML = data.map((meeting,index)=>{
-
-    const monthDay =
-      getMonthDay(meeting.date);
-
-    const monthTitle =
-      getMonthTitle(meeting.date);
-
-
-    let monthHtml = "";
-
-
-    if(previousMonth !== monthTitle){
-
-      monthHtml = `
-        <div class="month-title">
-          ${monthTitle}
-        </div>
-      `;
-
-      previousMonth = monthTitle;
-
-    }
-
-
-    const info =
-
-      infoRow("일시",meeting.datetime) +
-
-      infoRow("회의 장소",meeting.place) +
-
-      infoRow("참석자",meeting.attendees) +
-
-      infoRow("불참자",meeting.absentees) +
-
-      infoRow("시작 기도",meeting.startPrayer) +
-
-      infoRow("마치는 기도",meeting.endPrayer);
-
-
-    return `
-
-      ${monthHtml}
-
-      <article class="card" id="meeting-${index}">
-
-        <div
-          class="card-head"
-          onclick="toggleCard(this.parentElement)">
-
-          <div class="date-badge">
-
-            <div class="badge-month">
-              ${monthDay.month}월
-            </div>
-
-            <div class="badge-day">
-              ${monthDay.day}일
-            </div>
-
-          </div>
-
-
-          <div class="card-main">
-
-            <div class="card-title">
-              ${esc(meeting.title)}
-            </div>
-
-            <div class="card-time">
-              ${getTime(meeting.datetime)}
-            </div>
-
-          </div>
-
-
-          <div class="chevron">
-            ⌄
-          </div>
-
-        </div>
-
-
-        <div class="card-content">
-
-          <div class="info-box">
-            ${info}
-          </div>
-
-          ${renderAgenda(meeting.agenda)}
-
-          ${renderContent(meeting.content)}
-
-        </div>
-
-      </article>
-
-    `;
-
-  }).join("");
-
-}
-
-
-/* ============================================================
-   뒤로가기
-============================================================ */
-
-function goHome(){
-  location.href = "index.html";
-}
-
-function goBack(){
-
-  if(history.length > 1){
-    history.back();
-  }else{
-    location.href = "index.html";
-  }
-
-}
-
-
-/* ============================================================
-   맨 위 버튼
-============================================================ */
-
-window.addEventListener("scroll",()=>{
-
-  document.getElementById("topButton").style.display =
-    window.scrollY > 500 ? "block" : "none";
-
-});
-
-
-/* ============================================================
-   시작
-============================================================ */
-
-applyMainSettings();
-showAuthScreen();
-initGoogleLogin();
-
 </script>
 
 </body>
