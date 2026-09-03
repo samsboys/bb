@@ -6,8 +6,6 @@
 <meta name="theme-color" content="#286b5b">
 
 <title>회의록 2026</title>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth}
@@ -406,35 +404,11 @@ body.dark .content-subline::before{
   color:#aab9b3;
 }
 
-.auth-screen{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;background:#f3f5f4}
-.auth-home-button{position:fixed;top:16px;left:16px;z-index:10001;width:42px;height:42px;border:0;border-radius:12px;background:#edf3f0;color:#286b5b;font-size:22px;font-weight:bold;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-body.dark .auth-home-button{background:#24352e;color:#91d0bb}
-.auth-box{width:min(420px,100%);background:#fff;border:1px solid #d9e2de;border-radius:18px;padding:28px 22px;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.08)}
-.auth-icon{font-size:38px;margin-bottom:8px}.auth-title{font-size:22px;font-weight:850;color:#286b5b}
-.auth-text{margin:8px 0 20px;font-size:13px;color:#68756f;line-height:1.6}.auth-status{margin-top:14px;font-size:13px;color:#68756f;min-height:22px}
-.auth-email{margin-top:8px;font-size:12px;color:#286b5b;word-break:break-all}
-body.dark .auth-screen{background:#121715}.auth-box{background:#fff}
-body.dark .auth-box{background:#1a211e;border-color:#35403b}.body.dark .auth-title{color:#91d0bb}
-body.dark .auth-text,body.dark .auth-status{color:#a9b4af}
 
 </style>
 </head>
 
 <body>
-
-<div id="authScreen" class="auth-screen">
-  <button class="auth-home-button" onclick="goHome()" aria-label="홈으로">⌂</button>
-  <div class="auth-box">
-    <div class="auth-icon">🔐</div>
-    <div class="auth-title">회의록</div>
-    <div class="auth-text">승인된 Google 계정으로 로그인해야<br>회의록을 볼 수 있습니다.</div>
-    <div id="googleButton"></div>
-    <div id="authStatus" class="auth-status">Google 계정 확인 중...</div>
-    <div id="authEmail" class="auth-email"></div>
-  </div>
-</div>
-
-
 <header>
   <div class="header-inner">
 
@@ -486,70 +460,47 @@ body.dark .auth-text,body.dark .auth-status{color:#a9b4af}
 <script>
 
 /* ============================================================
-   회의록 데이터 직접 내장
+   회의록 데이터
+   이메일/Google 계정 인증 없이 불러옵니다.
 ============================================================ */
 
 const meetings = [];
-let authenticatedEmail = "";
 
-
-/* ============================================================
-   승인된 Google 계정 인증
-============================================================ */
+/* 회의록 API */
 const MEETINGS_API = "https://YOUR-WORKER.workers.dev/";
-const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
 
-function setAuthStatus(message, isError=false){
-  const el=document.getElementById("authStatus");
-  if(el){el.textContent=message;el.style.color=isError?"#b33a3a":"";}
-}
-function showAuthScreen(){document.getElementById("authScreen").style.display="flex";}
-function hideAuthScreen(){document.getElementById("authScreen").style.display="none";}
-
-async function handleGoogleCredential(response){
+async function loadMeetings(){
   try{
-    setAuthStatus("접근 권한을 확인하고 있습니다...");
-    const result=await fetch(MEETINGS_API,{
+    if(MEETINGS_API.includes("YOUR-WORKER")){
+      buildYears();
+      render();
+      return;
+    }
+
+    const result = await fetch(MEETINGS_API,{
       method:"GET",
-      headers:{"Authorization":"Bearer "+response.credential},
       cache:"no-store"
     });
-    const data=await result.json().catch(()=>({}));
-    if(!result.ok || !data.success) throw new Error(data.error||"접근 권한이 없습니다.");
 
-    authenticatedEmail=data.email||"";
-    document.getElementById("authEmail").textContent=authenticatedEmail;
-    meetings.length=0;
-    meetings.push(...(Array.isArray(data.meetings)?data.meetings:[]));
+    const data = await result.json().catch(()=>({}));
 
-    hideAuthScreen();
+    if(!result.ok || !data.success){
+      throw new Error(data.error || "회의록을 불러오지 못했습니다.");
+    }
+
+    meetings.length = 0;
+    meetings.push(...(Array.isArray(data.meetings) ? data.meetings : []));
+
     buildYears();
     render();
+
   }catch(error){
     console.error(error);
-    setAuthStatus(error.message||"로그인에 실패했습니다.",true);
+    document.getElementById("status").textContent =
+      "회의록을 불러오지 못했습니다.";
+    document.getElementById("list").innerHTML =
+      '<div class="empty">회의록 데이터를 불러올 수 없습니다.</div>';
   }
-}
-
-function initGoogleLogin(){
-  if(!window.google || !google.accounts || !google.accounts.id){
-    setTimeout(initGoogleLogin,300);
-    return;
-  }
-  if(GOOGLE_CLIENT_ID.includes("YOUR_GOOGLE_CLIENT_ID") || MEETINGS_API.includes("YOUR-WORKER")){
-    setAuthStatus("설정이 필요합니다: Google Client ID와 Worker 주소를 입력하세요.",true);
-    return;
-  }
-  google.accounts.id.initialize({
-    client_id:GOOGLE_CLIENT_ID,
-    callback:handleGoogleCredential,
-    auto_select:false,
-    cancel_on_tap_outside:true
-  });
-  google.accounts.id.renderButton(document.getElementById("googleButton"),{
-    theme:"outline",size:"large",width:280,text:"signin_with",shape:"rect"
-  });
-  setAuthStatus("Google 계정으로 로그인해 주세요.");
 }
 
 /* ============================================================
@@ -999,8 +950,7 @@ window.addEventListener("scroll",()=>{
 ============================================================ */
 
 applyMainSettings();
-showAuthScreen();
-initGoogleLogin();
+loadMeetings();
 
 </script>
 
