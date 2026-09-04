@@ -107,9 +107,6 @@ body.dark #authGate{background:#121715}
 body.dark .auth-box{background:#1a211e;border-color:#35403b}
 body.dark .auth-title{color:#91d0bb}
 body.dark .auth-message{color:#a9b4af}
-.auth-back{position:absolute;top:14px;left:14px;width:42px;height:42px;border:0;border-radius:12px;background:#edf3f0;color:#286b5b;font-size:27px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2}
-.auth-lock{font-size:42px;line-height:1;margin-bottom:12px}
-body.dark .auth-back{background:#26332e;color:#8fd0b9}
 </style>
 </head>
 
@@ -117,9 +114,7 @@ body.dark .auth-back{background:#26332e;color:#8fd0b9}
 
 <!-- Google 인증이 완료될 때까지 회의록 화면을 잠급니다. -->
 <div id="authGate">
-  <button class="auth-back" onclick="goBack()" aria-label="뒤로가기" title="뒤로가기">‹</button>
   <div class="auth-box">
-    <div class="auth-lock" aria-hidden="true">🔐</div>
     <div class="auth-title">회의록 2026</div>
     <div id="authMessage" class="auth-message">Google 계정을 확인하고 있습니다...</div>
     <div id="googleButton"></div>
@@ -179,11 +174,11 @@ body.dark .auth-back{background:#26332e;color:#8fd0b9}
 ========================================================= */
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbysgotaoVEulLRZPFh9BXMKiRvbi9FTUvC4qk3R9P4xbJSyydBf0EaekH3D471kRkkY/exec";
+  "https://script.google.com/macros/s/AKfycbwjsk_YGxEpsZrH25ZXhovumo-oIXre9-wrDMoPhbDpdQz3XeHmOMBW53grdYVZwl0q/exec";
 
 const GOOGLE_CLIENT_ID =
-  "710102597374-s5vk3qqmm81onhiqihj5kcbhjkh00f.apps.googleusercontent.com";
-
+  "710102597374-s5vk3qqmm81onhiqiihj5kcbhjkhl00f.apps.googleusercontent.com";
+  
 let meetings = [];
 let groupedMeetings = [];
 let googleAuthFinished = false;
@@ -198,17 +193,17 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 /* =========================================================
-   Google 자동 인증
-   - 기존 Google 세션이 있고 이전에 이 앱을 승인했다면
-     자동으로 ID 토큰을 받을 수 있습니다.
-   - 자동 인증이 안 되면 아래 Google 버튼이 표시됩니다.
+   Google 인증
+   - 처음부터 사용자가 Google 계정을 직접 선택합니다.
+   - 기존 Google 세션을 자동으로 선택하지 않습니다.
+   - 선택한 계정의 ID Token을 Apps Script로 보내 권한을 확인합니다.
 ========================================================= */
 
 function startGoogleAuthentication() {
   const message = document.getElementById("authMessage");
   const error = document.getElementById("authError");
 
-  message.textContent = "Google 계정을 확인하고 있습니다...";
+  message.textContent = "사용할 Google 계정을 선택해 주세요.";
   error.textContent = "";
 
   const waitForGoogle = setInterval(function() {
@@ -226,8 +221,7 @@ function startGoogleAuthentication() {
     clearInterval(waitForGoogle);
 
     if (!googleAuthFinished) {
-      message.textContent =
-        "자동 인증을 완료하지 못했습니다. 아래 버튼으로 Google 계정을 선택해 주세요.";
+      message.textContent = "Google 로그인 버튼을 눌러 계정을 선택해 주세요.";
       renderGoogleButton();
     }
   }, 7000);
@@ -236,25 +230,14 @@ function startGoogleAuthentication() {
 function initializeGoogleIdentity() {
   google.accounts.id.initialize({
     client_id: GOOGLE_CLIENT_ID,
-    auto_select: true,
-    use_fedcm_for_button: true,
-    button_auto_select: true,
+    auto_select: false,
+    use_fedcm_for_button: false,
+    button_auto_select: false,
     callback: handleGoogleCredential
   });
 
-  /*
-   * 자동 인증을 먼저 시도합니다.
-   * 자동 인증 조건이 맞지 않는 경우 Google에서
-   * 필요한 인증/계정 선택 UI가 나타날 수 있습니다.
-   */
-  google.accounts.id.prompt(function(notification) {
-    if (
-      notification.isNotDisplayed() ||
-      notification.isSkippedMoment()
-    ) {
-      renderGoogleButton();
-    }
-  });
+  /* 자동 prompt()를 사용하지 않고 로그인 버튼을 바로 표시합니다. */
+  renderGoogleButton();
 }
 
 function renderGoogleButton() {
@@ -268,10 +251,7 @@ function renderGoogleButton() {
 
   const container = document.getElementById("googleButton");
 
-  if (container.dataset.rendered === "1") {
-    return;
-  }
-
+  container.innerHTML = "";
   container.dataset.rendered = "1";
 
   google.accounts.id.renderButton(
@@ -406,13 +386,18 @@ async function handleGoogleCredential(response) {
       if (accountChangeMode) {
         const changeMessage = document.getElementById("accountChangeMessage");
         if (changeMessage) {
-          changeMessage.textContent = data.message || "이 Google 계정은 회의록 열람 권한이 없습니다.";
+          changeMessage.textContent =
+            (data.email ? "현재 선택된 계정: " + data.email + "\n\n" : "") +
+            (data.message || "이 Google 계정은 회의록 열람 권한이 없습니다.");
         }
       }
-      message.textContent = "접근 권한이 없습니다.";
+      message.textContent = data.email
+        ? `선택한 계정: ${data.email}`
+        : "접근 권한이 없습니다.";
       error.textContent =
         data.message ||
         "이 Google 계정은 회의록 열람 권한이 없습니다.";
+      renderGoogleButton();
       return;
     }
 
@@ -424,10 +409,6 @@ async function handleGoogleCredential(response) {
       const gate = document.getElementById("accountChangeGate");
       if (gate) gate.style.display = "none";
 
-      /* 계정 변경 후에는 선택한 계정을 다음 로그인에서 우선 사용할 수 있게 합니다. */
-      if (window.google && google.accounts && google.accounts.id) {
-        google.accounts.id.enableAutoSelect();
-      }
     }
 
     /*
@@ -768,7 +749,13 @@ function getDay(dateText) {
 ========================================================= */
 
 function formatDetailHtml(text) {
-  const cleaned = displayDetail(text);
+  const cleaned = displayDetail(text)
+    .split("\n")
+    .map(function(line){
+      return line.replace(/^[\s\u3000]+/, "");
+    })
+    .join("\n")
+    .trim();
 
   if (!cleaned) return "";
 
