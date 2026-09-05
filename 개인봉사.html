@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#171a21">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>개인봉사</title>
+
+<style>
+:root{
+  --s:1;
+
+  --bg:#0f1115;
+  --card:#1b1f27;
+  --card2:#20252e;
+  --line:#303641;
+
+  --text:#f2f4f7;
+  --muted:#aeb5c0;
+
+  --accent:#8d7cf5;
+  --accent2:#6555d8;
+
+  --nav:#151821;
+  --navline:#303641;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html{
+  min-height:100%;
+  background:var(--bg);
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  padding-top:78px;
+
+  background:
+    radial-gradient(
+      circle at top,
+      #252a38 0%,
+      #171a21 40%,
+      #0f1115 78%
+    );
+
+  color:var(--text);
+
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Noto Sans KR",
+    Arial,
+    sans-serif;
+
+  font-size:calc(16px * var(--s));
+
+  padding-bottom:78px;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  z-index:1000;
+
+  padding:calc(18px + env(safe-area-inset-top)) 58px 16px;
+
+  text-align:center;
+
+  background:
+    linear-gradient(
+      180deg,
+      #202431,
+      #171a21
+    );
+
+  border-bottom:1px solid var(--line);
+
+  box-shadow:
+    0 5px 22px rgba(0,0,0,.35);
+}
+
+.header h1{
+  margin:0;
+
+  font-size:calc(23px * var(--s));
+  font-weight:900;
+
+  letter-spacing:-.5px;
+}
+
+.sub{
+  margin-top:5px;
+
+  color:var(--muted);
+
+  font-size:calc(13px * var(--s));
+}
+
+/* =========================
+   HEADER BUTTONS
+========================= */
+
+.home-btn,
+.settings{
+  position:absolute;
+
+  top:12px;
+
+  width:40px;
+  height:40px;
+
+  border:1px solid #ffffff18;
+  border-radius:12px;
+
+  background:#ffffff0d;
+
+  color:#fff;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:20px;
+
+  cursor:pointer;
+
+  transition:
+    background .2s,
+    transform .15s;
+}
+
+.home-btn{
+  left:12px;
+}
+
+.settings{
+  right:12px;
+}
+
+.home-btn:active,
+.settings:active{
+  transform:scale(.94);
+  background:#ffffff1b;
+}
+
+/* =========================
+   SETTINGS PANEL
+========================= */
+
+.panel{
+  display:none;
+
+  position:absolute;
+
+  top:60px;
+  right:10px;
+
+  width:245px;
+
+  padding:15px;
+
+  z-index:200;
+
+  background:#20242d;
+
+  border:1px solid #3a404b;
+
+  border-radius:16px;
+
+  box-shadow:
+    0 14px 35px rgba(0,0,0,.55);
+
+  text-align:center;
+}
+
+.panel.show{
+  display:block;
+}
+
+.panel-title{
+  margin-bottom:13px;
+
+  color:#dfe3e9;
+
+  font-size:14px;
+
+  font-weight:900;
+}
+
+/* =========================
+   THEME SELECTOR
+========================= */
+
+.theme-row{
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:8px;
+
+  margin-bottom:14px;
+}
+
+.theme-btn{
+  height:42px;
+
+  border:1px solid #363c47;
+
+  border-radius:11px;
+
+  background:#171b22;
+
+  color:#e9edf2;
+
+  font-size:14px;
+
+  font-weight:800;
+
+  cursor:pointer;
+}
+
+.theme-btn:active{
+  transform:scale(.97);
+}
+
+.theme-btn.active{
+  border-color:var(--accent);
+
+  background:
+    linear-gradient(
+      135deg,
+      #302b50,
+      #24213b
+    );
+
+  color:#fff;
+}
+
+/* =========================
+   FONT SIZE
+========================= */
+
+.font-row{
+  display:grid;
+
+  grid-template-columns:52px 1fr 52px;
+
+  align-items:center;
+
+  gap:8px;
+}
+
+.font-btn{
+  width:52px;
+  height:42px;
+
+  border:1px solid #363c47;
+
+  border-radius:11px;
+
+  background:#171b22;
+
+  color:#fff;
+
+  font-size:20px;
+
+  font-weight:900;
+
+  cursor:pointer;
+}
+
+.font-btn:active{
+  transform:scale(.95);
+}
+
+.font-size{
+  height:42px;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  border:1px solid #363c47;
+
+  border-radius:11px;
+
+  background:#171b22;
+
+  color:#fff;
+
+  font-size:15px;
+
+  font-weight:900;
+}
+
+/* =========================
+   MAIN
+========================= */
+
+.wrap{
+  width:min(720px, calc(100% - 20px));
+
+  margin:0 auto;
+
+  padding:14px 0 20px;
+}
+
+/* =========================
+   LOADING
+========================= */
+
+.loading{
+  padding:45px 20px;
+
+  text-align:center;
+
+  color:var(--muted);
+
+  font-size:calc(15px * var(--s));
+}
+
+/* =========================
+   CARDS
+========================= */
+
+.cards{
+  display:flex;
+
+  flex-direction:column;
+
+  gap:12px;
+}
+
+.card{
+  position:relative;
+
+  overflow:hidden;
+
+  background:
+    linear-gradient(
+      145deg,
+      #1d222b,
+      #171b22
+    );
+
+  border:1px solid #303640;
+
+  border-radius:17px;
+
+  box-shadow:
+    0 7px 18px rgba(0,0,0,.28);
+
+  padding:15px;
+}
+
+.card:active{
+  transform:scale(.992);
+}
+
+/* =========================
+   CARD TOP
+========================= */
+
+.top{
+  display:flex;
+
+  align-items:center;
+
+  gap:11px;
+
+  margin-bottom:12px;
+}
+
+/* =========================
+   NUMBER
+========================= */
+
+.num{
+  min-width:58px;
+
+  height:40px;
+
+  padding:0 11px;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--accent2),
+      #5142b8
+    );
+
+  border-radius:11px;
+
+  box-shadow:
+    0 5px 12px rgba(0,0,0,.25);
+}
+
+.num a{
+  color:#fff;
+
+  text-decoration:none;
+
+  font-size:calc(17px * var(--s));
+
+  font-weight:900;
+}
+
+/* =========================
+   INFO
+========================= */
+
+.info{
+  min-width:0;
+
+  flex:1;
+}
+
+.zone{
+  color:var(--text);
+
+  font-size:calc(17px * var(--s));
+
+  font-weight:900;
+
+  line-height:1.35;
+
+  word-break:keep-all;
+}
+
+.house{
+  margin-top:2px;
+
+  color:var(--muted);
+
+  font-size:calc(13px * var(--s));
+}
+
+/* =========================
+   DATES
+========================= */
+
+.dates{
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:9px;
+
+  margin-top:8px;
+}
+
+.datebox{
+  min-width:0;
+
+  padding:10px 11px;
+
+  background:#14181e;
+
+  border:1px solid #2d333d;
+
+  border-radius:11px;
+}
+
+.label{
+  color:#8f98a6;
+
+  font-size:calc(11px * var(--s));
+
+  font-weight:700;
+}
+
+.date{
+  margin-top:4px;
+
+  color:#eef1f5;
+
+  font-size:calc(14px * var(--s));
+
+  font-weight:800;
+
+  white-space:nowrap;
+}
+
+.complete{
+  border-color:#39414d;
+}
+
+/* =========================
+   ASSIGN
+========================= */
+
+.assign{
+  display:flex;
+
+  align-items:center;
+
+  gap:8px;
+
+  margin-top:10px;
+
+  padding:9px 11px;
+
+  background:#181c23;
+
+  border-radius:10px;
+
+  border:1px solid #2b313a;
+}
+
+.alabel{
+  color:#858e9b;
+
+  font-size:calc(11px * var(--s));
+
+  font-weight:800;
+}
+
+.weekday{
+  color:#c5cad2;
+
+  font-size:calc(13px * var(--s));
+
+  font-weight:700;
+}
+
+.name{
+  margin-left:auto;
+
+  color:#fff;
+
+  font-size:calc(14px * var(--s));
+
+  font-weight:900;
+}
+
+/* =========================
+   NOTICE
+========================= */
+
+.note{
+  margin-top:15px;
+
+  padding:14px 15px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #24212f,
+      #1c1b24
+    );
+
+  border:1px solid #3b354f;
+
+  border-radius:14px;
+
+  color:#d9d5e5;
+
+  font-size:calc(13px * var(--s));
+
+  line-height:1.6;
+
+  word-break:keep-all;
+}
+
+/* =========================
+   ERROR
+========================= */
+
+.error{
+  padding:30px 20px;
+
+  text-align:center;
+
+  background:#20191c;
+
+  border:1px solid #493035;
+
+  border-radius:15px;
+
+  color:#ffb3b3;
+
+  line-height:1.6;
+}
+
+.error-title{
+  margin-bottom:7px;
+
+  font-weight:900;
+
+  font-size:17px;
+}
+
+/* =========================
+   BOTTOM NAV
+========================= */
+
+.bottom-nav{
+  position:fixed;
+
+  left:0;
+  right:0;
+  bottom:0;
+
+  z-index:100;
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(4,1fr);
+
+  height:64px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #1b1f27,
+      #13161c
+    );
+
+  border-top:1px solid var(--navline);
+
+  box-shadow:
+    0 -7px 24px rgba(0,0,0,.40);
+}
+
+.bottom-nav a{
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  min-width:0;
+
+  padding:8px 4px;
+
+  color:#e9ecf1;
+
+  text-decoration:none;
+
+  font-size:calc(13px * var(--s));
+
+  font-weight:800;
+
+  white-space:nowrap;
+}
+
+.bottom-nav a + a{
+  border-left:1px solid #303641;
+}
+
+.bottom-nav a:active{
+  background:#ffffff0b;
+}
+
+/* =========================
+   LIGHT THEME
+========================= */
+
+body.light{
+  --bg:#f3f4f7;
+  --card:#fff;
+  --card2:#f7f8fa;
+  --line:#dfe2e7;
+
+  --text:#20242b;
+  --muted:#69717d;
+
+  --nav:#fff;
+  --navline:#dfe2e7;
+
+  background:#f3f4f7;
+}
+
+body.light .header{
+  background:#fff;
+}
+
+body.light .home-btn,
+body.light .settings{
+  background:#f2f3f5;
+  border-color:#e0e2e6;
+  color:#222;
+}
+
+body.light .panel{
+  background:#fff;
+
+  border-color:#dfe2e7;
+
+  box-shadow:
+    0 12px 30px rgba(0,0,0,.16);
+}
+
+body.light .panel-title{
+  color:#333;
+}
+
+body.light .theme-btn,
+body.light .font-btn,
+body.light .font-size{
+  background:#f5f6f8;
+
+  border-color:#dfe2e7;
+
+  color:#222;
+}
+
+body.light .theme-btn.active{
+  background:#eeeaff;
+
+  border-color:#7566e8;
+
+  color:#40348d;
+}
+
+body.light .card{
+  background:#fff;
+
+  border-color:#e1e4e8;
+
+  box-shadow:
+    0 5px 15px rgba(0,0,0,.08);
+}
+
+body.light .datebox,
+body.light .assign{
+  background:#f6f7f9;
+
+  border-color:#e2e5e9;
+}
+
+body.light .date{
+  color:#252a31;
+}
+
+body.light .name{
+  color:#222;
+}
+
+body.light .bottom-nav{
+  background:#fff;
+}
+
+body.light .bottom-nav a{
+  color:#252a31;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:520px){
+
+  body{
+    padding-top:70px;
+  }
+
+  .header{
+    padding:
+      calc(17px + env(safe-area-inset-top))
+      55px
+      14px;
+  }
+
+  .header h1{
+    font-size:calc(21px * var(--s));
+  }
+
+  .wrap{
+    width:calc(100% - 14px);
+
+    padding-top:10px;
+  }
+
+  .card{
+    padding:13px;
+
+    border-radius:15px;
+  }
+
+  .zone{
+    font-size:calc(16px * var(--s));
+  }
+
+  .dates{
+    gap:7px;
+  }
+
+  .datebox{
+    padding:9px;
+  }
+
+  .date{
+    font-size:calc(13px * var(--s));
+  }
+
+  .panel{
+    width:235px;
+  }
+
+  .bottom-nav{
+    height:62px;
+  }
+
+  .bottom-nav a{
+    font-size:calc(12px * var(--s));
+  }
+}
+
+@media(max-width:360px){
+
+  .bottom-nav a{
+    font-size:calc(11px * var(--s));
+  }
+
+  .num{
+    min-width:52px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header class="header">
+
+  <button
+    class="home-btn"
+    onclick="home()"
+    aria-label="홈">
+    🏠
+  </button>
+
+  <h1>📋 개인봉사</h1>
+
+  <div class="sub">
+    개인 구역 카드
+  </div>
+
+  <button
+    class="settings"
+    onclick="toggle()"
+    aria-label="설정">
+    ⚙️
+  </button>
+
+
+  <!-- =====================
+       SETTINGS PANEL
+  ====================== -->
+
+  <div id="panel" class="panel">
+
+    <div class="panel-title">
+      화면 설정
+    </div>
+
+
+    <!-- 밝게 / 어둡게 -->
+
+    <div class="theme-row">
+
+      <button
+        id="lightBtn"
+        class="theme-btn"
+        onclick="theme('light')">
+        ☀️ 밝게
+      </button>
+
+      <button
+        id="darkBtn"
+        class="theme-btn"
+        onclick="theme('dark')">
+        🌙 어둡게
+      </button>
+
+    </div>
+
+
+    <!-- 글자 크기 -->
+
+    <div class="font-row">
+
+      <button
+        class="font-btn"
+        onclick="changeFont(-10)"
+        aria-label="글자 작게">
+        ◀
+      </button>
+
+      <div
+        id="fontSize"
+        class="font-size">
+        100%
+      </div>
+
+      <button
+        class="font-btn"
+        onclick="changeFont(10)"
+        aria-label="글자 크게">
+        ▶
+      </button>
+
+    </div>
+
+  </div>
+
+</header>
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main class="wrap">
+
+  <div
+    id="app"
+    class="loading">
+    개인봉사 자료를 불러오는 중입니다...
+  </div>
+
+</main>
+
+
+<!-- =========================
+     BOTTOM NAV
+========================= -->
+
+<nav class="bottom-nav">
+
+  <a
+    href="https://www.jw.org/ko/"
+    target="_blank"
+    rel="noopener">
+    JW.ORG
+  </a>
+
+  <a
+    href="https://wol.jw.org/ko/"
+    target="_blank"
+    rel="noopener">
+    라이브러리
+  </a>
+
+  <a
+    href="https://wol.jw.org/ko/wol/binav/r8/lp-ko"
+    target="_blank"
+    rel="noopener">
+    성경
+  </a>
+
+  <a
+    href="https://tv.jw.org/#ko/home"
+    target="_blank"
+    rel="noopener">
+    JW방송
+  </a>
+
+</nav>
+
+
+<script>
+
+/* ==========================================
+   GOOGLE APPS SCRIPT API
+========================================== */
+
+const API =
+"https://script.google.com/macros/s/AKfycbzBidcJoF1DIUoyahm0uOJVRiNgwQuX--Uu5JRXyJmnTh5zoyJrEouIecIVHyvGMP-E/exec";
+
+
+/* ==========================================
+   GOOGLE SHEET
+========================================== */
+
+const SHEET_ID =
+"1XGbksIQCRjagzCJLj-wHlBVfQf4JsMjk79ikxIMFI4o";
+
+const GID = "0";
+
+const SHEET =
+`https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit?gid=${GID}`;
+
+
+/* ==========================================
+   HTML ESCAPE
+========================================== */
+
+function esc(value){
+
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"◀")
+    .replace(/>/g,"▶")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#39;");
+
+}
+
+
+/* ==========================================
+   HOME
+========================================== */
+
+function home(){
+
+  location.href = "index.html";
+
+}
+
+
+/* ==========================================
+   SETTINGS TOGGLE
+========================================== */
+
+function toggle(){
+
+  const panel =
+    document.getElementById("panel");
+
+  panel.classList.toggle("show");
+
+}
+
+
+/* ==========================================
+   THEME
+========================================== */
+
+function theme(mode){
+
+  const lightBtn =
+    document.getElementById("lightBtn");
+
+  const darkBtn =
+    document.getElementById("darkBtn");
+
+
+  if(mode === "light"){
+
+    document.body.classList.add("light");
+
+    localStorage.setItem(
+      "personalTheme",
+      "light"
+    );
+
+    const themeColor =
+      document.querySelector('meta[name="theme-color"]');
+    if(themeColor){
+      themeColor.setAttribute("content", "#ffffff");
+    }
+
+    const statusBar =
+      document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+    if(statusBar){
+      statusBar.setAttribute("content", "default");
+    }
+
+    lightBtn.classList.add("active");
+    darkBtn.classList.remove("active");
+
+  }else{
+
+    document.body.classList.remove("light");
+
+    localStorage.setItem(
+      "personalTheme",
+      "dark"
+    );
+
+    const themeColor =
+      document.querySelector('meta[name="theme-color"]');
+    if(themeColor){
+      themeColor.setAttribute("content", "#171a21");
+    }
+
+    const statusBar =
+      document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+    if(statusBar){
+      statusBar.setAttribute("content", "black");
+    }
+
+    darkBtn.classList.add("active");
+    lightBtn.classList.remove("active");
+
+  }
+
+}
+
+
+/* ==========================================
+   FONT SIZE
+========================================== */
+
+let fontPercent = 100;
+
+
+function setFontPercent(percent){
+
+  /*
+    70% ~ 130%
+  */
+
+  fontPercent =
+    Math.max(
+      70,
+      Math.min(130, percent)
+    );
+
+
+  const scale =
+    fontPercent / 100;
+
+
+  document.documentElement.style
+    .setProperty(
+      "--s",
+      scale
+    );
+
+
+  document.getElementById("fontSize")
+    .textContent =
+      fontPercent + "%";
+
+
+  localStorage.setItem(
+    "personalFont",
+    String(fontPercent)
+  );
+
+}
+
+
+function changeFont(amount){
+
+  setFontPercent(
+    fontPercent + amount
+  );
+
+}
+
+
+/* ==========================================
+   LOAD SAVED SETTINGS
+========================================== */
+
+(function(){
+
+  const savedTheme =
+    localStorage.getItem(
+      "personalTheme"
+    );
+
+  const savedFont =
+    localStorage.getItem(
+      "personalFont"
+    );
+
+
+  if(savedTheme === "light"){
+
+    theme("light");
+
+  }else{
+
+    theme("dark");
+
+  }
+
+
+  if(savedFont){
+
+    const value =
+      Number(savedFont);
+
+    if(
+      Number.isFinite(value)
+    ){
+
+      setFontPercent(value);
+
+    }
+
+  }
+
+})();
+
+
+/* ==========================================
+   JSONP CALLBACK
+========================================== */
+
+const callbackName =
+"personalVolunteerCallback_" +
+Date.now();
+
+
+/* ==========================================
+   LOAD DATA
+========================================== */
+
+function load(){
+
+  const app =
+    document.getElementById("app");
+
+
+  app.className = "loading";
+
+  app.innerHTML =
+    "개인봉사 자료를 불러오는 중입니다...";
+
+
+  window[callbackName] =
+    function(result){
+
+      try{
+
+        if(
+          !result ||
+          result.success !== true
+        ){
+
+          throw new Error(
+            result?.message ||
+            "자료를 가져오지 못했습니다."
+          );
+
+        }
+
+
+        render(result);
+
+
+      }catch(error){
+
+        showError(
+          error.message
+        );
+
+      }
+
+    };
+
+
+  const script =
+    document.createElement("script");
+
+
+  script.src =
+    API +
+    "?callback=" +
+    callbackName +
+    "&t=" +
+    Date.now();
+
+
+  script.onerror =
+    function(){
+
+      showError(
+        "개인봉사 자료를 불러오지 못했습니다."
+      );
+
+    };
+
+
+  document.body.appendChild(script);
+
+}
+
+
+/* ==========================================
+   RENDER
+========================================== */
+
+function render(result){
+
+  const app =
+    document.getElementById("app");
+
+
+  const data =
+    Array.isArray(result.data)
+      ? result.data
+      : [];
+
+
+  if(data.length === 0){
+
+    app.className = "error";
+
+    app.innerHTML =
+      "<div class='error-title'>" +
+      "자료가 없습니다." +
+      "</div>" +
+      "개인봉사 자료를 확인해 주세요.";
+
+    return;
+
+  }
+
+
+  let html =
+    "<div class='cards'>";
+
+
+  data.forEach(function(x){
+
+    /*
+      Apps Script에서 반환하는
+      실제 Sheet 행 번호 사용
+
+      예:
+      row = 4
+      → B4
+    */
+
+    const number =
+      esc(x.number);
+
+    const zone =
+      esc(x.zone);
+
+    const house =
+      esc(x.house);
+
+    const weekday =
+      esc(x.weekday);
+
+    const person =
+      esc(x.person);
+
+    const startDate =
+      esc(x.startDate);
+
+    const completeDate =
+      esc(x.completeDate);
+
+
+    /*
+      번호 클릭 → 원본에서 실제 연결된 링크
+      ---------------------------------------
+      IMPORTRANGE는 원본 셀의 링크 정보를 가져오지 못하므로
+      원본 135의 실제 링크를 우선 사용합니다.
+
+      135 실제 링크:
+      https://docs.google.com/spreadsheets/d/13iF9EDGobrhQC63Jiqwsjk8qU_KTSwUSSgvVP24herw/edit?gid=77788459#gid=77788459
+    */
+
+    const actualLinks = {
+
+      "135":
+        "https://docs.google.com/spreadsheets/d/13iF9EDGobrhQC63Jiqwsjk8qU_KTSwUSSgvVP24herw/edit?usp=drive_link",
+
+      "136":
+        "https://docs.google.com/spreadsheets/d/1zfMZhKyUjqcGLcCrxk7TBpXktbMjmTR68JveiyZOtpM/edit?gid=77788459",
+
+      "301":
+        "https://docs.google.com/spreadsheets/d/1PSkImH6xXoFGDsEw-Vt1FOn8WZ7jXXniFNssQsfDf7U/edit?gid=77788459",
+
+      "420":
+        "https://docs.google.com/spreadsheets/d/1HwH3hiOtJ5uMQyhl0mgjkVJQTKgMD5Mr7Dwnxx940pA/edit?gid=77788459",
+
+      "427":
+        "https://docs.google.com/spreadsheets/d/1SFQaNBhdTvZlPQIHV1Vk-rM0msYHGspAEOezIvB76Ig/edit?gid=77788459",
+
+      "428":
+        "https://docs.google.com/spreadsheets/d/1YX0x2x6GH5WEakJDTPRMQ3hrWY4Ezhg6OA-JcJg-wX0/edit?usp=drive_link",
+
+      "429":
+        "https://docs.google.com/spreadsheets/d/191mQxh5UXkTBRiK9aTEsBXZUeRPsohZijr09SccfqNg/edit?usp=drive_link",
+
+      "430":
+        "https://docs.google.com/spreadsheets/d/1qaCAaOB03D9-16hYa_1uauqqN-WtA2EDBAjliiV0JWc/edit?usp=drive_link",
+
+      "431":
+        "https://docs.google.com/spreadsheets/d/1wVfqZhfxPeYTePsZSA8EVun3lwaaOdRrIAU72iEJFD8/edit?gid=77788459"
+    };
+
+    const numberKey =
+      String(x.number ?? "").trim();
+
+    const numberLink =
+      x.linkUrl ||
+      actualLinks[numberKey] ||
+      "";
+
+
+    html += `
+
+      <section class="card">
+
+        <div class="top">
+
+          <div class="num">
+
+            <a
+              href="${esc(numberLink)}"
+              target="_blank"
+              rel="noopener">
+
+              ${number}
+
+            </a>
+
+          </div>
+
+
+          <div class="info">
+
+            <div class="zone">
+              ${zone}
+            </div>
+
+            <div class="house">
+              ${house}호
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="dates">
+
+          <div class="datebox">
+
+            <div class="label">
+              지급일자
+            </div>
+
+            <div class="date">
+              ${startDate}
+            </div>
+
+          </div>
+
+
+          <div class="datebox complete">
+
+            <div class="label">
+              완료 날짜
+            </div>
+
+            <div class="date">
+              ${completeDate}
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="assign">
+
+          <span class="alabel">
+            임명
+          </span>
+
+          <span class="weekday">
+            ${weekday}
+          </span>
+
+          <span class="name">
+            ${person}
+          </span>
+
+        </div>
+
+      </section>
+
+    `;
+
+  });
+
+
+  html += "</div>";
+
+
+  /* =========================
+     NOTICE
+  ========================= */
+
+  if(result.notice){
+
+    html += `
+
+      <div class="note">
+        ${esc(result.notice)}
+      </div>
+
+    `;
+
+  }
+
+
+  app.className = "";
+
+  app.innerHTML = html;
+
+}
+
+
+/* ==========================================
+   ERROR
+========================================== */
+
+function showError(message){
+
+  const app =
+    document.getElementById("app");
+
+
+  app.className = "error";
+
+
+  app.innerHTML = `
+
+    <div class="error-title">
+      자료를 불러오지 못했습니다.
+    </div>
+
+    ${esc(
+      message ||
+      "알 수 없는 오류입니다."
+    )}
+
+  `;
+
+}
+
+
+/* ==========================================
+   START
+========================================== */
+
+load();
+
+</script>
+
+</body>
+</html>
