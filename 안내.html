@@ -135,6 +135,47 @@
       color: var(--text-main);
     }
 
+    /* 타이틀 왼쪽 뒤로가기 */
+    .title-back-button {
+      position: absolute;
+      left: 0;
+      top: 0;
+      transform: none;
+
+      width: 52px;
+      height: 52px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border: 1px solid var(--panel-border);
+      border-radius: 18px;
+
+      background: var(--button-bg);
+      color: var(--accent);
+
+      padding: 0;
+      font-family: inherit;
+      font-size: 23px;
+      font-weight: 900;
+      line-height: 1;
+
+      cursor: pointer;
+
+      z-index: 1100;
+
+      transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+    }
+
+    .title-back-button:hover {
+      background: var(--button-hover);
+      transform: translateY(-1px);
+    }
+
+
 
     .header-month {
       margin-top: 12px;
@@ -776,6 +817,15 @@
       }
 
 
+      .title-back-button {
+
+        width: 46px;
+        height: 46px;
+
+        font-size: 20px;
+      }
+
+
       .settings-button {
 
         width: 46px;
@@ -948,7 +998,13 @@
     >
       ⚙
     </button>
-
+    <button
+      class="title-back-button"
+      onclick="goBack()"
+      aria-label="뒤로가기"
+    >
+      ◀
+    </button>
 
     <h1 class="header-title">
       👥 외부 안내 봉사
@@ -1060,29 +1116,7 @@
        뒤로가기 → 새로고침
   ========================================== -->
 
-  <div class="actions">
-
-
-    <button
-      class="action-button"
-      onclick="goBack()"
-    >
-      ← 뒤로가기
-    </button>
-
-
-    <button
-      class="action-button"
-      onclick="loadData()"
-    >
-      ↻ 새로고침
-    </button>
-
-
-  </div>
-
-
-  <!-- =========================================
+<!-- =========================================
        데이터
   ========================================== -->
 
