@@ -56,8 +56,7 @@ body {
 
   text-align: center;
 
-  background:
-    rgba(18, 31, 42, 0.88);
+  background: #18324a;
 
   border-bottom:
     1px solid rgba(255,255,255,0.08);
@@ -70,6 +69,7 @@ body {
 
 .header h1 {
   margin: 0;
+  color: #ffffff;
 
   font-size: 35px;
   line-height: 35px;
@@ -81,6 +81,7 @@ body {
 
 .reference-date {
   margin-top: 3px;
+  color: #ffffff;
 
   font-size: 17px;
   line-height: 17px;
@@ -448,15 +449,15 @@ body {
   align-items: center;
   justify-content: center;
 
-  border: 1px solid rgba(255,255,255,0.10);
-  border-radius: 50%;
+  border: none;
+  border-radius: 12px;
 
-  background: rgba(255,255,255,0.12);
-  color: #83e8ba;
+  background: #234563;
+  color: #ffffff;
 
   padding: 0;
   font-family: inherit;
-  font-size: 23px;
+  font-size: 25px;
   font-weight: 900;
   line-height: 1;
 
@@ -486,11 +487,11 @@ body {
   width: 42px;
   height: 42px;
   border: none;
-  border-radius: 50%;
-  font-size: 20px;
+  border-radius: 12px;
+  font-size: 25px;
   cursor: pointer;
   color: #ffffff;
-  background: rgba(255,255,255,0.12);
+  background: #234563;
   z-index: 10;
 }
 
@@ -567,18 +568,22 @@ body {
 /* 밝게 */
 body.light {
   color: #222222;
-  background: linear-gradient(135deg, #f4f7fa, #ffffff);
+  background: #18324a;
 }
 
 body.light .header {
-  background: rgba(255,255,255,0.92);
+  background: #18324a;
   border-bottom-color: rgba(0,0,0,0.08);
 }
 
-body.light .action-button,
-body.light .settings-button {
+body.light .action-button {
   color: #222222;
   background: rgba(0,0,0,0.07);
+}
+
+body.light .settings-button {
+  color: #ffffff;
+  background: #234563;
 }
 
 body.light .action-button:hover,
@@ -618,9 +623,13 @@ body.light .section-title {
 
 body.light .empty-message,
 body.light .loading,
-body.light .error,
-body.light .reference-date {
+body.light .error {
   color: rgba(0,0,0,0.55);
+}
+
+body.light .header h1,
+body.light .reference-date {
+  color: #ffffff;
 }
 
 body.light .reference-item {
@@ -645,7 +654,8 @@ body.light .settings-row button.active {
 }
 
 body.light .settings-button {
-  background: rgba(0,0,0,0.06);
+  background: #234563;
+  color: #ffffff;
 }
 
 
@@ -664,7 +674,7 @@ body.light .settings-button {
     top: 23px;
     width: 42px;
     height: 42px;
-    font-size: 20px;
+    font-size: 25px;
   }
 
   .settings-button {
@@ -698,7 +708,7 @@ body.light .settings-button {
     class="title-back-button"
     onclick="goBack()"
     aria-label="뒤로가기">
-    ◀
+    ‹
   </button>
 
   <h1>
@@ -713,8 +723,6 @@ body.light .settings-button {
   </button>
 
   <div id="settingsPanel" class="settings-panel">
-
-    <div class="settings-title">설정</div>
 
     <div class="settings-row">
       <button id="lightButton" onclick="setTheme('light')">☀️ 밝게</button>
