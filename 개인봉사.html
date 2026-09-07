@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#173A63" id="themeColorMeta">
+<meta name="theme-color" content="#18324a" id="themeColorMeta">
 <meta name="color-scheme" content="dark" id="colorSchemeMeta">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" id="statusBarMeta">
@@ -11,7 +11,9 @@
 
 <style>
 :root{
-  --s:1;
+  /* 본문 글자 크기: 100%일 때 실제 표시값 120% */
+  --s:1.2;
+  --header-height:0px;
 
   --bg:#0f1115;
   --card:#1b1f27;
@@ -24,8 +26,7 @@
   --accent:#8d7cf5;
   --accent2:#6555d8;
 
-  /* 밝게/어둡게와 관계없이 상단/하단 고정 영역에 사용하는 다크블루 */
-  --fixed-blue:#173A63;
+  --fixed-blue:#18324a;
   --fixed-blue-dark:#102C4A;
   --nav:#151821;
   --navline:#303641;
@@ -43,7 +44,6 @@ html{
 body{
   margin:0;
   min-height:100vh;
-  padding-top:78px;
 
   background:
     radial-gradient(
@@ -77,40 +77,45 @@ body{
   top:0;
   left:0;
   right:0;
+  width:100%;
   z-index:1000;
+  background:#18324a !important;
+  border-bottom:1px solid #18324a;
+  box-shadow:0 5px 22px rgba(0,0,0,.35);
+}
 
-  padding:calc(18px + env(safe-area-inset-top)) 58px 16px;
+.header-inner{
+  width:100%;
+  max-width:900px;
+  margin:0 auto;
+  padding:10px 14px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
 
+.title-area{
+  flex:1;
+  min-width:0;
   text-align:center;
-
-  background:
-    linear-gradient(
-      180deg,
-      #173A63,
-      #102C4A
-    );
-
-  border-bottom:1px solid var(--line);
-
-  box-shadow:
-    0 5px 22px rgba(0,0,0,.35);
 }
 
 .header h1{
   margin:0;
-
-  font-size:calc(23px * var(--s));
-  font-weight:900;
-
-  letter-spacing:-.5px;
+  padding:0;
+  font-size:35px !important;
+  font-weight:800 !important;
+  letter-spacing:.04em !important;
+  white-space:nowrap;
+  text-align:center;
+  color:#fff !important;
 }
 
 .sub{
-  margin-top:5px;
-
-  color:var(--muted);
-
-  font-size:calc(13px * var(--s));
+  margin-top:1px !important;
+  font-size:12px !important;
+  color:#b9c4cf !important;
+  text-align:center;
 }
 
 /* =========================
@@ -119,26 +124,26 @@ body{
 
 .home-btn,
 .settings{
-  position:absolute;
+  flex:0 0 42px;
 
-  top:50%;
-  transform:translateY(-50%);
+  width:42px;
+  height:42px;
 
-  width:40px;
-  height:40px;
+  border:0;
 
-  border:1px solid #ffffff18;
   border-radius:12px;
 
-  background:#202431;
+  background:#234563 !important;
 
-  color:#fff;
+  color:#d7e3ea !important;
 
   display:flex;
   align-items:center;
   justify-content:center;
 
-  font-size:20px;
+  font-size:25px;
+
+  line-height:1;
 
   cursor:pointer;
 
@@ -147,18 +152,12 @@ body{
     transform .15s;
 }
 
-.home-btn{
-  left:12px;
-}
-
-.settings{
-  right:12px;
-}
 
 .home-btn:active,
 .settings:active{
   transform:scale(.94);
-  background:#202431;
+
+  background:#234563 !important;
 }
 
 /* =========================
@@ -170,12 +169,12 @@ body{
 
   position:absolute;
 
-  top:60px;
+  top:58px;
   right:10px;
 
-  width:245px;
+  width:235px;
 
-  padding:15px;
+  padding:12px;
 
   z-index:200;
 
@@ -195,16 +194,6 @@ body{
   display:block;
 }
 
-.panel-title{
-  margin-bottom:13px;
-
-  color:#dfe3e9;
-
-  font-size:14px;
-
-  font-weight:900;
-}
-
 /* =========================
    THEME SELECTOR
 ========================= */
@@ -216,7 +205,7 @@ body{
 
   gap:8px;
 
-  margin-bottom:14px;
+  margin-bottom:8px;
 }
 
 .theme-btn{
@@ -280,7 +269,7 @@ body{
 
   color:#fff;
 
-  font-size:20px;
+  font-size:22px;
 
   font-weight:900;
 
@@ -289,13 +278,6 @@ body{
 
 .font-btn:active{
   transform:scale(.95);
-}
-
-.font-limit{
-  white-space:nowrap;
-  color:#dfe3e9;
-  font-size:12px;
-  font-weight:800;
 }
 
 .font-size{
@@ -325,10 +307,8 @@ body{
 
 .wrap{
   width:min(720px, calc(100% - 20px));
-
   margin:0 auto;
-
-  padding:14px 0 20px;
+  padding:calc(var(--header-height, 0px) + 20px) 0 80px;
 }
 
 /* =========================
@@ -414,12 +394,7 @@ body{
   align-items:center;
   justify-content:center;
 
-  background:
-    linear-gradient(
-      135deg,
-      var(--accent2),
-      #5142b8
-    );
+  background:#0000FF;
 
   border-radius:11px;
 
@@ -664,7 +639,7 @@ body{
 
   text-decoration:none;
 
-  font-size:calc(13px * var(--s));
+  font-size:13px;
 
   font-weight:800;
 
@@ -698,29 +673,27 @@ body.light{
   background:#f3f4f7;
 }
 
+/* 밝게 모드에서도 헤더는 항상 #18324a */
+
 body.light .header{
-  background:
-    linear-gradient(
-      180deg,
-      #173A63,
-      #102C4A
-    );
+  background:#18324a !important;
 }
 
-/* 밝게 모드에서도 상단 고정 영역과 카드 영역은 다크 테마와 동일하게 유지 */
 body.light .header h1{
   color:#f2f4f7;
 }
 
 body.light .sub{
-  color:#aeb5c0;
+  color:#7a8580;
 }
 
 body.light .home-btn,
 body.light .settings{
-  background:#f2f3f5;
-  border-color:#e0e2e6;
-  color:#222;
+  background:#234563 !important;
+
+  border-color:transparent;
+
+  color:#286b5b !important;
 }
 
 body.light .panel{
@@ -730,10 +703,6 @@ body.light .panel{
 
   box-shadow:
     0 12px 30px rgba(0,0,0,.16);
-}
-
-body.light .panel-title{
-  color:#333;
 }
 
 body.light .theme-btn,
@@ -818,25 +787,31 @@ body.light .bottom-nav a{
 
 @media(max-width:520px){
 
-  body{
-    padding-top:70px;
-  }
-
-  .header{
-    padding:
-      calc(17px + env(safe-area-inset-top))
-      55px
-      14px;
+  .header-inner{
+    padding:10px 7px;
+    gap:10px;
   }
 
   .header h1{
-    font-size:calc(21px * var(--s));
+    font-size:35px !important;
+    letter-spacing:.04em !important;
+  }
+
+  .sub{
+    margin-top:1px !important;
+    font-size:12px !important;
+  }
+
+  .home-btn,
+  .settings{
+    flex:0 0 42px;
+    width:42px;
+    height:42px;
   }
 
   .wrap{
     width:calc(100% - 14px);
-
-    padding-top:10px;
+    padding-top:calc(var(--header-height, 0px) + 20px);
   }
 
   .card{
@@ -870,14 +845,14 @@ body.light .bottom-nav a{
   }
 
   .bottom-nav a{
-    font-size:calc(12px * var(--s));
+    font-size:12px;
   }
 }
 
 @media(max-width:360px){
 
   .bottom-nav a{
-    font-size:calc(11px * var(--s));
+    font-size:11px;
   }
 
   .num{
@@ -894,35 +869,21 @@ body.light .bottom-nav a{
 ========================= -->
 
 <header class="header">
+  <div class="header-inner">
+    <button class="home-btn" onclick="home()" aria-label="홈">‹</button>
 
-  <button
-    class="home-btn"
-    onclick="home()"
-    aria-label="홈">
-    🏠
-  </button>
+    <div class="title-area">
+      <h1>개인봉사</h1>
+      <div class="sub">개인 구역 카드</div>
+    </div>
 
-  <h1>📋 개인봉사</h1>
+    <button class="settings" onclick="toggle()" aria-label="설정">⚙</button>
 
-  <div class="sub">
-    개인 구역 카드
-  </div>
-
-  <button
-    class="settings"
-    onclick="toggle()"
-    aria-label="설정">
-    ⚙️
-  </button>
-
-
-  <!-- =====================
-       SETTINGS PANEL
-  ====================== -->
+    <!-- =====================
+         SETTINGS PANEL
+    ====================== -->
 
   <div id="panel" class="panel">
-
-    <!-- 밝게 / 어둡게 -->
 
     <div class="theme-row">
 
@@ -930,7 +891,7 @@ body.light .bottom-nav a{
         id="lightBtn"
         class="theme-btn"
         onclick="theme('light')">
-        ☀️ 밝게
+        ☀ 밝게
       </button>
 
       <button
@@ -943,15 +904,13 @@ body.light .bottom-nav a{
     </div>
 
 
-    <!-- 글자 크기 -->
-
     <div class="font-row">
 
       <button
         class="font-btn"
         onclick="changeFont(-10)"
         aria-label="글자 작게">
-        ◀
+        −
       </button>
 
       <div
@@ -964,7 +923,7 @@ body.light .bottom-nav a{
         class="font-btn"
         onclick="changeFont(10)"
         aria-label="글자 크게">
-        ▶
+        ＋
       </button>
 
     </div>
@@ -1045,7 +1004,7 @@ const API =
 ========================================== */
 
 const SHEET_ID =
-"1XGbksIQCRjagzCJLj-wHlBVfQf4JsMjk79ikxIMFI4o";
+"1XGbksIQCRjagzCJLj-wHlBVfQ4JsMjk79ikxIMFI4o";
 
 const GID = "0";
 
@@ -1127,7 +1086,7 @@ function theme(mode){
   if(themeColor){
     themeColor.setAttribute(
       "content",
-      "#173A63"
+      "#18324a"
     );
   }
 
@@ -1153,15 +1112,6 @@ function theme(mode){
     darkBtn.classList.toggle("active", !isLight);
   }
 
-  /*
-    모바일 브라우저가 테마 색상 변경을 즉시
-    다시 읽도록 meta 요소를 재설정합니다.
-  */
-  /*
-    문서 전체의 시스템 색상 체계도 즉시 변경합니다.
-    모바일 브라우저가 테마 변경을 다시 읽도록
-    theme-color meta도 새 요소로 교체합니다.
-  */
   document.documentElement.style.colorScheme =
     isLight ? "light" : "dark";
 
@@ -1172,29 +1122,27 @@ function theme(mode){
     isLight ? "#f3f4f7" : "#0f1115";
 
   if(themeColor){
+
     const newMeta =
       document.createElement("meta");
 
     newMeta.name = "theme-color";
     newMeta.id = "themeColorMeta";
     newMeta.content =
-      "#173A63";
+      "#18324a";
 
     themeColor.replaceWith(newMeta);
   }
 
-  /*
-    iOS/Android에서 화면 테마 관련 설정이
-    연속으로 바뀌어도 다시 적용되도록 한 번 더 동기화합니다.
-  */
   requestAnimationFrame(function(){
+
     const currentTheme =
       document.getElementById("themeColorMeta");
 
     if(currentTheme){
       currentTheme.setAttribute(
         "content",
-        "#173A63"
+        "#18324a"
       );
     }
 
@@ -1217,6 +1165,7 @@ function theme(mode){
         "black-translucent"
       );
     }
+
   });
 
 }
@@ -1231,11 +1180,6 @@ let fontPercent = 100;
 
 function setFontPercent(percent){
 
-  /*
-    글자 크기 범위: 80% ~ 150%
-    버튼 1회 클릭마다 10%씩 변경
-  */
-
   fontPercent =
     Math.max(
       80,
@@ -1243,8 +1187,9 @@ function setFontPercent(percent){
     );
 
 
+  // 100% = 기존보다 1.2배 크게 표시 (본문만 적용)
   const scale =
-    fontPercent / 100;
+    1.2 * (fontPercent / 100);
 
 
   document.documentElement.style
@@ -1320,6 +1265,53 @@ function changeFont(amount){
   }
 
 })();
+
+
+/* ==========================================
+   HEADER HEIGHT
+   화면 회전/크기 변경 시 다시 계산
+========================================== */
+
+function syncHeaderHeight(){
+  const header = document.querySelector(".header");
+  if(!header) return;
+
+  const height = header.offsetHeight;
+
+  document.documentElement.style.setProperty(
+    "--header-height",
+    height + "px"
+  );
+}
+
+function startHeaderHeightSync(){
+  const header = document.querySelector(".header");
+  if(!header) return;
+
+  syncHeaderHeight();
+
+  if("ResizeObserver" in window){
+    new ResizeObserver(function(){
+      syncHeaderHeight();
+    }).observe(header);
+  }
+
+  if(document.fonts && document.fonts.ready){
+    document.fonts.ready.then(syncHeaderHeight);
+  }
+
+  window.addEventListener("resize", syncHeaderHeight);
+  window.addEventListener("orientationchange", function(){
+    setTimeout(syncHeaderHeight, 50);
+    setTimeout(syncHeaderHeight, 300);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+  requestAnimationFrame(startHeaderHeightSync);
+});
+
+window.addEventListener("load", syncHeaderHeight);
 
 
 /* ==========================================
@@ -1512,10 +1504,6 @@ function render(result){
     /*
       Apps Script에서 반환하는
       실제 Sheet 행 번호 사용
-
-      예:
-      row = 4
-      → B4
     */
 
     const number =
@@ -1542,12 +1530,6 @@ function render(result){
 
     /*
       번호 클릭 → 원본에서 실제 연결된 링크
-      ---------------------------------------
-      IMPORTRANGE는 원본 셀의 링크 정보를 가져오지 못하므로
-      원본 135의 실제 링크를 우선 사용합니다.
-
-      135 실제 링크:
-      https://docs.google.com/spreadsheets/d/13iF9EDGobrhQC63Jiqwsjk8qU_KTSwUSSgvVP24herw/edit?gid=77788459#gid=77788459
     */
 
     const actualLinks = {
@@ -1578,10 +1560,16 @@ function render(result){
 
       "431":
         "https://docs.google.com/spreadsheets/d/1wVfqZhfxPeYTePsZSA8EVun3lwaaOdRrIAU72iEJFD8/edit?gid=77788459"
+
     };
+
 
     const numberKey =
       String(x.number ?? "").trim();
+
+
+    const numClass = "num";
+
 
     const numberLink =
       x.linkUrl ||
@@ -1595,7 +1583,7 @@ function render(result){
 
         <div class="top">
 
-          <div class="num">
+          <div class="${numClass}">
 
             <a
               href="${esc(numberLink)}"
@@ -1652,9 +1640,6 @@ function render(result){
           </div>
 
         </div>
-
-
-
 
       </section>
 
