@@ -318,19 +318,7 @@ body.light .admin-name.selected {
 .group-controls {
   display: flex;
   justify-content: center;
-  gap: 8px;
   margin-bottom: 18px;
-}
-
-.service-order-button {
-  border: 0;
-  border-radius: 10px;
-  padding: 12px 20px;
-  background: #A83232;
-  color: #fff;
-  font-size: calc(15px * var(--font-scale));
-  font-weight: 700;
-  cursor: pointer;
 }
 
 .add-group-button {
@@ -339,7 +327,7 @@ body.light .admin-name.selected {
 
   padding: 12px 20px;
 
-  background: #3374A9;
+  background: #4285f4;
   color: #fff;
 
   font-size: calc(15px * var(--font-scale));
@@ -441,16 +429,13 @@ body.light .group-slot.filled {
 }
 
 .service-info {
+  margin-bottom: 18px;
   text-align: center;
   font-size: calc(18px * var(--font-scale));
   color: #aaa;
 }
 
 body.light .service-info {
-  color: #777;
-}
-
-body.light .service-conductor {
   color: #777;
 }
 
@@ -477,14 +462,13 @@ body.light .service-card {
   display: flex;
   align-items: center;
   gap: 9px;
-  height: 70px;
   margin-bottom: 10px;
 }
 
 .service-number {
-  width: calc((100% - 21px) / 2);
+  width: auto;
   min-width: 0;
-  flex: 0 0 calc((100% - 21px) / 2);
+  flex: 0 0 auto;
   height: 50px;
 
   padding: 0 16px;
@@ -498,50 +482,19 @@ body.light .service-card {
   justify-content: center;
 
   text-align: center;
-  font-size: calc(25px * var(--font-scale));
+  font-size: calc(22px * var(--font-scale));
   font-weight: 800;
 }
 
 .service-name {
-  height: 25px;
-  color: #fff;
-  line-height: 25px;
-  font-size: calc(25px * var(--font-scale));
+  font-size: calc(22px * var(--font-scale));
   font-weight: 800;
 }
 
-body.light .service-name {
-  color: #000;
-}
-
-.service-conductor {
-  width: 100%;
-  height: 18px;
-  margin: 0 0 15px;
-  padding: 0;
-  line-height: 18px;
-  text-align: center;
-  font-size: 18px;
-  color: #aaa;
-}
-
-.service-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  min-width: 0;
-  height: 70px;
-  padding-top: 15px;
-  padding-bottom: 10px;
-  gap: 5px;
-}
-
 .service-detail {
-  height: 15px;
-  line-height: 15px;
-  margin: 0;
+  margin-bottom: 12px;
 
-  font-size: calc(15px * var(--font-scale));
+  font-size: calc(18px * var(--font-scale));
   color: #aaa;
 }
 
@@ -550,25 +503,8 @@ body.light .service-detail {
 }
 
 .service-volunteers {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.service-pair {
-  width: 100%;
-}
-
-.service-team-label {
-  text-align: left;
-  font-size: calc(12px * var(--font-scale));
-  font-weight: 600;
-  margin: 0 0 3px 2px;
-}
-
-.service-pair-people {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 7px;
 }
 
@@ -911,9 +847,6 @@ body.light .settings-label {
 }
 .service-title-with-refresh {
   position: relative;
-  height: 25px;
-  line-height: 25px;
-  margin: 0 0 20px;
 }
 
 .service-refresh-button {
@@ -1142,13 +1075,6 @@ body.light .service-refresh-button {
           + 봉사 그룹 추가
         </button>
 
-        <button
-          class="service-order-button"
-          onclick="resetServiceDateOrder()"
-        >
-         ↻ 봉사 날짜 초기화
-        </button>
-
       </div>
 
 
@@ -1172,7 +1098,7 @@ body.light .service-refresh-button {
   >
 
     <h1 class="page-title service-title-with-refresh">
-      즐겁게 봉사해요
+      봉사하기
       <button
         type="button"
         class="service-refresh-button"
@@ -1183,7 +1109,7 @@ body.light .service-refresh-button {
 
     <div class="service-section">
 
-      <div class="service-conductor">
+      <div class="service-info">
         <strong id="serviceConductor">인도자 : </strong>
       </div>
 
@@ -1307,13 +1233,23 @@ const SATURDAY_SHEET_NAME = "토요일";
 
 
 /* =========================================================
+   추가 기능 - 신청용/관리용 빠른 재사용 + 일요일 초기화 동기화
+   ※ 기존 구조와 기능은 그대로 유지합니다.
+========================================================= */
+const SATURDAY_LOCAL_RESET_KEY = "saturdayLocalResetKey";
+const SATURDAY_SERVER_RESET_KEY = "saturdayServerResetKey";
+const SATURDAY_FAST_CACHE_MS = 15000;
+let lastMasterNamesLoadAt = 0;
+let lastApplicantsLoadAt = 0;
+
+
+/* =========================================================
    봉사 구역
 ========================================================= */
 
 let SERVICE_AREAS = [];
 let SERVICE_CONDUCTOR = "";
 let SATURDAY_REFERENCE = [];
-let SERVICE_ORDER = [];
 
 
 /* =========================================================
@@ -1344,6 +1280,11 @@ document.addEventListener(
   function() {
 
     loadSettings();
+
+    checkSaturdayApplicationReset();
+    syncSaturdayResetStatus();
+    setInterval(checkSaturdayApplicationReset, 60000);
+    setInterval(syncSaturdayResetStatus, 60000);
 
     loadMasterNames();
 
@@ -1582,11 +1523,154 @@ function goBack() {
 
 
 /* =========================================================
+   일요일 신청 초기화 - 휴대폰 상태 동기화
+
+   ★ 일요일 2~3시 삭제 문제 방지
+   - 이 HTML에는 2~3시 초기화 기능을 넣지 않습니다.
+   - Apps Script의 resetStatus 결과를 기준으로 동기화합니다.
+   - 휴대폰에서 일요일 1~2시에 접속한 경우에도 즉시 초기화합니다.
+========================================================= */
+function getSundayResetKey() {
+
+  const now = new Date();
+
+  return
+    now.getFullYear() + "-" +
+    String(now.getMonth() + 1).padStart(2, "0") + "-" +
+    String(now.getDate()).padStart(2, "0");
+
+}
+
+
+function checkSaturdayApplicationReset() {
+
+  const now = new Date();
+
+  /* 오직 일요일 01:00~01:59에만 로컬 시간 초기화를 실행합니다.
+     02:00~03:00에는 별도의 삭제 동작을 절대 하지 않습니다. */
+  if (
+    now.getDay() !== 0 ||
+    now.getHours() !== 1
+  ) {
+    return;
+  }
+
+  const resetKey = getSundayResetKey();
+
+  const savedKey =
+    localStorage.getItem(
+      SATURDAY_LOCAL_RESET_KEY
+    );
+
+  if (savedKey === resetKey) {
+    return;
+  }
+
+  localStorage.removeItem(
+    MY_SELECTION_KEY
+  );
+
+  localStorage.setItem(
+    SATURDAY_LOCAL_RESET_KEY,
+    resetKey
+  );
+
+  renderNames();
+  updateSelectedCount();
+
+}
+
+
+async function syncSaturdayResetStatus() {
+
+  try {
+
+    const response =
+      await fetch(
+        SCRIPT_URL +
+        "?action=resetStatus&_=" +
+        Date.now(),
+        { cache: "no-store" }
+      );
+
+    if (!response.ok) {
+      return;
+    }
+
+    const data =
+      await response.json();
+
+    if (
+      !data.success ||
+      !data.resetKey
+    ) {
+      return;
+    }
+
+    const savedServerKey =
+      localStorage.getItem(
+        SATURDAY_SERVER_RESET_KEY
+      );
+
+    /* 처음 연결한 기기는 현재 서버 상태만 기록합니다.
+       기존 선택을 첫 접속 순간에 지우지 않습니다. */
+    if (!savedServerKey) {
+
+      localStorage.setItem(
+        SATURDAY_SERVER_RESET_KEY,
+        data.resetKey
+      );
+
+      return;
+
+    }
+
+    if (
+      savedServerKey !== data.resetKey
+    ) {
+
+      localStorage.removeItem(
+        MY_SELECTION_KEY
+      );
+
+      localStorage.setItem(
+        SATURDAY_SERVER_RESET_KEY,
+        data.resetKey
+      );
+
+      renderNames();
+      updateSelectedCount();
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      "신청 초기화 상태 확인 실패:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================================
    봉사자 명단
    Google Sheet G열에서 가져옴
 ========================================================= */
 
 async function loadMasterNames() {
+
+  /* 최근에 이미 불러온 신청용 명단은 다시 서버에 요청하지 않습니다. */
+  const now = Date.now();
+  if (
+    masterNames.length > 0 &&
+    now - lastMasterNamesLoadAt < SATURDAY_FAST_CACHE_MS
+  ) {
+    renderNames();
+    return;
+  }
 
   const grid =
     document.getElementById("nameGrid");
@@ -1616,6 +1700,8 @@ async function loadMasterNames() {
       Array.isArray(data.names)
         ? data.names
         : [];
+
+    lastMasterNamesLoadAt = Date.now();
 
     renderNames();
 
@@ -1904,6 +1990,16 @@ function updateSelectedCount() {
 
 async function loadApplicants() {
 
+  /* 최근에 이미 불러온 관리용 자료는 다시 서버에 요청하지 않습니다. */
+  const now = Date.now();
+  if (
+    applicants.length > 0 &&
+    now - lastApplicantsLoadAt < SATURDAY_FAST_CACHE_MS
+  ) {
+    renderAdmin();
+    return;
+  }
+
   try {
 
     const response =
@@ -1929,6 +2025,8 @@ async function loadApplicants() {
       Array.isArray(data.applicants)
         ? data.applicants
         : [];
+
+    lastApplicantsLoadAt = Date.now();
 
 
     await loadGroups();
@@ -2333,67 +2431,14 @@ async function cleanGroups() {
 
 
 /* =========================================================
-   봉사 날짜 초기화
-   - 현재 bon의 순서를 새 봉사 순서로 저장합니다.
-   - 날짜를 기록하는 중에도 화면 순서는 움직이지 않습니다.
-========================================================= */
-async function resetServiceDateOrder() {
-
-  if (!confirm("현재 봉사 순서를 새로운 봉사 날짜 기준으로 초기화하시겠습니까?\n\n초기화 후에는 봉사자가 날짜를 기록해도 순서가 바뀌지 않습니다.")) {
-    return;
-  }
-
-  try {
-    const response = await fetch(
-      SCRIPT_URL,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "text/plain;charset=utf-8"
-        },
-        body: JSON.stringify({
-          action: "createServiceOrder"
-        })
-      }
-    );
-
-    const data = await response.json();
-
-    if (!data.success) {
-      throw new Error(
-        data.message ||
-        "봉사 날짜 초기화에 실패했습니다."
-      );
-    }
-
-    SERVICE_ORDER = Array.isArray(data.serviceOrder)
-      ? data.serviceOrder.map(function(number) {
-          return String(number || "").trim();
-        }).filter(Boolean)
-      : [];
-
-    renderService();
-
-    alert("봉사 날짜가 초기화되었습니다.\n현재 순서가 이번 봉사 순서로 고정됩니다.");
-
-  } catch (error) {
-    console.error(error);
-    alert(
-      "봉사 날짜 초기화에 실패했습니다.\n잠시 후 다시 시도해 주세요."
-    );
-  }
-}
-
-
-/* =========================================================
    그룹 추가
 ========================================================= */
 
 async function addGroup() {
 
-  /* 새 그룹은 생성 순서의 맨 뒤에 추가합니다. */
+  /* 새 그룹은 항상 맨 위에 추가합니다. */
 
-  groups.push([
+  groups.unshift([
     "",
     "",
     "",
@@ -2431,15 +2476,13 @@ async function deleteGroup(index) {
     1
   );
 
+  await saveGroups();
+
   selectedApplicant = null;
 
   renderAdmin();
 
   renderService();
-
-  saveGroups().catch(function(error) {
-    console.error(error);
-  });
 
 }
 
@@ -2468,15 +2511,13 @@ async function resetGroup(index) {
     ""
   ];
 
+  await saveGroups();
+
   selectedApplicant = null;
 
   renderAdmin();
 
   renderService();
-
-  saveGroups().catch(function(error) {
-    console.error(error);
-  });
 
 }
 
@@ -2506,23 +2547,8 @@ function renderGroups() {
   }
 
 
-  /*
-    groups 내부 저장 순서는
-    생성 순서 1 → 2 → 3 → 4를 유지합니다.
-
-    관리자 화면에서는
-    최신 그룹부터 위에 보이도록
-    4 → 3 → 2 → 1 순서로 표시합니다.
-
-    실제 groupIndex는 원래 배열의 인덱스를 그대로 사용하므로
-    그룹 번호와 배정된 봉사자는 이동하지 않습니다.
-  */
-
-  groups.slice().reverse().forEach(
-    function(group, reverseIndex) {
-
-      const groupIndex =
-        groups.length - 1 - reverseIndex;
+  groups.forEach(
+    function(group, groupIndex) {
 
       const card =
         document.createElement("div");
@@ -2650,7 +2676,7 @@ function renderGroups() {
             );
 
             slot.textContent =
-              slotIndex < 2 ? "A팀" : "B팀";
+              "빈 자리";
 
           }
 
@@ -2707,13 +2733,11 @@ async function handleSlotClick(
     groups[groupIndex][slotIndex] =
       "";
 
+    await saveGroups();
+
     renderAdmin();
 
     renderService();
-
-    saveGroups().catch(function(error) {
-      console.error(error);
-    });
 
     return;
 
@@ -2758,15 +2782,15 @@ async function handleSlotClick(
     selectedApplicant;
 
 
+  await saveGroups();
+
+
   selectedApplicant = null;
+
 
   renderAdmin();
 
   renderService();
-
-  saveGroups().catch(function(error) {
-    console.error(error);
-  });
 
 }
 
@@ -2798,13 +2822,6 @@ async function loadServiceData() {
     }
 
     // 실제 봉사 데이터는 기존 Apps Script의 bon에서 가져옵니다.
-    SERVICE_ORDER =
-      Array.isArray(data.serviceOrder)
-        ? data.serviceOrder.map(function(number) {
-            return String(number || "").trim();
-          }).filter(Boolean)
-        : [];
-
     SERVICE_AREAS =
       Array.isArray(data.data)
         ? data.data.map(function(item) {
@@ -2966,6 +2983,10 @@ function getServiceAreasForDisplay() {
     return [];
   }
 
+  if (!Array.isArray(SATURDAY_REFERENCE) || SATURDAY_REFERENCE.length === 0) {
+    return SERVICE_AREAS.slice();
+  }
+
   const byNumber = new Map();
 
   SERVICE_AREAS.forEach(function(area) {
@@ -2975,74 +2996,38 @@ function getServiceAreasForDisplay() {
     }
   });
 
-  const refByNumber = new Map();
-  if (Array.isArray(SATURDAY_REFERENCE)) {
-    SATURDAY_REFERENCE.forEach(function(ref) {
-      const key = String(ref.number || "").trim();
-      if (key) {
-        refByNumber.set(key, ref);
-      }
-    });
-  }
-
   const ordered = [];
   const used = new Set();
 
-  // 저장된 봉사 순서를 최우선으로 사용합니다.
-  if (Array.isArray(SERVICE_ORDER) && SERVICE_ORDER.length > 0) {
-    SERVICE_ORDER.forEach(function(number) {
-      const key = String(number || "").trim();
-      if (!key || !byNumber.has(key) || used.has(key)) {
-        return;
-      }
+  SATURDAY_REFERENCE.forEach(function(ref) {
 
-      const source = byNumber.get(key);
-      const ref = refByNumber.get(key);
+    const key = String(ref.number || "").trim();
 
-      ordered.push({
-        number: source.number,
-        name: ref && ref.name ? ref.name : source.name,
-        ho: ref && ref.ho ? ref.ho : source.ho,
-        m: ref && ref.m ? ref.m : source.m,
-        person: source.person,
-        startDate: source.startDate,
-        completeDate: source.completeDate,
-        linkUrl: source.linkUrl
-      });
-
-      used.add(key);
-    });
-  } else if (Array.isArray(SATURDAY_REFERENCE) && SATURDAY_REFERENCE.length > 0) {
-    // 저장된 순서가 아직 없을 때만 기존 토요일 시트 순서를 사용합니다.
-    SATURDAY_REFERENCE.forEach(function(ref) {
-      const key = String(ref.number || "").trim();
-      if (!key || !byNumber.has(key) || used.has(key)) {
-        return;
-      }
-
-      const source = byNumber.get(key);
-      ordered.push({
-        number: source.number,
-        name: ref.name || source.name,
-        ho: ref.ho || source.ho,
-        m: ref.m || source.m,
-        person: source.person,
-        startDate: source.startDate,
-        completeDate: source.completeDate,
-        linkUrl: source.linkUrl
-      });
-      used.add(key);
-    });
-  }
-
-  // 새로 추가된 구역은 현재 데이터의 뒤쪽에 붙입니다.
-  SERVICE_AREAS.forEach(function(area) {
-    const key = String(area.number || "").trim();
-    if (!key || used.has(key)) {
+    if (!key || !byNumber.has(key)) {
       return;
     }
-    ordered.push(area);
+
+    const source = byNumber.get(key);
+
+    ordered.push({
+      number: source.number,
+      name: ref.name || source.name,
+      ho: ref.ho || source.ho,
+      m: ref.m || source.m,
+      person: source.person,
+      startDate: source.startDate,
+      completeDate: source.completeDate,
+      linkUrl: source.linkUrl
+    });
+
     used.add(key);
+  });
+
+  SERVICE_AREAS.forEach(function(area) {
+    const key = String(area.number || "").trim();
+    if (!key || !used.has(key)) {
+      ordered.push(area);
+    }
   });
 
   return ordered;
@@ -3193,22 +3178,31 @@ function renderService() {
       name.className =
         "service-name";
 
+
       if (area) {
+
         name.textContent =
           area.name;
+
       } else {
+
         name.textContent =
           "봉사 구역 " +
           (index + 1);
+
       }
 
-      const info =
-        document.createElement("div");
 
-      info.className =
-        "service-info";
+      head.appendChild(number);
 
-      info.appendChild(name);
+      head.appendChild(name);
+
+      // 번호 링크 버튼의 가로 폭을 같은 카드의 구역 이름 폭에 맞춥니다.
+      const nameWidth = name.getBoundingClientRect().width;
+      if (nameWidth > 0) {
+        number.style.width = nameWidth + "px";
+      }
+
 
       const detail =
         document.createElement("div");
@@ -3216,20 +3210,20 @@ function renderService() {
       detail.className =
         "service-detail";
 
+
       if (area) {
+
         detail.textContent =
           area.ho +
           " 호 " +
           area.m;
+
       } else {
+
         detail.textContent =
           "등록된 봉사 구역 정보가 없습니다.";
+
       }
-
-      info.appendChild(detail);
-
-      head.appendChild(number);
-      head.appendChild(info);
 
 
       const volunteers =
@@ -3239,59 +3233,28 @@ function renderService() {
         "service-volunteers";
 
 
-      for (let pairIndex = 0; pairIndex < 2; pairIndex++) {
+      group.forEach(function(person) {
 
-        const pair =
+        const personBox =
           document.createElement("div");
 
-        pair.className = "service-pair";
+        personBox.className =
+          "service-person" +
+          (person ? " filled" : "");
 
-        const teamLabel =
-          document.createElement("div");
+        personBox.textContent =
+          person || "빈 자리";
 
-        teamLabel.className =
-          "service-team-label";
+        volunteers.appendChild(
+          personBox
+        );
 
-        teamLabel.textContent =
-          pairIndex === 0 ? "A팀" : "B팀";
-
-        pair.appendChild(teamLabel);
-
-        const pairPeople =
-          document.createElement("div");
-
-        pairPeople.className =
-          "service-pair-people";
-
-        for (let i = 0; i < 2; i++) {
-
-          const slotIndex =
-            pairIndex * 2 + i;
-
-          const person =
-            group[slotIndex];
-
-          const personBox =
-            document.createElement("div");
-
-          personBox.className =
-            "service-person" +
-            (person ? " filled" : "");
-
-          personBox.textContent =
-            person || "배정 전";
-
-          pairPeople.appendChild(
-            personBox
-          );
-        }
-
-        pair.appendChild(pairPeople);
-        volunteers.appendChild(pair);
-      }
+      });
 
 
       card.appendChild(head);
+
+      card.appendChild(detail);
 
       card.appendChild(volunteers);
 
@@ -3513,6 +3476,12 @@ async function refreshServiceGroups() {
   }
 
 }
+
+
+
+
+
+
 
 </script>
 
