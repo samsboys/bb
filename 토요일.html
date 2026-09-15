@@ -315,6 +315,38 @@ body.light .admin-name.selected {
   border: 3px solid #3F6F9F;
 }
 
+.admin-selection-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+  border-radius: 5px;
+  background: #3374A9;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.confirm-group-button {
+  display: block;
+  margin: -10px auto 22px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 9px;
+  background: #3374A9;
+  color: #fff;
+  cursor: pointer;
+  font-size: calc(15px * var(--font-scale));
+  font-weight: 700;
+  opacity: .45;
+}
+
+.confirm-group-button:enabled {
+  opacity: 1;
+}
+
 .group-controls {
   display: flex;
   justify-content: center;
@@ -1283,6 +1315,16 @@ body.light .submitted-volunteer-name {
         </div>
       </div>
 
+      <button
+        type="button"
+        id="confirmGroupButton"
+        class="confirm-group-button"
+        onclick="confirmSelectedGroup()"
+        disabled
+      >
+        배정 확정
+      </button>
+
 
       <div class="group-controls">
 
@@ -1366,25 +1408,22 @@ body.light .submitted-volunteer-name {
 
   <button
     class="nav-button"
-    id="navAdmin"
-    onclick="showView('admin')"
-  >
-    관리용
-  </button>
-
-  <button
-    class="nav-button"
     id="navService"
     onclick="showView('service')"
   >
     봉사용
   </button>
 
+  <button
+    class="nav-button"
+    id="navAdmin"
+    onclick="showView('admin')"
+  >
+    관리용
+  </button>
+
 </nav>
-
-
-
-
+   
 <!-- =======================================================
      관리자 비밀번호
 ======================================================= -->
@@ -1477,7 +1516,7 @@ let applicants = [];
 
 let groups = [];
 
-let selectedApplicant = null;
+let selectedApplicants = [];
 
 let currentView = "apply";
 
@@ -2037,137 +2076,138 @@ async function loadApplicants() {
 
 function renderAdmin() {
 
-  /*
-    신청자 전체에서 이미 그룹에 배정된 사람을 제외합니다.
-    따라서 관리자 화면에는 아직 그룹에 넣지 않은 사람만 남습니다.
-  */
-
   const assignedNames = new Set();
 
   groups.forEach(function(group) {
-
     group.forEach(function(name) {
-
-      if (name) {
-        assignedNames.add(name);
-      }
-
+      if (name) assignedNames.add(name);
     });
-
   });
 
+  const unassignedApplicants = applicants.filter(function(name) {
+    return !assignedNames.has(name);
+  });
 
-  const unassignedApplicants =
-    applicants.filter(function(name) {
-      return !assignedNames.has(name);
-    });
+  document.getElementById("adminCount").textContent =
+    "미배정 신청자 " + unassignedApplicants.length + "명";
 
-
-  document
-    .getElementById("adminCount")
-    .textContent =
-      "미배정 신청자 " +
-      unassignedApplicants.length +
-      "명";
-
-
-  const namesBox =
-    document.getElementById("adminNames");
-
+  const namesBox = document.getElementById("adminNames");
   namesBox.innerHTML = "";
 
-
-  /* 신청하지 않은 사람을 관리자가 직접 추가 */
-
-  const addButton =
-    document.createElement("button");
-
-  addButton.type = "button";
-
-  addButton.className =
-    "admin-add-button";
-
-  addButton.textContent =
-    "+ 추가";
-
-  addButton.onclick =
-    addManualApplicant;
-
-
-  if (unassignedApplicants.length === 0) {
-
-    const empty =
-      document.createElement("div");
-
-    empty.className =
-      "service-empty";
-
-    empty.style.width = "100%";
-
-    empty.textContent =
-      "미배정 신청자가 없습니다.";
-
-    namesBox.appendChild(empty);
-
-  } else {
-
-    unassignedApplicants.forEach(function(name) {
-
-      const button =
-        document.createElement("button");
-
-      button.type = "button";
-
-      button.className =
-        "admin-name";
-
-      if (
-        selectedApplicant === name
-      ) {
-
-        button.classList.add(
-          "selected"
-        );
-
-      }
-
-      button.textContent =
-        name;
-
-
-      button.onclick =
-        function() {
-
-          if (
-            selectedApplicant === name
-          ) {
-
-            selectedApplicant = null;
-
-          } else {
-
-            selectedApplicant = name;
-
-          }
-
-          renderAdmin();
-
-        };
-
-
-      namesBox.appendChild(button);
-
-    });
-
+  if (selectedApplicants.length > 0) {
+    const info = document.createElement("div");
+    info.style.width = "100%";
+    info.style.color = "#6FA8D8";
+    info.style.fontWeight = "700";
+    info.style.marginBottom = "2px";
+    info.textContent = "선택 " + selectedApplicants.length + "/4명";
+    namesBox.appendChild(info);
   }
 
-  /* + 추가는 미배정 신청자 목록의 맨 마지막 */
+  const addButton = document.createElement("button");
+  addButton.type = "button";
+  addButton.className = "admin-add-button";
+  addButton.textContent = "+ 추가";
+  addButton.onclick = addManualApplicant;
+
+  if (unassignedApplicants.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "service-empty";
+    empty.style.width = "100%";
+    empty.textContent = "미배정 신청자가 없습니다.";
+    namesBox.appendChild(empty);
+  } else {
+    unassignedApplicants.forEach(function(name) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "admin-name";
+
+      const selectedIndex = selectedApplicants.indexOf(name);
+      if (selectedIndex !== -1) {
+        button.classList.add("selected");
+        const badge = document.createElement("span");
+        badge.className = "admin-selection-badge";
+        badge.textContent = String(selectedIndex + 1);
+        button.appendChild(badge);
+      }
+
+      button.appendChild(document.createTextNode(name));
+      button.onclick = function() {
+        toggleApplicantForGroup(name);
+      };
+      namesBox.appendChild(button);
+    });
+  }
+
   namesBox.appendChild(addButton);
 
-  renderGroups();
+  const confirmButton = document.getElementById("confirmGroupButton");
+  if (confirmButton) {
+    confirmButton.disabled = selectedApplicants.length < 2;
+  }
 
+  renderGroups();
 }
 
+function toggleApplicantForGroup(name) {
+
+  const index = selectedApplicants.indexOf(name);
+
+  if (index !== -1) {
+    selectedApplicants.splice(index, 1);
+    renderAdmin();
+    return;
+  }
+
+  if (selectedApplicants.length >= 4) {
+    alert("한 그룹에는 4명까지만 선택할 수 있습니다.");
+    return;
+  }
+
+  selectedApplicants.push(name);
+  renderAdmin();
+}
+
+async function confirmSelectedGroup() {
+
+  if (selectedApplicants.length < 2) {
+  alert("봉사자를 2명 이상 선택해 주세요.");
+  return;
+ }
+
+  const newGroup = selectedApplicants.slice(0, 4);
+  let targetIndex = -1;
+
+  for (let i = 0; i < groups.length; i++) {
+    const group = groups[i] || [];
+    if (group.every(function(name) { return !name; })) {
+      targetIndex = i;
+      break;
+    }
+  }
+
+  if (targetIndex === -1) {
+    groups.push(newGroup);
+  } else {
+    groups[targetIndex] = newGroup;
+  }
+
+  try {
+    await saveGroups();
+    selectedApplicants = [];
+    renderAdmin();
+    renderService();
+  } catch (error) {
+    console.error(error);
+    if (targetIndex === -1) {
+      groups.pop();
+    } else {
+      groups[targetIndex] = ["", "", "", ""];
+    }
+    alert("그룹 배정 저장에 실패했습니다.\n잠시 후 다시 시도해 주세요.");
+    renderAdmin();
+  }
+}
 
 /* =========================================================
    관리자 직접 신청자 추가
@@ -2237,7 +2277,7 @@ async function addManualApplicant() {
 
     applicants.push(trimmedName);
 
-    selectedApplicant = trimmedName;
+    selectedApplicants = [trimmedName];
 
     renderAdmin();
 
@@ -2582,7 +2622,7 @@ async function deleteGroup(index) {
     1
   );
 
-  selectedApplicant = null;
+  selectedApplicants = [];
 
   renderAdmin();
 
@@ -2619,7 +2659,7 @@ async function resetGroup(index) {
     ""
   ];
 
-  selectedApplicant = null;
+  selectedApplicants = [];
 
   renderAdmin();
 
@@ -2850,81 +2890,15 @@ async function handleSlotClick(
   slotIndex
 ) {
 
-  const currentName =
-    groups[groupIndex][slotIndex];
-
-
-  /*
-    이미 사람이 들어있는 슬롯을 누르면
-    그 사람을 비움
-  */
-
-  if (currentName) {
-
-    groups[groupIndex][slotIndex] =
-      "";
-
+  if (groups[groupIndex] && groups[groupIndex][slotIndex]) {
+    groups[groupIndex][slotIndex] = "";
     renderAdmin();
-
     renderService();
-
-    saveGroups().catch(function(error) {
-      console.error(error);
-    });
-
+    saveGroups().catch(function(error) { console.error(error); });
     return;
-
   }
 
-
-  /*
-    선택된 봉사자가 없으면 안내
-  */
-
-  if (!selectedApplicant) {
-
-    alert(
-      "먼저 위에서 봉사자 이름을 선택해 주세요."
-    );
-
-    return;
-
-  }
-
-
-  /*
-    다른 그룹에 이미 배치되어 있다면
-    먼저 기존 위치에서 제거
-  */
-
-  groups =
-    groups.map(function(group) {
-
-      return group.map(function(name) {
-
-        return name === selectedApplicant
-          ? ""
-          : name;
-
-      });
-
-    });
-
-
-  groups[groupIndex][slotIndex] =
-    selectedApplicant;
-
-
-  selectedApplicant = null;
-
-  renderAdmin();
-
-  renderService();
-
-  saveGroups().catch(function(error) {
-    console.error(error);
-  });
-
+  alert("위에서 봉사자 4명을 선택한 후 배정 확정 버튼을 눌러 주세요.");
 }
 
 
