@@ -2308,65 +2308,73 @@ async function loadGroupSheetLabels() {
 
   try {
 
-    const url =
-      "https://docs.google.com/spreadsheets/d/" +
-      SATURDAY_SHEET_ID +
-      "/gviz/tq?tqx=out:json&sheet=" +
-      encodeURIComponent(SATURDAY_SHEET_NAME) +
-      "&range=B4:E13&t=" +
-      Date.now();
-
     const response =
-      await fetch(url, { cache: "no-store" });
+      await fetch(
+        SCRIPT_URL +
+        "?action=saturdayReference&t=" +
+        Date.now()
+      );
 
     if (!response.ok) {
-      throw new Error("토요일 시트 그룹 정보를 불러오지 못했습니다.");
+      throw new Error(
+        "토요일 시트 그룹 정보를 불러오지 못했습니다."
+      );
     }
 
-    const text = await response.text();
-    const match =
-      text.match(/google\.visualization\.Query\.setResponse\((.*)\);\s*$/s);
+    const data =
+      await response.json();
 
-    if (!match) {
-      throw new Error("토요일 시트 응답 형식을 확인할 수 없습니다.");
+    if (!data.success) {
+      throw new Error(
+        data.message ||
+        "토요일 시트 그룹 정보를 불러오지 못했습니다."
+      );
     }
 
-    const json = JSON.parse(match[1]);
     const rows =
-      json && json.table && Array.isArray(json.table.rows)
-        ? json.table.rows
+      Array.isArray(data.reference)
+        ? data.reference
         : [];
 
- window.SATURDAY_GROUP_LABELS =
-  rows.slice(0, 10).map(function(row) {
-    const cells = Array.isArray(row.c) ? row.c : [];
+    window.SATURDAY_GROUP_LABELS =
+      rows.slice(0, 10).map(function(item) {
 
-    function value(index) {
-      const cell = cells[index];
-      return cell && cell.v != null
-        ? String(cell.v).trim()
-        : "";
-    }
+        const number =
+          String(
+            item.number || ""
+          ).trim();
 
-    const number = value(0);  // B열
-    const house = value(2);   // D열
-    const status = value(3);  // E열
+        const house =
+          String(
+            item.ho || ""
+          ).trim();
 
-    return [
-      number ? number + "번" : "",
-      house ? house + "호" : "",
-      status
-    ].filter(Boolean).join(" ");
-  });
+        const status =
+          String(
+            item.m || ""
+          ).trim();
+
+        return [
+          number ? number + "번" : "",
+          house ? house + "호" : "",
+          status
+        ]
+        .filter(Boolean)
+        .join(" ");
+
+      });
 
   } catch (error) {
 
-    console.error("토요일 시트 그룹 표시 정보:", error);
+    console.error(
+      "토요일 시트 그룹 표시 정보:",
+      error
+    );
+
     window.SATURDAY_GROUP_LABELS = [];
 
   }
 }
-
 
 async function loadGroups() {
 
@@ -2978,124 +2986,100 @@ async function loadServiceData() {
 ========================================================= */
 async function loadSaturdayReference() {
 
-  // 인도자는 항상 토요일!F4의 최신 값으로 다시 설정합니다.
   SERVICE_CONDUCTOR = "";
 
   try {
 
-    const query = "select B,C,D,E,F";
-
-    const url =
-      "https://docs.google.com/spreadsheets/d/" +
-      SATURDAY_SHEET_ID +
-      "/gviz/tq?tqx=out:json&sheet=" +
-      encodeURIComponent(SATURDAY_SHEET_NAME) +
-      "&tq=" +
-      encodeURIComponent(query) +
-      "&t=" +
-      Date.now();
-
     const response =
-      await fetch(url, { cache: "no-store" });
+      await fetch(
+        SCRIPT_URL +
+        "?action=saturdayReference&t=" +
+        Date.now()
+      );
 
     if (!response.ok) {
-      throw new Error("토요일 시트를 불러오지 못했습니다.");
+      throw new Error(
+        "토요일 데이터를 불러오지 못했습니다."
+      );
     }
 
-    const text = await response.text();
+    const data =
+      await response.json();
 
-    const match =
-      text.match(/google\.visualization\.Query\.setResponse\((.*)\);\s*$/s);
-
-    if (!match) {
-      throw new Error("토요일 시트 응답 형식을 확인할 수 없습니다.");
+    if (!data.success) {
+      throw new Error(
+        data.message ||
+        "토요일 데이터를 불러오지 못했습니다."
+      );
     }
-
-    const json = JSON.parse(match[1]);
-    const rows =
-      json && json.table && Array.isArray(json.table.rows)
-        ? json.table.rows
-        : [];
 
     SATURDAY_REFERENCE =
-      rows.map(function(row) {
+      Array.isArray(data.reference)
+        ? data.reference.map(function(item) {
 
-        const cells = Array.isArray(row.c) ? row.c : [];
+            return {
 
-        function cellValue(index) {
-          const cell = cells[index];
-          return cell && cell.v != null
-            ? String(cell.v).trim()
-            : "";
-        }
+              number:
+                String(item.number || "").trim(),
 
-        return {
-          number: cellValue(0),
-          name: cellValue(1),
-          ho: cellValue(2),
-          m: cellValue(3),
-          conductor: cellValue(4)
-        };
+              name:
+                String(item.name || "").trim(),
 
-      }).filter(function(item) {
-        return item.number || item.name || item.ho || item.m || item.conductor;
-      });
+              ho:
+                String(item.ho || "").trim(),
 
-    // 인도자는 토요일 시트 F4 셀의 값을 그대로 사용합니다.
-    // 기존 Apps Script의 bon 데이터는 변경하지 않습니다.
-    try {
-      const conductorUrl =
-        "https://docs.google.com/spreadsheets/d/" +
-        SATURDAY_SHEET_ID +
-        "/gviz/tq?tqx=out:json&sheet=" +
-        encodeURIComponent(SATURDAY_SHEET_NAME) +
-        "&range=F4:F4&t=" +
-        Date.now();
+              m:
+                String(item.m || "").trim(),
 
-      const conductorResponse =
-        await fetch(conductorUrl, { cache: "no-store" });
+              conductor:
+                String(item.conductor || "").trim()
 
-      if (conductorResponse.ok) {
-        const conductorText = await conductorResponse.text();
-        const conductorMatch =
-          conductorText.match(/google\.visualization\.Query\.setResponse\((.*)\);\s*$/s);
+            };
 
-        if (conductorMatch) {
-          const conductorJson = JSON.parse(conductorMatch[1]);
-          const conductorRows =
-            conductorJson &&
-            conductorJson.table &&
-            Array.isArray(conductorJson.table.rows)
-              ? conductorJson.table.rows
-              : [];
+          }).filter(function(item) {
 
-          const conductorCell =
-            conductorRows[0] &&
-            Array.isArray(conductorRows[0].c)
-              ? conductorRows[0].c[0]
-              : null;
+            return (
+              item.number ||
+              item.name ||
+              item.ho ||
+              item.m ||
+              item.conductor
+            );
 
-          SERVICE_CONDUCTOR =
-            conductorCell && conductorCell.v != null
-              ? String(conductorCell.v).trim()
-              : "";
-        }
-      }
-    } catch (conductorError) {
-      console.error("토요일 시트 F4 인도자:", conductorError);
-    }
+          })
+        : [];
+
+    SERVICE_CONDUCTOR =
+      String(
+        data.conductor || ""
+      ).trim();
+
+    console.log(
+      "★★★★★ 지금 확인할 SATURDAY_REFERENCE ★★★★★",
+      SATURDAY_REFERENCE
+    );
+
+    console.log(
+      "★★★★★ 지금 확인할 SERVICE_CONDUCTOR ★★★★★",
+      SERVICE_CONDUCTOR
+    );
 
     return true;
 
   } catch (error) {
 
-    console.error("토요일 시트 기준 데이터:", error);
-    SATURDAY_REFERENCE = [];
-    return false;
+    console.error(
+      "토요일 시트 기준 데이터:",
+      error
+    );
 
+    SATURDAY_REFERENCE = [];
+
+    SERVICE_CONDUCTOR = "";
+
+    return false;
   }
 }
-
 
 function getServiceAreasForDisplay() {
 
