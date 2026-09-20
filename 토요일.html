@@ -1014,32 +1014,26 @@ body.light .service-refresh-button {
   display: block;
 }
 
-.apply-back-icon {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  margin-right: 5px;
-
-  font-size: 30px;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.volunteer-apply-button.open .apply-back-icon {
-  display: inline-flex;
-}
-
-.volunteer-submit-button {
-  display: block;
+.volunteer-apply-toolbar {
   width: 100%;
   max-width: 600px;
   height: 48px;
-  margin: 18px auto 0;
+  margin: 0 auto 12px;
+
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+
+  background: #3374A9;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.volunteer-back-button,
+.volunteer-submit-button {
+  height: 48px;
 
   border: 0;
-  border-radius: 12px;
+  border-radius: 0;
 
   background: #3374A9;
   color: #fff;
@@ -1048,6 +1042,42 @@ body.light .service-refresh-button {
   font-weight: 700;
 
   cursor: pointer;
+}
+
+.volunteer-back-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.volunteer-submit-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+.volunteer-apply-toolbar::before {
+  content: "";
+  grid-column: 2;
+  grid-row: 1;
+
+  width: 1px;
+  height: 48px;
+
+  background: #fff;
+}
+
+.volunteer-back-button {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.volunteer-submit-button {
+  grid-column: 3;
+  grid-row: 1;
 }
 
 .volunteer-submit-button:disabled {
@@ -1229,18 +1259,34 @@ body.light .submitted-volunteer-name {
     class="volunteer-apply-button"
     onclick="openVolunteerApply()"
   >
-    <span
-      class="apply-back-icon"
-      onclick="event.stopPropagation(); closeVolunteerApply();"
-      aria-label="신청 취소"
-    >‹</span>
-    <span>봉사 신청</span>
+    봉사 신청
   </button>
 
   <div
     id="volunteerApplyArea"
     class="volunteer-apply-area"
   >
+
+    <div class="volunteer-apply-toolbar">
+
+      <button
+        type="button"
+        class="volunteer-back-button"
+        onclick="closeVolunteerApply()"
+      >
+        ‹ 뒤로가기
+      </button>
+
+      <button
+        type="button"
+        id="volunteerSubmitButton"
+        class="volunteer-submit-button"
+        onclick="submitVolunteerApplication()"
+      >
+        제출
+      </button>
+
+    </div>
 
     <div
       class="name-grid"
@@ -1252,15 +1298,6 @@ body.light .submitted-volunteer-name {
       </div>
 
     </div>
-
-    <button
-      type="button"
-      id="volunteerSubmitButton"
-      class="volunteer-submit-button"
-      onclick="submitVolunteerApplication()"
-    >
-      제출
-    </button>
 
   </div>
 
@@ -1282,7 +1319,6 @@ body.light .submitted-volunteer-name {
   </div>
 
 </section>
-
 
   <!-- =====================================================
        2. 관리자용
@@ -3660,8 +3696,7 @@ function openVolunteerApply() {
   area.classList.add("show");
 
   if (button) {
-    button.classList.add("open");
-    button.style.display = "flex";
+    button.style.display = "none";
   }
 
   loadMasterNames();
@@ -3689,7 +3724,6 @@ function closeVolunteerApply() {
   }
 
   if (button) {
-    button.classList.remove("open");
     button.style.display = "flex";
   }
 
