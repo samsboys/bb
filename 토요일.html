@@ -980,32 +980,6 @@ body.light .service-refresh-button {
   cursor: default;
 }
 
-/* =========================================================
-   봉사 신청 버튼
-   기존 명단 선택 화면의 CSS는 변경하지 않습니다.
-========================================================= */
-
-.volunteer-apply-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 600px;
-  height: 48px;
-  margin: 0 auto 18px;
-
-  border: 0;
-  border-radius: 12px;
-
-  background: #3374A9;
-  color: #fff;
-
-  font-size: calc(18px * var(--font-scale));
-  font-weight: 700;
-
-  cursor: pointer;
-}
-
 .volunteer-apply-area {
   display: none;
 }
@@ -1020,17 +994,22 @@ body.light .service-refresh-button {
   height: 48px;
   margin: 0 auto 12px;
 
-  display: grid;
-  grid-template-columns: 1fr 1px 1fr;
+  display: block;
 
   background: #3374A9;
   border-radius: 12px;
   overflow: hidden;
 }
 
-.volunteer-back-button,
 .volunteer-submit-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
   height: 48px;
+  max-width: none;
+  margin: 0;
 
   border: 0;
   border-radius: 0;
@@ -1044,86 +1023,63 @@ body.light .service-refresh-button {
   cursor: pointer;
 }
 
-.volunteer-back-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.volunteer-submit-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: none;
-  margin: 0;
-}
-
-.volunteer-apply-toolbar::before {
-  content: "";
-  grid-column: 2;
-  grid-row: 1;
-
-  width: 1px;
-  height: 48px;
-
-  background: #fff;
-}
-
-.volunteer-back-button {
-  grid-column: 1;
-  grid-row: 1;
-}
-
-.volunteer-submit-button {
-  grid-column: 3;
-  grid-row: 1;
-}
-
 .volunteer-submit-button:disabled {
   opacity: .55;
   cursor: default;
 }
 
-.submitted-volunteer-area {
+.volunteer-apply-area {
+  display: none;
+}
+
+.volunteer-apply-area.show {
+  display: block;
+}
+
+.application-complete-message {
+  display: none;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  z-index: 3000;
+
+  padding: 14px 22px;
+
+  border-radius: 10px;
+
+  background: #333;
+  color: #fff;
+
+  font-size: calc(18px * var(--font-scale));
+  font-weight: 700;
+
+  text-align: center;
+  white-space: nowrap;
+}
+
+.application-complete-message.show {
+  display: block;
+  .application-confirm-button {
+  display: block;
+
   width: 100%;
-  max-width: 900px;
-  margin: 20px auto 0;
-}
+  height: 40px;
 
-.submitted-volunteer-title {
-  margin-bottom: 10px;
+  margin-top: 12px;
 
-  font-size: calc(18px * var(--font-scale));
-  font-weight: 800;
-}
+  border: 0;
+  border-radius: 8px;
 
-.submitted-volunteer-names {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.submitted-volunteer-name {
-  min-height: 40px;
-  padding: 8px 13px;
-
-  border-radius: 9px;
-  border: 1px solid rgba(255,255,255,.15);
-
-  background: rgba(255,255,255,.08);
-  color: inherit;
-
-  display: flex;
-  align-items: center;
-
-  font-size: calc(18px * var(--font-scale));
-  font-weight: 600;
-}
-
-body.light .submitted-volunteer-name {
   background: #fff;
-  border-color: #ddd;
+  color: #333;
+
+  font-size: calc(16px * var(--font-scale));
+  font-weight: 700;
+
+  cursor: pointer;
+} 
 }
    
 </style>
@@ -1253,29 +1209,12 @@ body.light .submitted-volunteer-name {
     봉사자 선택
   </h1>
 
-  <button
-    type="button"
-    id="volunteerApplyButton"
-    class="volunteer-apply-button"
-    onclick="openVolunteerApply()"
-  >
-    봉사 신청
-  </button>
-
   <div
     id="volunteerApplyArea"
-    class="volunteer-apply-area"
+    class="volunteer-apply-area show"
   >
 
     <div class="volunteer-apply-toolbar">
-
-      <button
-        type="button"
-        class="volunteer-back-button"
-        onclick="closeVolunteerApply()"
-      >
-        ‹ 뒤로가기
-      </button>
 
       <button
         type="button"
@@ -1302,24 +1241,12 @@ body.light .submitted-volunteer-name {
   </div>
 
   <div
-    id="submittedVolunteerArea"
-    class="submitted-volunteer-area"
-  >
-
-    <div class="submitted-volunteer-title">
-      봉사자 명단
-    </div>
-
-    <div
-      id="submittedVolunteerNames"
-      class="submitted-volunteer-names"
-    >
-    </div>
-
-  </div>
+    id="applicationCompleteMessage"
+    class="application-complete-message"
+  ></div>
 
 </section>
-
+   
   <!-- =====================================================
        2. 관리자용
   ====================================================== -->
@@ -3860,44 +3787,32 @@ async function submitVolunteerApplication() {
     }
 
 
-    /*
-      제출 완료 후 화면을 닫습니다.
-    */
+const message =
+  document.getElementById(
+    "applicationCompleteMessage"
+  );
 
-    const area =
-      document.getElementById(
-        "volunteerApplyArea"
-      );
+if (message) {
 
-    const applyButton =
-      document.getElementById(
-        "volunteerApplyButton"
-      );
+  message.innerHTML =
+    newSelections.length +
+    "명이 신청되었습니다" +
+    "<button" +
+    " type=\"button\"" +
+    " class=\"application-confirm-button\"" +
+    " onclick=\"closeApplicationCompleteMessage()\"" +
+    ">" +
+    "확인" +
+    "</button>";
 
+  message.classList.add("show");
 
-    if (area) {
-      area.classList.remove("show");
-    }
+}
 
-    if (applyButton) {
-      applyButton.style.display = "block";
-    }
-
-
-    /*
-      제출된 봉사자 명단을 바로 표시합니다.
-    */
-
-    renderSubmittedVolunteers(
-      newSelections
-    );
-
-
-    if (button) {
-      button.disabled = false;
-      button.textContent = "제출";
-    }
-
+if (button) {
+  button.disabled = false;
+  button.textContent = "제출";
+}
 
   } catch (error) {
 
@@ -3917,7 +3832,23 @@ async function submitVolunteerApplication() {
   }
 
 }
+   
+function closeApplicationCompleteMessage() {
 
+  const message =
+    document.getElementById(
+      "applicationCompleteMessage"
+    );
+
+  if (message) {
+
+    message.classList.remove("show");
+
+    message.innerHTML = "";
+
+  }
+
+}
 
 /* =========================================================
    봉사 신청 서버 반영
