@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>전시대</title>
+
+<link rel="stylesheet" href="전시대.css">
+
+</head>
+
+<body>
+
+<!-- =======================================================
+     상단
+======================================================= -->
+
+<header class="top-bar">
+
+  <button
+    class="top-button top-left"
+    onclick="goBack()"
+    aria-label="뒤로가기"
+  >
+    ‹
+  </button>
+
+  <div
+    class="top-title"
+    id="topTitle"
+  >
+    전시대
+  </div>
+
+  <button
+    class="top-button top-right"
+    onclick="toggleSettings()"
+    aria-label="설정"
+  >
+    ⚙
+  </button>
+
+</header>
+
+
+<!-- =======================================================
+     설정
+======================================================= -->
+
+<div
+  class="settings-panel"
+  id="settingsPanel"
+>
+
+  <div class="settings-row">
+
+    <div class="settings-buttons">
+
+      <button
+        class="settings-button"
+        id="lightButton"
+        onclick="setTheme('light')"
+        aria-label="밝게"
+      >
+        ☀
+      </button>
+
+      <button
+        class="settings-button"
+        id="darkButton"
+        onclick="setTheme('dark')"
+        aria-label="어둡게"
+      >
+        🌙
+      </button>
+
+    </div>
+
+  </div>
+
+  <div class="settings-row">
+
+    <div class="settings-buttons">
+
+      <button
+        class="settings-button"
+        onclick="changeFontSize(-10)"
+        aria-label="글자 크기 10% 감소"
+      >
+        −
+      </button>
+
+      <div
+        class="settings-button font-size-display"
+        id="fontSizeDisplay"
+      >
+        100%
+      </div>
+
+      <button
+        class="settings-button"
+        onclick="changeFontSize(10)"
+        aria-label="글자 크기 10% 증가"
+      >
+        +
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =======================================================
+     본문
+======================================================= -->
+
+<main class="main">
+
+
+ <!-- =====================================================
+     1. 봉사신청
+====================================================== -->
+
+<section
+  id="applyView"
+  class="view active"
+>
+
+  <!-- 봉사 요일 선택 제목 -->
+  <h1
+    id="volunteerMainTitle"
+    class="page-title"
+  >
+    요일을 선택해 주세요
+  </h1>
+
+  <!-- 봉사 요일 선택 -->
+  <div
+  id="volunteerScheduleArea"
+  class="volunteer-schedule-area"
+>
+
+  <button
+    type="button"
+    class="volunteer-schedule-btn"
+    onclick="selectVolunteerSchedule('토오전')"
+  >
+    <span>토요일 오전</span>
+  </button>
+
+  <button
+    type="button"
+    class="volunteer-schedule-btn"
+    onclick="selectVolunteerSchedule('토오후')"
+  >
+    <span>토요일 오후</span>
+  </button>
+
+  <button
+    type="button"
+    class="volunteer-schedule-btn"
+    onclick="selectVolunteerSchedule('일오전')"
+  >
+    <span>일요일 오전</span>
+  </button>
+
+  <div
+    id="customVolunteerScheduleButtons"
+    class="custom-volunteer-schedule-buttons"
+  ></div>
+
+</div>
+
+  <!-- =================================================
+       봉사자 선택 화면
+  ================================================== -->
+
+  <div
+    id="volunteerApplyArea"
+    class="volunteer-apply-area"
+  >
+
+    <!-- 뒤로가기 + 제출 -->
+<div
+  class="volunteer-action-buttons"
+>
+
+  <button
+    type="button"
+    class="volunteer-back-button"
+    onclick="goToApplyHome()"
+  >
+    뒤로가기
+  </button>
+
+
+  <button
+    type="button"
+    id="volunteerSubmitButton"
+    class="volunteer-submit-button"
+    onclick="submitVolunteerApplication()"
+  >
+    제출
+  </button>
+
+</div>
+
+
+<!-- 봉사자 명단 -->
+<div
+  id="nameGrid"
+  class="name-grid"
+></div>
+
+  </div>
+
+
+  <!-- 제출 후 신청한 봉사자 -->
+  <div
+    id="submittedVolunteerArea"
+    class="submitted-volunteer-area"
+    style="display:none;"
+  >
+
+    <div
+      class="submitted-volunteer-title"
+    >
+      신청한 봉사자
+    </div>
+
+    <div
+      id="submittedVolunteerNames"
+      class="submitted-volunteer-names"
+    ></div>
+
+  </div>
+
+</section>
+
+ <!-- =====================================================
+     2. 관리자용
+====================================================== -->
+
+<section
+  id="adminView"
+  class="view"
+>
+
+  <h1 class="page-title service-title-with-refresh">
+  관리자용
+
+  <button
+    type="button"
+    class="service-refresh-button"
+    onclick="refreshAdminData()"
+    aria-label="새로고침"
+  >↻</button>
+
+</h1>
+
+
+  <div class="admin-section">
+
+
+    <!-- =================================================
+         관리자용 일정 선택
+    ================================================== -->
+
+    <div
+      id="adminScheduleSelector"
+      class="admin-schedule-selector"
+    >
+
+      <div class="admin-schedule-buttons">
+
+
+  <!-- 토요일 오전 -->
+
+  <button
+    type="button"
+    class="admin-schedule-button"
+    data-schedule="토오전"
+    onclick="selectAdminSchedule('토오전')"
+  >
+    <span>토요일 오전</span>
+    <span class="admin-schedule-arrow">›</span>
+  </button>
+
+
+  <!-- 토요일 오후 -->
+
+  <button
+    type="button"
+    class="admin-schedule-button"
+    data-schedule="토오후"
+    onclick="selectAdminSchedule('토오후')"
+  >
+    <span>토요일 오후</span>
+    <span class="admin-schedule-arrow">›</span>
+  </button>
+
+
+  <!-- 일요일 오전 -->
+
+  <button
+    type="button"
+    class="admin-schedule-button"
+    data-schedule="일오전"
+    onclick="selectAdminSchedule('일오전')"
+  >
+    <span>일요일 오전</span>
+    <span class="admin-schedule-arrow">›</span>
+  </button>
+
+
+  <!-- 특정 날짜 추가 -->
+
+  <button
+    type="button"
+    class="admin-add-schedule-button"
+    onclick="openCustomVolunteerSchedulePopup()"
+  >
+    ＋ 추가
+  </button>
+
+
+  <!-- 추가된 일정 -->
+
+  <div
+    id="customAdminScheduleButtons"
+    class="custom-admin-schedule-buttons"
+  ></div>
+
+
+</div>
+    </div>
+
+
+<!-- =================================================
+     선택한 일정의 관리자 1세트
+     처음에는 숨김
+================================================== -->
+
+<div
+  id="adminManagementArea"
+  class="admin-management-area"
+  style="display:none;"
+>
+
+
+  <!-- 관리자용 일정 뒤로가기 -->
+
+<div class="admin-back-area">
+
+  <button
+    type="button"
+    class="admin-back-button"
+    onclick="backToAdminSchedule()"
+  >
+    &lt; 뒤로가기
+  </button>
+
+</div>
+
+
+<!-- 미배정 신청자 수 -->
+
+<div
+  class="admin-count"
+  id="adminCount"
+>
+  미배정 신청자 0명
+</div>
+
+
+  <!-- 신청자 명단 -->
+
+  <div
+    class="admin-names"
+    id="adminNames"
+  >
+    <div class="service-empty">
+      신청자를 불러오는 중입니다.
+    </div>
+  </div>
+
+
+ <!-- 봉사 그룹 추가 -->
+
+<div class="admin-action-buttons">
+
+  <div class="admin-action-guide">
+    먼저 명단을 선택해 주세요
+  </div>
+
+  <div class="admin-action-button-row">
+
+    <button
+      type="button"
+      class="add-group-button"
+      onclick="addGroup()"
+    >
+      + 봉사 그룹 추가
+    </button>
+
+    <button
+      type="button"
+      class="admin-stop-button"
+      onclick="showStopReason()"
+    >
+      중단
+    </button>
+
+  </div>
+
+</div>
+
+
+  <!-- 봉사 그룹 -->
+
+  <div
+    class="groups"
+    id="groups"
+  ></div>
+
+
+</div>
+
+
+</div>
+
+</section>
+
+  <!-- =====================================================
+       알림
+  ====================================================== -->
+
+  <section
+    id="noticeView"
+    class="view"
+  >
+
+    <div class="notice-container">
+
+      <h1 class="page-title">
+        알림
+      </h1>
+<div style="
+  text-align:left;
+  font-weight:800;
+  color:#777;
+  margin-left:20px;
+  margin-bottom:6px;
+">
+  토요일 신청 & 마감
+</div>
+         
+      <div class="notice-card">
+
+        <div class="notice-row">
+          <strong>토요일 신청</strong>
+          <span>목요일</span>
+        </div>
+
+        <div class="notice-row">
+          <strong>토요일 마감</strong>
+          <span>금요일</span>
+        </div>
+
+      </div>
+
+<div style="
+  text-align:left;
+  font-weight:800;
+  color:#777;
+  margin-left:20px;
+  margin-top:30px;
+  margin-bottom:6px;
+">
+  일요일 신청 & 마감
+</div>
+         
+      <div class="notice-card">
+
+        <div class="notice-row">
+          <strong>일요일 신청</strong>
+          <span>금요일</span>
+        </div>
+
+        <div class="notice-row">
+          <strong>일요일 마감</strong>
+          <span>토요일</span>
+        </div>
+
+      </div>
+
+<div style="
+  text-align:left;
+  font-weight:800;
+  color:#777;
+  margin-left:20px;
+  margin-top:30px;
+  margin-bottom:6px;
+">
+  인도자
+</div>
+         
+      <div class="notice-card">
+
+        <div class="notice-row">
+          <strong>토요일 (오후)</strong>
+          <span>김경수 형제</span>
+        </div>
+
+        <div class="notice-row">
+          <strong>일요일 (오전)</strong>
+          <span>정지원 형제</span>
+        </div>
+
+      </div>
+
+
+      <!-- 추가 신청 및 임명 취소 안내 -->
+
+      <div class="notice-card notice-contact-card">
+
+        <div class="notice-row">
+          <strong>※ 추가 신청 및 임명 취소는 인도자에게 연락 주세요</strong>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       3. 봉사하기
+  ===================================================== -->
+
+  <section
+    id="serviceView"
+    class="view"
+  >
+
+    <h1 class="page-title service-title-with-refresh">
+
+  즐겁게 봉사해요
+
+  <button
+    type="button"
+    class="service-refresh-button"
+    onclick="refreshServiceGroups()"
+    aria-label="새로고침"
+  >↻</button>
+
+</h1>
+
+
+    <!-- =====================================================
+         봉사용 일정 선택
+    ===================================================== -->
+
+    <div
+      id="serviceScheduleSelector"
+      class="service-schedule-selector"
+    >
+
+      <div class="service-schedule-buttons">
+
+  <button
+    type="button"
+    class="service-schedule-button"
+    data-schedule="토오전"
+    onclick="selectServiceSchedule('토오전')"
+  >
+    <span>토요일 오전</span>
+    <span class="service-schedule-arrow">›</span>
+  </button>
+
+  <button
+    type="button"
+    class="service-schedule-button"
+    data-schedule="토오후"
+    onclick="selectServiceSchedule('토오후')"
+  >
+    <span>토요일 오후</span>
+    <span class="service-schedule-arrow">›</span>
+  </button>
+
+  <button
+    type="button"
+    class="service-schedule-button"
+    data-schedule="일오전"
+    onclick="selectServiceSchedule('일오전')"
+  >
+    <span>일요일 오전</span>
+    <span class="service-schedule-arrow">›</span>
+  </button>
+
+
+  <!-- 추가된 일정 -->
+
+  <div
+    id="customServiceScheduleButtons"
+    class="custom-service-schedule-buttons"
+  ></div>
+
+</div>
+
+    </div>
+
+<!-- =======================================================
+     특정 날짜 봉사 일정 추가 팝업
+======================================================= -->
+
+<div
+  id="customVolunteerScheduleOverlay"
+  class="custom-volunteer-schedule-overlay"
+  style="display:none;"
+>
+
+  <div class="custom-volunteer-schedule-popup">
+
+    <h2 class="custom-volunteer-schedule-title">
+      봉사 일정 추가
+    </h2>
+
+
+    <!-- 날짜 -->
+
+    <div class="custom-schedule-form-row">
+
+      <label for="customScheduleDate">
+        날짜
+      </label>
+
+      <input
+  type="date"
+  id="customScheduleDate"
+  aria-label="날짜 선택"
+>
+
+    </div>
+
+
+    <!-- 봉사 시작 -->
+
+    <div class="custom-schedule-form-row">
+
+      <label for="customScheduleStartTime">
+        봉사시작
+      </label>
+
+      <select
+        id="customScheduleStartTime"
+      >
+      </select>
+
+    </div>
+
+
+    <!-- 봉사 마감 -->
+
+    <div class="custom-schedule-form-row">
+
+      <label for="customScheduleEndTime">
+        봉사마감
+      </label>
+
+      <select
+        id="customScheduleEndTime"
+        disabled
+      >
+      </select>
+
+    </div>
+
+
+    <!-- 버튼 -->
+
+    <div class="custom-schedule-popup-buttons">
+
+      <button
+        type="button"
+        class="custom-schedule-cancel-button"
+        onclick="closeCustomVolunteerSchedulePopup()"
+      >
+        취소
+      </button>
+
+      <button
+  type="button"
+  class="custom-schedule-confirm-button"
+  id="customVolunteerScheduleConfirmButton"
+>
+  확인
+</button>
+
+    </div>
+
+  </div>
+
+</div>
+      
+    <!-- =====================================================
+         봉사용 실제 내용
+    ===================================================== -->
+
+    <div
+  id="serviceManagementArea"
+  class="service-management-area"
+  style="display:none;"
+>
+  <div class="service-section">
+
+    <div class="admin-back-area">
+      <button
+        type="button"
+        class="admin-back-button"
+        onclick="backToServiceSchedule()"
+      >
+        &lt; 뒤로가기
+      </button>
+    </div>
+
+    <div
+      class="service-list"
+      id="serviceList"
+    ></div>
+
+  </div>
+</div>
+
+  </section>
+
+</main>
+
+
+<!-- =======================================================
+     하단 메뉴
+======================================================= -->
+
+<nav class="bottom-nav">
+
+  <button
+    class="nav-button"
+    id="navNotice"
+    onclick="showView('notice')"
+  >
+    알림
+  </button>
+
+  <button
+    class="nav-button active"
+    id="navApply"
+    onclick="showView('apply')"
+  >
+    신청용
+  </button>
+
+  <button
+    class="nav-button"
+    id="navService"
+    onclick="showView('service')"
+  >
+    봉사용
+  </button>
+
+  <button
+    class="nav-button"
+    id="navAdmin"
+    onclick="showView('admin')"
+  >
+    관리용
+  </button>
+
+</nav>
+
+
+<!-- =======================================================
+     관리자 비밀번호
+======================================================= -->
+
+<div
+  id="adminLoginOverlay"
+  class="admin-login-overlay"
+>
+
+  <div class="admin-login-box">
+
+    <div class="admin-login-icon">🔒</div>
+
+    <h2 class="admin-login-title">
+      관리자용
+    </h2>
+
+    <input
+      type="password"
+      id="adminPasswordInput"
+      class="admin-login-input"
+      inputmode="numeric"
+      autocomplete="current-password"
+      placeholder="비밀번호 입력"
+      onkeydown="if(event.key === 'Enter') checkAdminPassword()"
+    >
+
+    <label class="admin-save-password">
+
+      <input
+        type="checkbox"
+        id="saveAdminPassword"
+      >
+
+      이 기기에 비밀번호 저장
+
+    </label>
+
+    <button
+      type="button"
+      class="admin-login-confirm"
+      onclick="checkAdminPassword()"
+    >
+      확인
+    </button>
+
+    <button
+      type="button"
+      class="admin-login-cancel"
+      onclick="cancelAdminLogin()"
+    >
+      취소
+    </button>
+
+  </div>
+
+</div>
+
+<script>
+     
+/* =========================================================
+   전시대 봉사자 명단
+   ※ 명단을 추가하거나 수정할 때 이 부분만 변경하세요.
+========================================================= */
+
+const DEFAULT_MASTER_NAMES = [
+'강효선',
+'계영혜',
+'권영란',
+'권호정',
+'김가희',
+'김경수',
+'김남희',
+'김정순',
+'김지인',
+'김현심',
+'남동완',
+'맹희주',
+'민순자',
+'박대기',
+'박미화',
+'박수은',
+'박정은',
+'박한별',
+'박현주',
+'성낙봉',
+'성지운',
+'손예진',
+'송화자',
+'안순옥',
+'안옥자',
+'오미경',
+'오민아',
+'오솔비',
+'오솔잎',
+'왕건식',
+'이규자',
+'이영자',
+'이혜자',
+'임창숙',
+'임채원',
+'장애영',
+'정성일',
+'정수인',
+'정숙자',
+'정윤희',
+'정지원',
+'정지후',
+'조숙희',
+'조순득',
+'지광미',
+'최귀님',
+'최민이',
+'최순임',
+'최옥희',
+'최재춘',
+'최홍국',
+'추요식',
+'한명순',
+'홍소영',
+'황희원'
+     
+  // 여기에 나머지 명단을 추가하세요. 마지막엔 '만표시
+];
+</script>
+
+<script src="전시대.js"></script>
+
+</body>
+</html>
