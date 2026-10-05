@@ -1,20 +1,21 @@
 /* =========================================================
    전시대 신청 가능 시간 확인
-   토요일 신청 : 목요일 ~ 금요일
-   일요일 신청 : 금요일 ~ 토요일
+   토요일 오전 : 토요일만 신청
+   토요일 오후 : 목요일 ~ 금요일 신청
+   일요일 오전 : 금요일 ~ 토요일 신청
 ========================================================= */
 
 function isVolunteerScheduleAvailable(schedule) {
 
- const koreaDate =
-  new Date(
-    new Date().toLocaleString(
-      "en-US",
-      {
-        timeZone: "Asia/Seoul"
-      }
-    )
-  );
+  const koreaDate =
+    new Date(
+      new Date().toLocaleString(
+        "en-US",
+        {
+          timeZone: "Asia/Seoul"
+        }
+      )
+    );
 
   const today =
     koreaDate.getDay();
@@ -34,10 +35,22 @@ function isVolunteerScheduleAvailable(schedule) {
   }
 
 
-  /* 토요일 오전 / 오후 */
+  /* 토요일 오전 */
 
   if (
-    schedule === "토오전" ||
+    schedule === "토오전"
+  ) {
+
+    return (
+      today === 6
+    );
+
+  }
+
+
+  /* 토요일 오후 */
+
+  if (
     schedule === "토오후"
   ) {
 
