@@ -2726,45 +2726,54 @@ alert("목요일 수정 코드가 실행되었습니다.");
     return;
   }
 
-  try {
-    const response = await fetch(
-      SCRIPT_URL,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "text/plain;charset=utf-8"
-        },
-        body: JSON.stringify({
-          action: "createServiceOrder"
-        })
-      }
-    );
-
-    const data = await response.json();
-
-    if (!data.success) {
-      throw new Error(
-        data.message ||
-        "봉사 날짜 초기화에 실패했습니다."
-      );
+ try {
+  const response = await fetch(
+    SCRIPT_URL,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify({
+        action: "createServiceOrder"
+      })
     }
+  );
 
-    SERVICE_ORDER = Array.isArray(data.serviceOrder)
-      ? data.serviceOrder.map(function(number) {
-          return String(number || "").trim();
-        }).filter(Boolean)
-      : [];
+  const data = await response.json();
 
-    renderService();
-
-    alert("봉사 날짜가 초기화되었습니다.\n현재 순서가 이번 봉사 순서로 고정됩니다.");
-
-  } catch (error) {
-    console.error(error);
-    alert(
-      "봉사 날짜 초기화에 실패했습니다.\n잠시 후 다시 시도해 주세요."
+  if (!data.success) {
+    throw new Error(
+      data.message ||
+      "봉사 날짜 초기화에 실패했습니다."
     );
   }
+
+  SERVICE_ORDER = Array.isArray(data.serviceOrder)
+    ? data.serviceOrder.map(function(number) {
+        return String(number || "").trim();
+      }).filter(Boolean)
+    : [];
+
+  renderService();
+
+  alert(
+    "봉사 날짜가 초기화되었습니다.\n현재 순서가 이번 봉사 순서로 고정됩니다."
+  );
+
+} catch (error) {
+
+  console.error(error);
+
+  alert(
+    "실제 오류 확인\n\n" +
+    "error.message =\n" +
+    (error.message || error) +
+    "\n\n" +
+    "SCRIPT_URL =\n" +
+    SCRIPT_URL
+  );
+
 }
 
 
