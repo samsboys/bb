@@ -1121,7 +1121,7 @@ body.light .service-refresh-button {
     ‹
   </button>
 
-  <!-- 상단 제목은 반드시 토요일 -->
+  <!-- 상단 제목은 반드시 요일 -->
   <div
     class="top-title"
     id="topTitle"
@@ -1503,26 +1503,28 @@ let SERVICE_ORDER = [];
 const DEFAULT_MASTER_NAMES = [
 '강효선',
 '계영혜',
-'구양숙',
 '권서원',
 '권영란',
 '권호정',
 '김가희',
 '김경수',
 '김남희',
+'김대원',
 '김수형',
 '김정순',
 '김주영',
 '김지인',
-'김지현',
 '김현심',
 '남동완',
 '맹희주',
+'문미자',
 '민순자',
 '박대기',
 '박미화',
 '박수은',
+'박재규',
 '박정은',
+'박정하',
 '박한별',
 '박현주',
 '배성주',
@@ -1543,7 +1545,6 @@ const DEFAULT_MASTER_NAMES = [
 '이우분',
 '이정임',
 '이혜자',
-'이희원',
 '임창숙',
 '임채원',
 '장사랑',
@@ -1553,16 +1554,13 @@ const DEFAULT_MASTER_NAMES = [
 '정성일',
 '정수인',
 '정숙자',
-'정옥례',
 '정윤희',
 '정종안',
 '정지원',
 '정지후',
 '조숙희',
 '조순득',
-'조애선',
 '지광미',
-'차지원',
 '최광임',
 '최귀님',
 '최민이',
@@ -1577,9 +1575,7 @@ const DEFAULT_MASTER_NAMES = [
 '한상욱',
 '홍소영',
 '홍진민',
-'황희원',
-'박재규',
-'문미자'
+'황희원'
    
   // ↓ 아래에 명단 계속추가 마지막 '표시
 ];
@@ -1852,7 +1848,7 @@ function goBack() {
 
 /* =========================================================
    봉사자 명단
-   토요일.html에 기록된 명단 사용
+   요일.html에 기록된 명단 사용
 ========================================================= */
 
 function loadMasterNames() {
@@ -3321,7 +3317,7 @@ async function loadServiceData() {
           })
         : [];
 
-    // 인도자는 Apps Script의 bon 값이 아니라 토요일!F4에서만 가져옵니다.
+    // 인도자는 Apps Script의 bon 값이 아니라 요일!F4에서만 가져옵니다.
 
     return true;
 
@@ -3335,9 +3331,9 @@ async function loadServiceData() {
 
 
 /* =========================================================
-   Google Sheet "토요일" 시트 기준 적용
+   Google Sheet "요일" 시트 기준 적용
    - Apps Script의 bon 봉사 데이터는 변경하지 않습니다.
-   - 토요일 시트의 B~F를 화면 표시 기준으로 사용합니다.
+   - 요일 시트의 B~F를 화면 표시 기준으로 사용합니다.
 ========================================================= */
 async function loadSaturdayReference() {
 
@@ -3489,7 +3485,7 @@ function getServiceAreasForDisplay() {
       used.add(key);
     });
   } else if (Array.isArray(SATURDAY_REFERENCE) && SATURDAY_REFERENCE.length > 0) {
-    // 저장된 순서가 아직 없을 때만 기존 토요일 시트 순서를 사용합니다.
+    // 저장된 순서가 아직 없을 때만 기존 요일 시트 순서를 사용합니다.
     SATURDAY_REFERENCE.forEach(function(ref) {
       const key = String(ref.number || "").trim();
       if (!key || !byNumber.has(key) || used.has(key)) {
@@ -4279,7 +4275,6 @@ function closeVolunteerApply() {
 
 async function submitVolunteerApplication() {
 
-  
   const button =
     document.getElementById(
       "volunteerSubmitButton"
