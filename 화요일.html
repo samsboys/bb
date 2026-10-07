@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>회요일</title>
+<title>화요일</title>
 
 <style>
 /* =========================================================
@@ -1126,7 +1126,7 @@ body.light .service-refresh-button {
     class="top-title"
     id="topTitle"
   >
-    회요일
+    화요일
   </div>
 
   <button
@@ -1482,7 +1482,7 @@ const GROUP_KEY =
 
 const SATURDAY_SHEET_ID =
   "1gwKQalzp7gSG3XAJK0ys7jAvpHAL_L3izkoo8-SEkhI";
-const SATURDAY_SHEET_NAME = "회요일";
+const SATURDAY_SHEET_NAME = "화요일";
 
 
 /* =========================================================
@@ -1661,7 +1661,7 @@ function showView(view) {
 
     document
       .getElementById("topTitle")
-      .textContent = "회요일";
+      .textContent = "화요일";
 
     setActiveNav("navApply");
 
@@ -1678,7 +1678,7 @@ function showView(view) {
 
     document
       .getElementById("topTitle")
-      .textContent = "회요일";
+      .textContent = "화요일";
 
     setActiveNav("navAdmin");
 
@@ -1695,7 +1695,7 @@ function showView(view) {
 
     document
       .getElementById("topTitle")
-      .textContent = "회요일";
+      .textContent = "화요일";
 
     setActiveNav("navService");
 
@@ -2484,7 +2484,7 @@ async function loadGroupSheetLabels() {
 
     if (!response.ok) {
       throw new Error(
-        "회요일 시트 그룹 정보를 불러오지 못했습니다."
+        "화요일 시트 그룹 정보를 불러오지 못했습니다."
       );
     }
 
@@ -2494,7 +2494,7 @@ async function loadGroupSheetLabels() {
     if (!data.success) {
       throw new Error(
         data.message ||
-        "회요일 시트 그룹 정보를 불러오지 못했습니다."
+        "화요일 시트 그룹 정보를 불러오지 못했습니다."
       );
     }
 
@@ -2534,7 +2534,7 @@ async function loadGroupSheetLabels() {
   } catch (error) {
 
     console.error(
-      "회요일 시트 그룹 표시 정보:",
+      "화요일 시트 그룹 표시 정보:",
       error
     );
 
@@ -3350,7 +3350,7 @@ async function loadSaturdayReference() {
 
     if (!response.ok) {
       throw new Error(
-        "회요일 데이터를 불러오지 못했습니다."
+        "화요일 데이터를 불러오지 못했습니다."
       );
     }
 
@@ -3360,7 +3360,7 @@ async function loadSaturdayReference() {
     if (!data.success) {
       throw new Error(
         data.message ||
-        "회요일 데이터를 불러오지 못했습니다."
+        "화요일 데이터를 불러오지 못했습니다."
       );
     }
 
@@ -3420,7 +3420,7 @@ async function loadSaturdayReference() {
   } catch (error) {
 
     console.error(
-      "회요일 시트 기준 데이터:",
+      "화요일 시트 기준 데이터:",
       error
     );
 
