@@ -1317,21 +1317,25 @@ body.light .service-refresh-button {
 
       <div class="group-controls">
 
-        <button
-          class="add-group-button"
-          onclick="addGroup()"
-        >
-          + 봉사 그룹 추가
-        </button>
+  <button
+    type="button"
+    id="confirmGroupButton"
+    class="confirm-group-button"
+    onclick="confirmSelectedGroup()"
+    disabled
+  >
+    배정 확정
+  </button>
 
-        <button
-          class="service-order-button"
-          onclick="resetServiceDateOrder()"
-        >
-         ↻ 봉사 날짜 초기화
-        </button>
+  <button
+    type="button"
+    class="add-group-button"
+    onclick="addGroup()"
+  >
+    + 봉사 그룹 추가
+  </button>
 
-      </div>
+</div>
 
 
       <div
