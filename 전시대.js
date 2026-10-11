@@ -74,7 +74,7 @@ function isVolunteerScheduleAvailable(schedule) {
   ) {
 
     return (
-      today === 5 ||
+      today >= 0 &&
       today === 6
     );
 
