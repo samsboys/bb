@@ -73,10 +73,12 @@ function isVolunteerScheduleAvailable(schedule) {
     schedule === "일오전"
   ) {
 
-    return true;
+    return (
+      today === 5 ||
+      today === 6
+    );
 
   }
-
 
   return false;
 }
