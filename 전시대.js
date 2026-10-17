@@ -35,20 +35,14 @@ function isVolunteerScheduleAvailable(schedule) {
   }
 
 
-  /* 토요일 오전 : 토요일 오전 3시 ~ 오전 10시 전 */
+  /* 토요일 오전 */
 
   if (
     schedule === "토오전"
   ) {
 
-    const currentMinutes =
-      koreaDate.getHours() * 60 +
-      koreaDate.getMinutes();
-
     return (
-      today === 6 &&
-      currentMinutes >= 180 &&
-      currentMinutes < 600
+      today === 6
     );
 
   }
@@ -297,8 +291,6 @@ function goToApplyHome() {
 
 async function submitVolunteerApplication() {
 
-   
-
   const button =
     document.getElementById(
       "volunteerSubmitButton"
@@ -319,25 +311,6 @@ async function submitVolunteerApplication() {
       getMySelections();
 
 
-    /* 신청자가 없으면 즉시 안내 */
-    if (
-      !Array.isArray(newSelections) ||
-      newSelections.length === 0
-    ) {
-
-      if (button) {
-        button.disabled = false;
-        button.textContent = "제출";
-      }
-
-      showSubmitConfirm(
-        "먼저 신청을 하세요"
-      );
-
-      return;
-    }
-
-
     const scheduleKey =
       selectedVolunteerSchedule;
 
@@ -351,6 +324,9 @@ async function submitVolunteerApplication() {
     }
 
 
+    /*
+       선택한 사람이 0명이어도 정상 제출
+    */
     await saveScheduleApplicants(
       scheduleKey,
       newSelections
@@ -493,96 +469,6 @@ async function saveScheduleApplicants(
 
 }
 
-/* =========================================================
-   일정별 신청자 목록 가져오기
-========================================================= */
-
-async function getVolunteerScheduleApplicants(
-  scheduleKey
-) {
-
-  const response =
-    await fetch(
-      SCRIPT_URL +
-      "?action=jeonsidaeScheduleApplicants" +
-      "&key=" +
-      encodeURIComponent(scheduleKey) +
-      "&t=" +
-      Date.now()
-    );
-
-  const data =
-    await response.json();
-
-  if (!data.success) {
-
-    throw new Error(
-      data.message ||
-      "신청자 목록을 불러오지 못했습니다."
-    );
-
-  }
-
-  return Array.isArray(data.applicants)
-    ? data.applicants
-    : [];
-
-}
-
-
-/* =========================================================
-   일정별 신청 취소 요청
-========================================================= */
-
-async function cancelVolunteerScheduleApplicants(
-  scheduleKey,
-  names
-) {
-
-  const response =
-    await fetch(
-      SCRIPT_URL,
-      {
-        method: "POST",
-
-        headers: {
-          "Content-Type":
-            "text/plain;charset=utf-8"
-        },
-
-        body: JSON.stringify({
-
-          action:
-            "cancelJeonsidaeScheduleApplicants",
-
-          key:
-            scheduleKey,
-
-          applicants:
-            Array.isArray(names)
-              ? names
-              : []
-
-        })
-      }
-    );
-
-  const data =
-    await response.json();
-
-  if (!data.success) {
-
-    throw new Error(
-      data.message ||
-      "신청 취소에 실패했습니다."
-    );
-
-  }
-
-  return data;
-
-}
-
 const SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbyGNTjZf3wagn7kWW0u1ZhBVnwBqQv-5MaYVM3U4lN1OjQ4JVMgckPnTIODGlL8e7yO/exec";
    
@@ -611,13 +497,11 @@ let groups = [];
 let selectedApplicants = [];
 let currentView = "apply";
 
-const submittedGroups = new Set();
-
 /* =========================================================
    제출 완료 확인창
 ========================================================= */
 
-function showSubmitConfirm(message, onConfirm) {
+function showSubmitConfirm(message) {
 
   const oldOverlay =
     document.getElementById("submitConfirmOverlay");
@@ -699,17 +583,9 @@ text.innerHTML =
   `;
 
   button.onclick =
-  function() {
-
-    overlay.remove();
-
-    if (
-      typeof onConfirm === "function"
-    ) {
-      onConfirm();
-    }
-
-  };
+    function() {
+      overlay.remove();
+    };
 
   box.appendChild(text);
   box.appendChild(button);
@@ -785,191 +661,6 @@ let selectedServiceSchedule = "";
 let selectedAdminSchedule = "";
 
 let serviceCancelReason = "";
-
-
-/* =========================================================
-   일정별 신청자 확인 / 취소
-========================================================= */
-
-let scheduleApplicantsMode = "view";
-
-
-async function showScheduleApplicants(mode) {
-
-  scheduleApplicantsMode = mode;
-
-  const area = document.getElementById("scheduleApplicantsArea");
-  const title = document.getElementById("scheduleApplicantsTitle");
-  const list = document.getElementById("scheduleApplicantsList");
-  const message = document.getElementById("scheduleApplicantsMessage");
-  const cancelButton = document.getElementById("cancelSelectedApplicantsButton");
-
-  if (!area || !title || !list || !message || !cancelButton) {
-    alert("신청자 목록 화면을 찾을 수 없습니다.");
-    return;
-  }
-
-  const key = String(selectedVolunteerSchedule || "").trim();
-
-  if (!key) {
-    alert("먼저 봉사 일정을 선택하세요.");
-    return;
-  }
-
-  area.style.display = "block";
-  
-  title.textContent = mode === "cancel"
-    ? "제출한 신청자 취소"
-    : "일정별 신청자 목록";
-
-  list.innerHTML = "";
-  message.textContent = "신청자 목록을 불러오는 중입니다.";
-  cancelButton.style.display = mode === "cancel" ? "block" : "none";
-
-  try {
-
-    const applicants =
-      await getVolunteerScheduleApplicants(key);
-
-    list.innerHTML = "";
-
-    if (applicants.length === 0) {
-      message.textContent = "신청한 봉사자가 없습니다.";
-      return;
-    }
-
-   
-    applicants.forEach(function(name) {
-
-      const item = document.createElement("div");
-      item.className = "schedule-applicant-item";
-
-      if (mode === "cancel") {
-
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.value = name;
-        checkbox.className = "schedule-applicant-checkbox";
-
-        const label = document.createElement("label");
-        label.textContent = name;
-        label.style.flex = "1";
-
-        item.appendChild(checkbox);
-        item.appendChild(label);
-
-      } else {
-
-        item.textContent = name;
-
-      }
-
-      list.appendChild(item);
-
-    });
-
-
-    message.textContent = "총 " + applicants.length + "명";
-
-  } catch (error) {
-
-    message.textContent =
-      "신청자 목록을 불러오지 못했습니다: " +
-      (error.message || String(error));
-
-  }
-
-}
-
-
-/* 신청자 목록 닫기 */
-
-function closeScheduleApplicants() {
-
-  const area =
-    document.getElementById("scheduleApplicantsArea");
-
-  if (area) {
-    area.style.display = "none";
-  }
-
-}
-
-
-/* 선택한 신청자 취소 */
-
-async function cancelSelectedScheduleApplicants() {
-
-  if (scheduleApplicantsMode !== "cancel") {
-    return;
-  }
-
-  const key = String(selectedVolunteerSchedule || "").trim();
-
-  const checked = document.querySelectorAll(
-    "#scheduleApplicantsList .schedule-applicant-checkbox:checked"
-  );
-
-  const names = Array.from(checked).map(function(checkbox) {
-    return checkbox.value;
-  });
-
-  if (!key) {
-    alert("먼저 봉사 일정을 선택하세요.");
-    return;
-  }
-
-  if (names.length === 0) {
-    alert("취소할 신청자를 선택하세요.");
-    return;
-  }
-
-  if (!confirm(names.length + "명의 신청을 취소할까요?")) {
-    return;
-  }
-
-  const message =
-    document.getElementById("scheduleApplicantsMessage");
-
-  if (message) {
-    message.textContent = "신청을 취소하는 중입니다.";
-  }
-
-  try {
-
-    const result =
-      await cancelVolunteerScheduleApplicants(key, names);
-
-    if (result.count === 0) {
-      if (message) {
-        message.textContent =
-          "취소된 신청이 없습니다. 신청 상태를 확인해 주세요.";
-      }
-      return;
-    }
-
-    await showScheduleApplicants("cancel");
-
-    const updatedMessage =
-      document.getElementById("scheduleApplicantsMessage");
-
-    if (updatedMessage) {
-      updatedMessage.textContent =
-        result.count + "명의 신청을 취소했습니다.";
-    }
-
-  } catch (error) {
-
-    if (message) {
-      message.textContent =
-        "신청 취소에 실패했습니다: " +
-        (error.message || String(error));
-    }
-
-  }
-
-}
-
 
 /* =========================================================
    특정 날짜 추가 봉사 일정
@@ -5514,12 +5205,12 @@ function addGroup() {
             유타몰
           </option>
 
-          <option value="성북천(보문2교-위)">
-            성북천(보문2교-위)
-          </option>
-
           <option value="성북천(보문2교-아래)">
             성북천(보문2교-아래)
+          </option>
+
+          <option value="성북천(보문2교-위)">
+            성북천(보문2교-위)
           </option>
 
           <option value="성북구청(광장)">
@@ -5532,6 +5223,22 @@ function addGroup() {
 
           <option value="성신여대(주변)">
             성신여대(주변)
+          </option>
+
+          <option value="성북천(하늘다리)">
+            성북천(하늘다리)
+          </option>
+
+          <option value="성북천(바람마당교)">
+            성북천(바람마당교)
+          </option>
+
+          <option value="성북천(분수대)">
+            성북천(분수대)
+          </option>
+
+          <option value="성북천(용문교)">
+            성북천(용문교)
           </option>
 
           <option value="가두 증거">
@@ -5671,23 +5378,19 @@ function showStopReason() {
     </option>
 
     <option value="인원 부족으로 취소합니다">
-      인원 부족 취소
+      인원 부족으로 취소합니다
     </option>
 
-    <option value="날씨 관계로 취소합니다">
-      날씨 관계 취소
-    </option>
-    
-    <option value="날씨 관계로 취소합니다 (줌 으로 봉사하겠습니다)">
-      날씨 관계 취소 (줌 봉사)
+    <option value="우천 시로 취소합니다">
+      우천 시로 취소합니다
     </option>
 
-    <option value="대회 주간입니다">
-      대회 주간
+    <option value="대회 주간 입니다">
+      대회 주간 입니다
     </option>
 
-    <option value="순회 방문 주간입니다">
-     순회 방문 주간
+    <option value="순회방문 주간 입니다">
+     순회방문 주간 입니다
     </option>
 
     <option value="삭제">
@@ -6840,9 +6543,9 @@ locationLabel.textContent =
 
         "유타몰",
 
-        "성북천(보문2교-위)",
-
         "성북천(보문2교-아래)",
+
+        "성북천(보문2교-위)",
 
         "성북구청(광장)",
 
@@ -7032,37 +6735,8 @@ locationLabel.textContent =
       submitButton.style.borderRadius =
         "10px";
 
-     
-const today = new Date();
-const weekStart = new Date(today);
-
-weekStart.setHours(0, 0, 0, 0);
-weekStart.setDate(
-  weekStart.getDate() -
-  ((weekStart.getDay() + 1) % 7)
-);
-
-const weekKey =
-  weekStart.getFullYear() +
-  "-" +
-  String(weekStart.getMonth() + 1).padStart(2, "0") +
-  "-" +
-  String(weekStart.getDate()).padStart(2, "0");
-
-const submittedKey =
-  weekKey +
-  "::" +
-  String(selectedAdminSchedule || "") +
-  "::" +
-  groupIndex;
-
-
-submitButton.style.background =
-  localStorage.getItem(
-    "submittedGroups_" + submittedKey
-  ) === "true"
-    ? "#003366"
-    : "#455A64";
+      submitButton.style.background =
+        "#455A64";
 
       submitButton.style.color =
         "#fff";
@@ -7325,49 +6999,11 @@ async function submitGroup(
 
     renderService();
 
-showSubmitConfirm(
-  "그룹" +
-  (groupIndex + 1) +
-  "이 저장됨",
-
-  function() {
-
-  
-const today = new Date();
-const weekStart = new Date(today);
-
-weekStart.setHours(0, 0, 0, 0);
-weekStart.setDate(
-  weekStart.getDate() -
-  ((weekStart.getDay() + 1) % 7)
-);
-
-const weekKey =
-  weekStart.getFullYear() +
-  "-" +
-  String(weekStart.getMonth() + 1).padStart(2, "0") +
-  "-" +
-  String(weekStart.getDate()).padStart(2, "0");
-
-const submittedKey =
-  weekKey +
-  "::" +
-  String(selectedAdminSchedule || "") +
-  "::" +
-  groupIndex;
-
-
-  localStorage.setItem(
-    "submittedGroups_" + submittedKey,
-    "true"
-  );
-
-  renderGroups();
-
-}
-   
-);
-
+        showSubmitConfirm(
+      "그룹" +
+      (groupIndex + 1) +
+      "이 저장됨"
+    );
 
    } catch (error) {
 
@@ -7833,13 +7469,8 @@ if (serviceCancelReason) {
   reason.className =
     "service-cancel-reason";
 
- reason.innerHTML =
-  String(
-    serviceCancelReason
-  ).replace(
-    " (줌 으로 봉사하겠습니다)",
-    "<br>(줌 으로 봉사하겠습니다)"
-  );
+  reason.textContent =
+    serviceCancelReason;
 
 
   /* -------------------------------------------------------
