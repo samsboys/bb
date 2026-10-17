@@ -208,35 +208,73 @@
 
 </div>
 
-
 <!-- 봉사자 명단 -->
 <div
   id="nameGrid"
   class="name-grid"
 ></div>
 
-  </div>
+<!-- 제출한 신청자 취소 버튼 -->
+<div class="applicant-manage-buttons">
 
-
-  <!-- 제출 후 신청한 봉사자 -->
-  <div
-    id="submittedVolunteerArea"
-    class="submitted-volunteer-area"
-    style="display:none;"
+  <button
+    type="button"
+    class="applicant-cancel-button"
+    onclick="showScheduleApplicants('cancel')"
   >
+    제출한 신청자 취소
+  </button>
 
-    <div
-      class="submitted-volunteer-title"
+</div>
+
+<!-- 일정별 신청자 목록 -->
+<div
+  id="scheduleApplicantsArea"
+  class="schedule-applicants-area"
+  style="display:none;"
+>
+
+  <div
+    id="scheduleApplicantsTitle"
+    class="schedule-applicants-title"
+  >
+    제출한 신청자 취소
+  </div>
+
+  <div
+    id="scheduleApplicantsList"
+    class="schedule-applicants-list"
+  ></div>
+
+  <div
+    id="scheduleApplicantsMessage"
+    class="schedule-applicants-message"
+  ></div>
+
+  <div class="schedule-applicants-action-buttons">
+
+    <button
+      type="button"
+      class="volunteer-back-button"
+      onclick="closeScheduleApplicants()"
     >
-      신청한 봉사자
-    </div>
+      닫기
+    </button>
 
-    <div
-      id="submittedVolunteerNames"
-      class="submitted-volunteer-names"
-    ></div>
+    
+<button
+  type="button"
+  id="cancelSelectedApplicantsButton"
+  class="applicant-delete-button"
+  onclick="cancelSelectedScheduleApplicants()"
+>
+  삭제
+</button>
+
 
   </div>
+
+</div>
 
 </section>
 
