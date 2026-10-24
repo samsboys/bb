@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<base target="_top">
+<title>생봉</title>
+
+<style>
+*{box-sizing:border-box}
+:root{--scale:1}
+body{margin:0;font-family:Arial,"Malgun Gothic",sans-serif;background:#f3f4f6;color:#222}
+
+.fixed-header{
+  position:fixed;top:0;left:0;width:100%;height:62px;
+  z-index:1000;display:flex;align-items:center;justify-content:center;
+  padding:10px 14px;background:#193650;color:#fff;text-align:center;
+}
+.main-title{
+  margin:0;padding:0;font-size:30px;font-weight:800;
+  letter-spacing:.04em;line-height:40px;white-space:nowrap;
+}
+.top-button{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:38px;height:38px;border:1px solid rgba(255,255,255,.35);
+  border-radius:10px;background:transparent;color:white;font-size:25px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+.back-button{left:10px}
+.settings-button{right:10px}
+
+.page{
+  position:fixed;top:62px;bottom:62px;left:0;right:0;
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  touch-action:pan-y;
+  overscroll-behavior-y:contain;
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+  padding:15px 10px 20px;max-width:900px;width:100%;margin:0 auto;
+}
+
+.page::-webkit-scrollbar{
+  display:none;
+  width:0;
+}
+  
+#content{
+  font-size:calc(16px * var(--scale));
+}
+
+#content .program-line,
+#content .program-line div,
+#content .program-line span,
+#content .program-line strong,
+#content .opening-row,
+#content .opening-row div,
+#content .opening-row span,
+#content .subline,
+#content .subline span,
+#content .note{
+  zoom:var(--scale);
+}
+
+.schedule-heading{
+  text-align:center;margin:0 0 10px;font-size:30px;font-weight:800;
+}
+.schedule-subtitle{
+  text-align:center;margin:0 0 20px;font-size:13px;font-weight:bold;
+}
+.program-card{
+  width:100%;max-width:680px;margin:0 auto 24px;padding:12px;
+  border:5px solid #AEB6BF;border-radius:16px;
+  background:linear-gradient(145deg,#fff,#f7faff);
+  box-shadow:0 6px 18px rgba(24,50,74,.08);
+}
+.date-title{
+  margin:4px 0 16px;padding:12px 8px;border-radius:10px;
+  background:#68717D;color:#fff;font-size:25px;font-weight:800;
+  line-height:1.5;letter-spacing:.02em;text-align:center;
+}
+
+.opening-row{
+  display:grid;
+  grid-template-columns:80px 1fr auto;
+  gap:2px 4px;
+  align-items:center;
+  padding:1px 4px;
+  border-bottom:1px solid #e4e7eb;
+  line-height:1.15;
+  font-size:calc(14px * var(--scale));
+}
+  
+.opening-row .role{color:#777;font-size:15px;text-align:left}
+.opening-row .value{font-weight:600}
+.opening-row .name{font-weight:800;white-space:nowrap;text-align:right}
+
+.section-title{
+  display:flex;align-items:center;gap:16px;margin:20px 0 0;padding:0;
+  text-align:left;background:transparent;font-size:30px;
+  font-weight:800;line-height:1.35;
+}
+.section-icon{
+  width:34px;height:35px;flex:0 0 34px;display:flex;
+  align-items:center;justify-content:center;color:#fff;
+}
+.section-icon svg{display:block;width:26px;height:27px;overflow:visible}
+.section-title.blue{color:#287889}
+.section-title.orange{color:#b77a0a}
+.section-title.green{color:#b52b20}
+.section-icon.blue{background:#347f8c}
+.section-icon.orange{background:#d18a00}
+.section-icon.green{background:#c6281c}
+
+.program-line{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:1.5px 4px;
+  align-items:start;
+  padding:0px 4px;
+  border-bottom:1px solid #e8ebef;
+  line-height:1.2;
+}
+.program-line:last-child{border-bottom:0}
+.program-text{overflow-wrap:anywhere}
+.program-name{font-weight:800;white-space:nowrap;text-align:right}
+.blue-text{color:#0645ff}
+.red-text{color:#f01818}
+.black-text{color:#222}
+
+.subline{
+  display:flex;justify-content:space-between;gap:8px;
+  padding:5px 4px;line-height:1.45;border-bottom:1px solid #eef0f3;
+}
+.subline span{overflow-wrap:anywhere}
+.subline .person{font-weight:700}
+.note{
+  font-size:calc(13px * var(--scale));font-weight:700;
+  color:#0645ff;padding:5px 4px;
+}
+
+.fixed-bottom{
+  position:fixed;left:0;right:0;bottom:0;height:60px;z-index:1000;
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  background:#193650;border-top:1px solid rgba(255,255,255,.10);
+}
+.fixed-bottom button{
+  min-width:0;height:59px;padding:0 4px;margin:0;border:0;border-radius:0;
+  background:transparent;color:#fff;font-family:Arial,"Malgun Gothic",sans-serif;
+  font-size:20px;font-weight:700;line-height:1;white-space:nowrap;cursor:pointer;
+}
+.fixed-bottom button+button{border-left:1px solid rgba(255,255,255,.25)}
+
+.settings-panel{
+  display:none;position:fixed;z-index:1100;top:75px;right:12px;width:300px;
+  max-width:calc(100vw - 24px);padding:14px;border:1px solid #ddd;
+  border-radius:16px;background:#fff;box-shadow:0 10px 30px #0002;
+}
+.settings-panel.show{display:block}
+.setting-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.settings-panel button{
+  padding:12px;border:1px solid #ddd;border-radius:10px;
+  background:#f5f5f5;font-size:16px;font-weight:700;
+}
+.font-row{
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;
+  align-items:center;text-align:center;
+}
+.loading,.error,.empty{text-align:center;padding:28px 10px;color:#555}
+.error{color:#b00020;white-space:pre-wrap}
+
+body.dark-mode{background:#202124;color:#FFFFFF}
+body.dark-mode .program-card{
+  background:#303134;
+  border-color:#858585;
+}
+body.dark-mode .opening-row,
+body.dark-mode .program-line,
+body.dark-mode .subline{border-color:#50545a}
+
+body.dark-mode #content,
+body.dark-mode #content *{
+  color:#FFFFFF !important;
+}
+body.dark-mode .settings-panel{background:#303134;color:#f1f3f4;border-color:#555}
+body.dark-mode .settings-panel button{
+  background:#202124;color:#f1f3f4;border-color:#555;
+}
+
+@media(max-width:520px){
+  .page{padding:10px 5px 15px}
+  .program-card{padding:12px;border-width:5px;border-radius:16px}
+  .date-title{margin:4px 0 16px;padding:12px 8px;font-size:25px}
+  .section-title{font-size:25px}
+  .opening-row{
+    grid-template-columns:65px minmax(0,1fr) auto;
+    gap:5px;font-size:calc(12px * var(--scale));
+  }
+  .program-line{gap:5px;padding:7px 2px}
+  .program-name{white-space:normal}
+}
+  
+/* =========================================================
+   특별 행사 카드
+========================================================= */
+
+  .special-event-card {
+  width: 100%;
+  max-width: 680px;
+  box-sizing: border-box;
+  padding: 12px;
+  margin: 0 auto 24px;
+  border: 5px solid #AEB6BF;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #fff, #f7faff);
+  color: #243b53;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(24, 50, 74, .08);
+  font-size: calc(16px * var(--scale));
+}
+
+.special-event-card .date-title {
+  margin: 4px 0 16px;
+  padding: 12px 8px;
+  text-align: center;
+  border-radius: 10px;
+  background: #68717D;
+  color: #fff;
+  font-size: 25px;
+  font-weight: 800;
+  line-height: 1.5;
+  letter-spacing: .02em;
+}
+
+.special-event-title {
+  font-size: calc(26px * var(--scale));
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.special-event-theme {
+  font-size: calc(22px * var(--scale));
+  font-weight: 800;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.special-event-place {
+  font-size: calc(22px * var(--scale));
+  font-weight: 600;
+}
+
+.special-event-place a {
+  color: #1769aa;
+  text-decoration: underline;
+}
+
+.special-event-pioneer {
+  font-size: calc(18px * var(--scale));
+  line-height: 1.6;
+  margin-top: 10px;
+}
+
+/* 어두운 테마 */
+body.dark-mode .special-event-card {
+  background: #222;
+  color: #fff;
+  border-color: #858585;
+}
+
+body.dark-mode .special-event-card .date-title {
+  background: #626970;
+  color: #fff;
+}
+
+body.dark-mode .special-event-card .special-event-title,
+body.dark-mode .special-event-card .special-event-theme,
+body.dark-mode .special-event-card .special-event-place,
+body.dark-mode .special-event-card .special-event-pioneer {
+  color: #fff;
+}
+
+body.dark-mode .special-event-place a {
+  color: #fff;
+}
+  
+</style>
+</head>
+
+<body>
+<header class="fixed-header">
+  <button type="button" class="top-button back-button"
+    onclick="location.href='index.html'" aria-label="홈으로">‹</button>
+  <div class="main-title">북부회중 게시판</div>
+  <button type="button" class="top-button settings-button"
+    onclick="toggleSettings()" aria-label="설정">⚙</button>
+</header>
+
+<main class="page">
+  <div id="content">
+    <div class="loading">생봉 일정을 불러오는 중입니다...</div>
+  </div>
+</main>
+
+<nav class="fixed-bottom">
+  <button type="button" onclick="goBoardPage('publicTalk')">
+    공개강연
+  </button>
+
+  <button type="button" onclick="goBoardPage('ministry')">
+    생활과봉사
+  </button>
+
+  <button type="button" onclick="goBoardPage('groups')">
+    집단및부서
+  </button>
+</nav>
+
+<div id="settingsPanel" class="settings-panel">
+  <div class="setting-row">
+    <button onclick="setTheme(false)">☀ 밝게</button>
+    <button onclick="setTheme(true)">🌙 어둡게</button>
+  </div>
+  <div class="font-row">
+    <button onclick="changeFont(-10)">−</button>
+    <strong id="fontSize">100%</strong>
+    <button onclick="changeFont(10)">＋</button>
+  </div>
+</div>
+
+<script>
+/* 생봉 Apps Script 웹 앱 URL */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx44HBK4VnofM1gVLJ8g9TeSAvELSE5P5bF6vxGmkbSl_lqx3Zk1RF_ArzP-ZfSQuTX/exec";
+
+let fontPercent = Number(localStorage.getItem("lifeBoardFont") || 100);
+
+function toggleSettings(){
+  document.getElementById("settingsPanel").classList.toggle("show");
+}
+
+function setTheme(dark){
+  document.body.classList.toggle("dark-mode",dark);
+  localStorage.setItem("northBoardTheme",dark?"dark":"light");
+}
+
+function changeFont(amount){
+  fontPercent=Math.max(80,Math.min(150,fontPercent+amount));
+  document.documentElement.style.setProperty("--scale",fontPercent/100);
+  document.getElementById("fontSize").textContent=fontPercent+"%";
+  localStorage.setItem("lifeBoardFont",String(fontPercent));
+}
+
+/* =====================================================
+   게시판 페이지 이동
+===================================================== */
+
+async function goBoardPage(section) {
+  try {
+    const response = await fetch(
+      "게시판-공강.html",
+      { cache: "no-store" }
+    );
+
+    if (!response.ok) {
+      throw new Error("주소 설정을 읽지 못했습니다.");
+    }
+
+    const html = await response.text();
+
+    const doc = new DOMParser().parseFromString(
+      html,
+      "text/html"
+    );
+
+    const configElement =
+      doc.getElementById("board-url-config");
+
+    if (!configElement) {
+      throw new Error("주소 설정을 찾지 못했습니다.");
+    }
+
+    const boardUrls = JSON.parse(
+      configElement.textContent
+    );
+
+    if (!boardUrls[section]) {
+      throw new Error("해당 페이지 주소가 없습니다.");
+    }
+
+    window.location.href = boardUrls[section];
+
+  } catch (error) {
+    alert("페이지 이동에 실패했습니다. 다시 시도해 주세요.");
+    console.error(error);
+  }
+}
+
+(function restoreSettings(){
+  setTheme(localStorage.getItem("northBoardTheme")==="dark");
+  fontPercent=Math.max(80,Math.min(150,fontPercent));
+  document.documentElement.style.setProperty("--scale",fontPercent/100);
+  document.getElementById("fontSize").textContent=fontPercent+"%";
+})();
+
+function loadSchedule(){
+  if(!SCRIPT_URL.startsWith("https://script.google.com/")){
+    document.getElementById("content").innerHTML=
+      '<div class="error">앱스스크립트를 배포한 뒤 SCRIPT_URL에 웹 앱 URL을 입력해 주세요.</div>';
+    return;
+  }
+
+  const old=document.getElementById("scheduleJsonp");
+  if(old)old.remove();
+
+  const script=document.createElement("script");
+  script.id="scheduleJsonp";
+  script.onerror=()=>showError("앱스스크립트에 연결하지 못했습니다. 배포 권한과 URL을 확인해 주세요.");
+  script.src=SCRIPT_URL+"?prefix=receiveSchedule&t="+Date.now();
+  document.body.appendChild(script);
+
+  window.scheduleTimer=setTimeout(
+    ()=>showError("응답 시간이 초과되었습니다. 앱스스크립트 배포를 확인해 주세요."),
+    20000
+  );
+}
+
+function receiveSchedule(data){
+  clearTimeout(window.scheduleTimer);
+  if(!data||!Array.isArray(data.schedules)){
+    showError("서버에서 받은 데이터 형식이 올바르지 않습니다.");
+    return;
+  }
+  renderSchedule(data);
+}
+
+function showError(message){
+  clearTimeout(window.scheduleTimer);
+
+  document.getElementById("content").innerHTML="";
+  const d=document.createElement("div");
+  d.className="error";
+  d.textContent=message;
+  document.getElementById("content").appendChild(d);
+}
+
+function cell(row,index){
+  const cells = Array.isArray(row) ? row : (row.cells || []);
+  return String(cells[index] || "").trim();
+}
+
+function line(text,name="",cls=""){
+  const el=document.createElement("div");
+  el.className="program-line";
+
+  const t=document.createElement("div");
+  t.className="program-text "+cls;
+  t.textContent=text||"";
+  el.appendChild(t);
+
+  if(name){
+    const n=document.createElement("div");
+    n.className="program-name "+cls;
+    n.textContent=name;
+    el.appendChild(n);
+  }
+  return el;
+}
+
+function subline(left,right){
+  const el=document.createElement("div");
+  el.className="subline";
+
+  const a=document.createElement("span");
+  a.textContent=left||"";
+
+  const b=document.createElement("span");
+  b.className="person";
+  b.textContent=right||"";
+
+  el.append(a,b);
+  return el;
+}
+
+function section(card,title,cls,buttonNote){
+  const h=document.createElement("div");
+  h.className="section-title "+cls;
+
+  const icon=document.createElement("span");
+  icon.className="section-icon "+cls;
+
+  const icons={
+    blue:`
+      <svg viewBox="0 0 28 30" aria-hidden="true">
+        <path d="M5 3.5H23L27 10 14 27 1 10Z
+                 M5 3.5 9 10 14 27 19 10 23 3.5
+                 M1 10H27 M9 10 14 3.5 19 10"
+          fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linejoin="round"/>
+      </svg>`,
+    orange:`
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <g fill="none" stroke="currentColor" stroke-width="2.8"
+           stroke-linecap="round" stroke-linejoin="round">
+          <path d="M32 58V9"/>
+          <path d="M30 14C25 13 20 8 22 4C27 5 31 9 30 14Z"/>
+          <path d="M30 24C23 24 17 19 17 14C24 14 29 18 30 24Z"/>
+          <path d="M30 35C22 35 15 30 15 25C23 25 29 29 30 35Z"/>
+          <path d="M30 46C22 46 17 41 17 36C24 36 29 40 30 46Z"/>
+          <path d="M34 19C41 18 46 13 44 8C38 9 34 13 34 19Z"/>
+          <path d="M34 30C42 29 48 24 48 19C40 20 35 24 34 30Z"/>
+          <path d="M34 41C42 40 49 35 49 30C41 31 35 35 34 41Z"/>
+          <path d="M34 51C41 50 46 45 46 40C39 41 35 45 34 51Z"/>
+          <path d="M32 54L24 48 M32 48L40 42"/>
+        </g>
+      </svg>`,
+    green:`
+      <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <g fill="none" stroke="#fff" stroke-width="2.8"
+           stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 27C14 21 20 19 27 19C34 19 39 22 43 20
+                   L49 13C51 10 55 11 57 14L59 17L56 20L52 20
+                   L51 29C51 32 49 35 46 37L44 43L47 53L39 53
+                   L36 43L24 43L21 53L13 53L16 39C12 38 11 35
+                   12 31Z"/>
+          <path d="M52 20Q54 17 56 16"/>
+          <path d="M24 43L28 53L21 53 M36 43L34 53L39 53"/>
+        </g>
+      </svg>`
+  };
+
+  icon.innerHTML=icons[cls]||"";
+  h.appendChild(icon);
+
+  const label=document.createElement("span");
+    label.textContent=title;
+  h.appendChild(label);
+  card.appendChild(h);
+
+}
+
+/* =========================================================
+   특별 행사 표시
+========================================================= */
+
+function renderSpecialEvent(event) {
+  if (!event || !(event.title || event.date)) {
+    return "";
+  }
+
+  const escapeHtml = value =>
+    String(value || "").replace(/[&<>"']/g, char => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[char]);
+
+  const mapUrl =
+    "https://map.naver.com/p/search/" +
+    encodeURIComponent(event.place || "");
+
+  return `
+    <section class="program-card special-event-card">
+
+      <h2 class="date-title">
+        ${escapeHtml(event.date)}
+      </h2>
+
+      <div class="special-event-title">
+        ${escapeHtml(event.title)}
+      </div>
+
+      <div class="special-event-theme">
+        ${escapeHtml(event.theme)}
+      </div>
+
+      <div class="special-event-place">
+        📍 <a
+          href="${mapUrl}"
+          target="_blank"
+          rel="noopener noreferrer"
+        >${escapeHtml(event.place)}</a>
+      </div>
+
+      ${
+        event.pioneerMeeting
+          ? `<div class="special-event-pioneer">
+              ${escapeHtml(event.pioneerMeeting).replace(/\r?\n/g, "<br>")}
+            </div>`
+          : ""
+      }
+
+    </section>
+  `;
+}
+
+function renderSchedule(data) {
+  const content=document.getElementById("content");
+  content.innerHTML="";
+
+  const heading=document.createElement("h2");
+  heading.className="schedule-heading";
+  heading.textContent=data.title||"";
+  content.appendChild(heading);
+
+  const subtitle=document.createElement("div");
+  subtitle.className="schedule-subtitle";
+  subtitle.textContent=data.subtitle||"";
+  content.appendChild(subtitle);
+
+  // 특별 행사 표시
+  const specialEventHtml = renderSpecialEvent(data.specialEvent);
+
+  if (specialEventHtml) {
+    content.insertAdjacentHTML("beforeend", specialEventHtml);
+  }
+
+  
+const schedules = data.schedules;
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+// 토요일부터 금요일까지를 한 주로 계산
+// 기준은 해당 주의 월요일 날짜
+const day = today.getDay(); // 일요일 0, 토요일 6
+
+const daysToMonday =
+  day === 6 ? 2 :
+  day === 0 ? 1 :
+  day === 1 ? 0 :
+  day === 2 ? -1 :
+  day === 3 ? -2 :
+  day === 4 ? -3 :
+  -4;
+
+const targetMonday = new Date(today);
+targetMonday.setDate(today.getDate() + daysToMonday);
+
+// 이번 주 월요일 날짜부터 8주간의 일정 표시
+const endDate = new Date(targetMonday);
+endDate.setDate(endDate.getDate() + 7 * 7);
+
+
+// 일정 필터링 후 날짜가 빠른 순서대로 정렬
+const items = schedules.filter(x => {
+  const date = new Date(
+    Number(x.year),
+    Number(x.month) - 1,
+    Number(x.day)
+  );
+
+  date.setHours(0, 0, 0, 0);
+ 
+return date >= targetMonday && date <= endDate;
+
+});
+
+items.sort((a, b) => {
+  const dateA = new Date(
+    Number(a.year),
+    Number(a.month) - 1,
+    Number(a.day)
+  );
+
+  const dateB = new Date(
+    Number(b.year),
+    Number(b.month) - 1,
+    Number(b.day)
+  );
+
+  return dateA - dateB;
+});
+
+if (!items.length) {
+
+    if (!data.specialEvent || !data.specialEvent.title) {
+      content.innerHTML =
+        '<div class="empty">표시할 생봉 일정이 없습니다.</div>';
+    }
+
+    return;
+  }
+items.forEach(item=>{
+
+  // C열이 '순회방문'인 행은 해당 행의 특별 행사 카드만 표시
+  if (item.specialEvent && item.specialEvent.title) {
+    content.insertAdjacentHTML(
+      "beforeend",
+      renderSpecialEvent(item.specialEvent)
+    );
+    return;
+  }
+
+  // 일반 행은 기존 프로그램 표시 방식 유지
+  const c=item.cells||[];
+
+  const card=document.createElement("section");
+  card.className="program-card";
+
+
+const date = document.createElement("h2");
+date.className = "date-title";
+
+// 원본 일정 날짜: 필터링과 주간 계산에 사용
+const scheduleDate = new Date(
+  Number(item.year),
+  Number(item.month) - 1,
+  Number(item.day)
+);
+scheduleDate.setHours(0, 0, 0, 0);
+
+// 화면 표시 날짜만 하루 더하기: 월요일 → 화요일
+const displayDate = new Date(scheduleDate);
+displayDate.setDate(displayDate.getDate() + 1);
+
+const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
+
+const dateText =
+  displayDate.getFullYear() + "년 " +
+  (displayDate.getMonth() + 1) + "월 " +
+  displayDate.getDate() + "일 (" +
+  weekdays[displayDate.getDay()] + ")";
+
+
+const firstCell = String(c[0] || "").trim();
+
+const isRotationVisit = firstCell.includes("순회방문");
+const isZoom = firstCell.includes("줌[ZOOM]");
+
+date.textContent = dateText;
+
+if (isRotationVisit || isZoom) {
+  const specialLabel = document.createElement("div");
+
+  specialLabel.textContent = isRotationVisit
+    ? "[순회 방문 주간]"
+    : "줌[ZOOM]";
+
+  specialLabel.style.fontSize = "20px";
+  specialLabel.style.fontWeight = "700";
+
+  date.appendChild(specialLabel);
+}
+
+
+// 이번 주 토요일부터 다음 주 토요일 전날까지 확인
+const thisSaturday = new Date(targetMonday);
+thisSaturday.setDate(thisSaturday.getDate() - 2);
+
+const nextSaturday = new Date(thisSaturday);
+nextSaturday.setDate(nextSaturday.getDate() + 7);
+
+// 이번 주 날짜만 짙은 파란색
+if (
+  scheduleDate >= thisSaturday &&
+  scheduleDate < nextSaturday
+) {
+  date.style.setProperty("background", "#294F70", "important");
+} else {
+  date.style.setProperty("background", "#68717D", "important");
+}
+
+card.appendChild(date);
+
+
+    function openingRow(label,name){
+      const row=document.createElement("div");
+      row.className="opening-row";
+
+      const role=document.createElement("div");
+      role.className="role";
+      role.textContent=label;
+
+      const spacer=document.createElement("div");
+
+      const value=document.createElement("div");
+      value.className="name";
+      value.textContent=name||"";
+
+      row.append(role,spacer,value);
+      return row;
+    }
+
+// 사회자와 시작 기도
+function openingRow(label,name){
+  const row = document.createElement("div");
+  row.className = "opening-row";
+  row.style.cssText =
+    "display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;";
+
+  const role = document.createElement("div");
+  role.className = "role";
+  role.textContent = label;
+  role.style.cssText = "font-size:15px;color:#777;text-align:left;";
+
+  const value = document.createElement("div");
+  value.className = "name";
+  value.textContent = name || "";
+  value.style.cssText =
+    "font-size:22px;color:#222;font-weight:800;text-align:right;";
+
+  row.append(role,value);
+  return row;
+}
+
+card.appendChild(openingRow("사회자",cell(c,2)));
+card.appendChild(openingRow("시작 기도",cell(c,3)));
+    
+
+    // 성경에 담긴 보물
+    section(card,"성경에 담긴 보물","blue",true);
+
+    // 연설 주제 + 시간 + 동영상은 왼쪽, 이름은 오른쪽에 한 줄 표시
+    const speechRow = document.createElement("div");
+    speechRow.className = "program-line";
+    speechRow.style.cssText =
+      "display:grid;grid-template-columns:minmax(0,1fr) auto;" +
+      "align-items:center;gap:8px;";
+
+    const speechLabel = document.createElement("div");
+    speechLabel.style.cssText =
+      "font-size:18px;color:#3374A9;font-weight:800;text-align:left;min-width:0;";
+
+    const speechTitle = (cell(c,6) || "")
+      .replace(/^\s*(?:1\.\s*)+/, "");
+
+    speechLabel.appendChild(
+      document.createTextNode(speechTitle ? "1. " + speechTitle : "")
+    );
+
+    const speechMeta = document.createElement("span");
+    speechMeta.textContent =
+      (cell(c,4) ? " " + cell(c,4) : " 10분") +
+      (cell(c,7) ? " · " + cell(c,7) : "");
+    speechMeta.style.cssText =
+      "font-size:15px;color:#777;font-weight:400;";
+    speechLabel.appendChild(speechMeta);
+
+    speechRow.appendChild(speechLabel);
+
+    const speechName = document.createElement("div");
+    speechName.textContent = cell(c,5);
+    speechName.style.cssText =
+      "font-size:22px;color:#222;font-weight:800;text-align:right;";
+    speechRow.appendChild(speechName);
+
+    card.appendChild(speechRow);
+
+
+
+// 2. 영적 보물찾기
+const treasureRow = document.createElement("div");
+treasureRow.className = "program-line";
+treasureRow.style.cssText =
+  "display:grid;grid-template-columns:minmax(0,1fr) auto;" +
+  "align-items:center;gap:8px;";
+
+const treasureLabel = document.createElement("div");
+treasureLabel.style.cssText =
+  "font-size:18px;color:#3374A9;font-weight:800;text-align:left;min-width:0;";
+
+treasureLabel.appendChild(
+  document.createTextNode("2. 영적 보물찾기 :")
+);
+
+const treasureTime = document.createElement("span");
+treasureTime.textContent = " " + (cell(c,8) || "10분");
+treasureTime.style.cssText =
+  "font-size:15px;color:#777;font-weight:400;";
+treasureLabel.appendChild(treasureTime);
+
+treasureRow.appendChild(treasureLabel);
+
+const treasureName = document.createElement("div");
+treasureName.textContent = cell(c,9);
+treasureName.style.cssText =
+  "font-size:22px;color:#222;font-weight:800;text-align:right;";
+treasureRow.appendChild(treasureName);
+
+card.appendChild(treasureRow);
+
+
+// 3. 성경 낭독
+const readingRow = document.createElement("div");
+readingRow.className = "program-line";
+readingRow.style.cssText =
+  "display:grid;grid-template-columns:minmax(0,1fr) auto;" +
+  "align-items:center;gap:8px;";
+
+const readingTitle = document.createElement("div");
+readingTitle.style.cssText =
+  "font-size:18px;color:#3374A9;font-weight:800;text-align:left;min-width:0;";
+
+readingTitle.appendChild(
+  document.createTextNode("3. 성경 낭독 :")
+);
+
+const readingMeta = document.createElement("span");
+readingMeta.textContent =
+  " " + (cell(c,10) || "4분") +
+  (cell(c,12) ? " " + cell(c,12) : "");
+readingMeta.style.cssText =
+  "font-size:15px;color:#777;font-weight:400;";
+readingTitle.appendChild(readingMeta);
+
+readingRow.appendChild(readingTitle);
+
+const readingName = document.createElement("div");
+readingName.textContent = cell(c,11);
+readingName.style.cssText =
+  "font-size:22px;color:#222;font-weight:800;text-align:right;";
+readingRow.appendChild(readingName);
+
+card.appendChild(readingRow);
+    
+
+
+// 야외 봉사에 힘쓰십시오
+section(card,"야외 봉사에 힘쓰십시오","orange",true);
+
+const assignments = [
+  {
+    n: 4,
+    title: cell(c,14),
+    duration: cell(c,13),
+    person: cell(c,15),
+    helper: cell(c,17),
+    note: cell(c,16),
+    label: ""
+  },
+  {
+    n: 5,
+    title: cell(c,19),
+    duration: cell(c,18),
+    person: cell(c,20),
+    helper: cell(c,22),
+    note: cell(c,21),
+    label: ""
+  },
+  {
+    n: 6,
+    title: cell(c,24),
+    duration: cell(c,23),
+    person: cell(c,25),
+    helper: cell(c,27),
+    note: cell(c,26),
+    label: ""
+  },
+  {
+    n: 7,
+    title: cell(c,29),
+    duration: cell(c,28),
+    person: cell(c,30),
+    helper: "",
+    note: cell(c,31),
+    label: ""
+  }
+];
+
+assignments.forEach(a=>{
+  const rawTitle = a.title || a.label || "";
+  const title = rawTitle.replace(/^\s*\d+\.\s*/, "");
+
+  const displayTitle = rawTitle
+    ? (rawTitle.match(/^\s*\d+\./)
+        ? rawTitle.trim().replace(/^\s*\d+\.\s*/, a.n + ". ")
+        : a.n + ". " + title)
+    : "";
+
+  if(displayTitle || a.duration || a.note || a.person || a.helper){
+
+  // 제목과 시간·세부 정보를 한 줄에 표시
+  const titleRow = document.createElement("div");
+  titleRow.className = "program-line";
+  titleRow.style.cssText =
+    "display:flex;flex-wrap:wrap;align-items:baseline;gap:0 6px;";
+
+   const titleText = document.createElement("span");
+  titleText.textContent = displayTitle;
+  titleText.style.cssText =
+    "font-size:18px;color:#b77a0a;font-weight:800;";
+  titleRow.appendChild(titleText);
+
+  const info = [
+    a.duration,
+    a.note
+  ].filter(Boolean).join(" ");
+
+  if(info){
+    const infoText = document.createElement("span");
+    infoText.textContent = info;
+    infoText.style.cssText =
+      "font-size:15px;color:#777;font-weight:400;";
+    titleRow.appendChild(infoText);
+  }
+
+  // 보조자가 없으면 담당자 이름을 제목과 같은 줄에 표시
+  const hasHelper = !!String(a.helper || "").trim();
+  const personName = String(a.person || "").trim();
+
+  if(!hasHelper && personName){
+    const personText = document.createElement("span");
+    personText.textContent = personName;
+    personText.style.cssText =
+      "font-size:22px;color:#222;font-weight:800;margin-left:auto;";
+    titleRow.appendChild(personText);
+  }
+
+  card.appendChild(titleRow);
+
+  // 보조자가 있을 때만 담당자와 보조자를 별도 줄에 표시
+  if(hasHelper){
+    const peopleRow = document.createElement("div");
+    peopleRow.className = "program-line";
+    peopleRow.style.cssText =
+      "display:grid;grid-template-columns:minmax(0,1fr) auto;" +
+      "align-items:center;gap:8px;";
+
+    const person = document.createElement("div");
+    person.style.cssText =
+      "font-size:22px;color:#222;font-weight:800;text-align:left;";
+
+    const personLabel = document.createElement("span");
+    personLabel.textContent = "전도인 : ";
+    personLabel.style.cssText =
+      "font-size:14px;color:#777;font-weight:400;";
+
+    person.appendChild(personLabel);
+    person.appendChild(document.createTextNode(personName));
+    peopleRow.appendChild(person);
+
+    const helper = document.createElement("div");
+    helper.style.cssText =
+      "font-size:22px;color:#222;font-weight:800;text-align:right;";
+
+    const helperLabel = document.createElement("span");
+    helperLabel.textContent = "보조자 : ";
+    helperLabel.style.cssText =
+      "font-size:14px;color:#777;font-weight:400;";
+
+    helper.appendChild(helperLabel);
+    helper.appendChild(document.createTextNode(String(a.helper).trim()));
+    peopleRow.appendChild(helper);
+
+    card.appendChild(peopleRow);
+  }
+  }
+});
+
+   
+    // 그리스도인 생활
+    section(card,"그리스도인 생활","green",true);
+
+    // 8번
+const bibleTitle = cell(c,35);
+const bibleTime = cell(c,33);
+const biblePerson = cell(c,34);
+const bibleVideo = cell(c,36);
+  
+if(bibleTitle || bibleTime || biblePerson || bibleVideo){
+  const row = document.createElement("div");
+  row.className = "program-line";
+  row.style.cssText =
+    "display:grid;grid-template-columns:minmax(0,1fr) auto;" +
+    "align-items:center;gap:8px;";
+
+  const detail = document.createElement("div");
+  detail.style.cssText =
+    "font-size:18px;color:#b52b20;font-weight:800;text-align:left;min-width:0;";
+  const title = document.createElement("span");
+  title.textContent =
+    (bibleTitle || "").replace(/^\s*8\.\s*/, "8. ");
+  detail.appendChild(title);
+
+  const meta = document.createElement("span");
+  meta.textContent =
+    (bibleTime ? " " + bibleTime : "") +
+    (bibleVideo ? " " + bibleVideo : "");
+  meta.style.cssText =
+    "font-size:15px;color:#777;font-weight:400;";
+  detail.appendChild(meta);
+
+  row.appendChild(detail);
+
+  const person = document.createElement("div");
+  person.textContent = biblePerson;
+  person.style.cssText =
+    "font-size:22px;color:#222;font-weight:800;text-align:right;";
+  row.appendChild(person);
+
+  card.appendChild(row);
+}
+
+    // 9번: 내용이 있을 때만 표시
+    const watchTitle = cell(c,39);
+const watchTime = cell(c,37);
+const watchPerson = cell(c,38);
+const watchVideo = cell(c,40);
+
+    if(watchTitle || watchTime || watchPerson || watchVideo){
+      const row = document.createElement("div");
+      row.className = "program-line";
+      row.style.cssText =
+        "display:grid;grid-template-columns:minmax(0,1fr) auto;" +
+        "align-items:center;gap:8px;";
+
+      const detail = document.createElement("div");
+      detail.textContent =
+        "9. " + watchTitle +
+        (watchTime ? " " + watchTime : "") +
+        (watchVideo ? " " + watchVideo : "");
+      detail.style.cssText =
+   "font-size:18px;color:#4CAF50;font-weight:800;text-align:left;";
+      row.appendChild(detail);
+
+      const person = document.createElement("div");
+      person.textContent = watchPerson;
+      person.style.cssText =
+        "font-size:22px;color:#222;font-weight:800;text-align:right;";
+      row.appendChild(person);
+
+      card.appendChild(row);
+    }
+
+// 10. 회중 성서 연구
+const studyTitle = cell(c,42);
+const studyTime = cell(c,41);
+const studyReader = cell(c,43);
+const studySocial = cell(c,44);
+
+if(studyTitle || studyTime || studyReader || studySocial){
+
+  const titleRow = document.createElement("div");
+  titleRow.className = "program-line";
+  titleRow.style.cssText =
+    "display:block;font-size:calc(18px * var(--scale));" +
+    "color:#b52b20;font-weight:800;";
+
+ titleRow.textContent =
+  studyTitle || "회중 성서 연구";
+
+const studyTimeText = document.createElement("span");
+studyTimeText.textContent = " " + (studyTime || "30분");
+studyTimeText.style.cssText =
+  "font-size:15px;color:#777;font-weight:400;";
+titleRow.appendChild(studyTimeText);
+  card.appendChild(titleRow);
+
+  const studyRow = document.createElement("div");
+  studyRow.className = "program-line";
+  studyRow.style.cssText =
+    "display:grid;grid-template-columns:minmax(0,1fr) auto;" +
+    "align-items:center;gap:8px;";
+
+  const social = document.createElement("div");
+  social.style.cssText =
+    "font-size:calc(22px * var(--scale));" +
+    "color:#222;font-weight:800;text-align:left;";
+
+  const socialLabel = document.createElement("span");
+  socialLabel.textContent = "연구사회자 : ";
+  socialLabel.style.cssText =
+    "font-size:calc(15px * var(--scale));" +
+    "color:#777;font-weight:400;";
+
+  social.appendChild(socialLabel);
+  social.appendChild(document.createTextNode(studySocial || ""));
+  studyRow.appendChild(social);
+
+    // 낭독자가 있을 때만 낭독 영역 표시
+  if (studyReader) {
+    const reader = document.createElement("div");
+    reader.style.cssText =
+      "font-size:calc(22px * var(--scale));" +
+      "color:#222;font-weight:800;text-align:right;";
+
+    const readerLabel = document.createElement("span");
+    readerLabel.textContent = "낭독 : ";
+    readerLabel.style.cssText =
+      "font-size:calc(15px * var(--scale));" +
+      "color:#777;font-weight:400;";
+
+    reader.appendChild(readerLabel);
+    reader.appendChild(document.createTextNode(studyReader));
+    studyRow.appendChild(reader);
+  }
+
+  card.appendChild(studyRow);
+}
+
+    // 마치는 기도
+    const closingPrayer = cell(c,45);
+
+    if(closingPrayer){
+      const prayerRow = document.createElement("div");
+      prayerRow.className = "program-line";
+      prayerRow.style.cssText =
+        "display:grid;grid-template-columns:minmax(0,1fr) auto;" +
+        "align-items:center;gap:8px;";
+
+      const prayerLabel = document.createElement("div");
+      prayerLabel.textContent = "마치는 기도";
+      prayerLabel.style.cssText =
+        "font-size:15px;color:#777;text-align:left;";
+      prayerRow.appendChild(prayerLabel);
+
+      const prayerName = document.createElement("div");
+      prayerName.textContent = closingPrayer;
+      prayerName.style.cssText =
+        "font-size:22px;color:#222;font-weight:800;text-align:right;";
+      prayerRow.appendChild(prayerName);
+
+      card.appendChild(prayerRow);
+    }
+ 
+    content.appendChild(card);
+  });
+}
+
+document.addEventListener("DOMContentLoaded",loadSchedule);
+</script>
+</body>
+</html>
