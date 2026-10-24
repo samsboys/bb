@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>북부회중 게시판</title>
+
+  <style>
+    * {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  font-family: Arial, "Malgun Gothic", sans-serif;
+  color: #222;
+  background: #f3f4f6;
+}
+
+    .page {
+      width: 100%;
+      margin: 0;
+      background: white;
+      min-height: 100vh;
+      padding-top: 62px;
+      padding-bottom: 60px;
+    }
+
+    .fixed-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 62px;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 14px;
+      background: #193650;
+      color: #fff;
+      text-align: center;
+    }
+
+    .main-title {
+      margin: 0;
+      padding: 0;
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      line-height: 40px;
+      white-space: nowrap;
+    }
+
+    .top-button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 38px;
+      height: 38px;
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 10px;
+      background: transparent;
+      color: white;
+      font-size: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .back-button { left: 10px; }
+    .settings-button { right: 10px; }
+
+    #content {
+      width: 100%;
+      padding: 18px 10px 24px;
+    }
+
+    /* 본문 공통 */
+    .section-card {
+      margin: 0 0 18px;
+      padding: 5px 0px; /* 16PX > 5PX 처음 위·아래 여백 두번째는 왼쪽·오른쪽 여백 12px > 0px  */
+      border: 1px solid #d8e0e8;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 3px 10px rgba(20,45,70,.06);
+      overflow: hidden;
+    }
+
+    .section-title {
+      margin: 0 0 14px;
+      padding: 0 0 10px;
+      border-bottom: 2px solid #193650;
+      color: #193650;
+      font-size: 1.15em;
+      font-weight: 800;
+    }
+
+
+/* 야외 봉사 일정: 큰 바깥 박스 안에 내부 선 표시 */
+#content > .section-card:has(.schedule-table),
+#content > .section-card.schedule-card {
+  margin-top: 0;
+  padding: 0;
+  border: 5px solid #AEB6BF;
+  border-radius: 12px;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.schedule-card .section-title {
+  display: none;
+}
+
+/* 왕국 회관 청소 / 봉사감독자 방문 */
+.rotation-card {
+  margin: 0 0 18px;
+  padding: 0;
+  border: 5px solid #AEB6BF;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.rotation-grid {
+  display: grid;
+  grid-template-columns: 33.4% 66.6%;
+  width: 100%;
+}
+
+
+
+.rotation-group,
+.rotation-value {
+  min-width: 0;
+  height: 36px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid #858585;
+  border-bottom: 1px solid #858585;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+
+
+.rotation-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 600;
+  background: #f7f9fb;
+  color: #000;
+}
+
+.rotation-value {
+  font-size: 20px;
+  font-weight: 600;
+  white-space: pre-wrap;
+  color: #000;
+}
+
+/* 어두운 모드: 왕국 회관 청소 / 봉사감독자 방문 */
+body.dark-mode .rotation-group,
+body.dark-mode .rotation-value {
+  color: #fff !important;
+}
+
+.rotation-group,
+.rotation-value {
+  border-right: 1px solid #858585;
+}
+
+.rotation-value:last-child {
+  border-bottom: none;
+}
+
+/* 어두운 모드: 모든 바깥쪽 박스 배경과 테두리 통일 */
+body.dark-mode .section-card,
+body.dark-mode .group-card,
+body.dark-mode .rotation-card,
+body.dark-mode #content > .section-card:has(.schedule-table),
+body.dark-mode #content > .section-card:has(.stats-grid) {
+  background: #292d31 !important;
+  border-color: #858585 !important;
+  box-shadow: none !important;
+}
+
+/* 왕국 회관 청소 / 봉사감독자 방문
+   밝은 모드와 어두운 모드 내부 선 색상 통일 */
+.rotation-group,
+.rotation-value {
+  border-color: #858585;
+}
+
+body.dark-mode .rotation-group,
+body.dark-mode .rotation-value {
+  color: #f1f3f4;
+  border-color: #858585;
+}
+
+/* 표 내부 가로선과 세로선: 모든 모드 동일 */
+.schedule-table th,
+.schedule-table td,
+.assignment-table th,
+.assignment-table td {
+  border-color: #858585;
+}
+
+body.dark-mode .schedule-table th,
+body.dark-mode .schedule-table td,
+body.dark-mode .assignment-table th,
+body.dark-mode .assignment-table td {
+  border-color: #858585;
+}
+
+body.dark-mode .rotation-group {
+  background: #39434d;
+}
+
+/* 회중 인원 통계: 집단 박스와 동일한 테두리 */
+#content > .section-card:has(.stats-grid) {
+  margin-top: 10px;
+  border: 5px solid #AEB6BF;
+  border-radius: 12px;
+  box-shadow: none;
+  overflow: hidden;
+  padding: 0;
+}
+
+#content > .section-card:has(.schedule-table) .section-title {
+  margin: 0;
+  padding: 18px 8px;
+  border-bottom: 2px solid #193650;
+  color: #193650;
+  text-align: center;
+  font-size: 1.25em;
+  font-weight: 900;
+}
+
+#content > .section-card:has(.stats-grid) .section-title {
+  margin: 0;
+  padding: 15px 8px 5px; /* 상단 사이 간격 15px, 하단 사이 간격 5px  */
+  border-bottom: 2px solid #193650;
+  color: #193650;
+  text-align: center;
+  font-size: 25px;
+  font-weight: 900;
+}
+    
+#content > .section-card:has(.stats-grid) .stats-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+
+#content > .section-card:has(.stats-grid) .stat-item {
+  display: grid;
+  grid-template-columns: 66.6% 33.4%;
+  align-items: stretch;
+  gap: 0;
+  width: 100%;
+  min-width: 0;
+  min-height: 36px;
+  padding: 0;
+  border: none;
+  border-bottom: 1px solid #858585;
+  border-radius: 0;
+  background: transparent;
+  text-align: center;
+}
+
+/* 통계 항목의 왼쪽 칸 */
+#content > .section-card:has(.stats-grid) .stat-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  margin: 0;
+  padding: 8px 4px;
+  border-right: 1px solid #858585;
+  background: #f7f9fb;
+  color: #000;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+/* 어두운 모드: 왼쪽 칸 */
+body.dark-mode #content > .section-card:has(.stats-grid) .stat-label {
+  background: #39434d;
+  color: #fff;
+}
+
+/* 통계 숫자: 오른쪽 칸 */
+#content > .section-card:has(.stats-grid) .stat-value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  flex-shrink: 0;
+  padding: 8px 4px;
+  color: #000;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* 어두운 모드: 오른쪽 칸 */
+body.dark-mode #content > .section-card:has(.stats-grid) .stat-value {
+  color: #fff;
+}
+
+/* 마지막 항목의 아래쪽 선 제거 */
+#content > .section-card:has(.stats-grid) .stat-item:last-child {
+  border-bottom: none;
+}
+ .group-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+   gap: 8px; /* 제목과 79명 사이 간격 */
+  width: 100%;
+  margin-top: 10px; /* 상단 사이 간격 */
+  margin-bottom: 5px; /* 하단 사이 간격 */
+  padding: 0 4px; /* 위아래 0px, 좌우 4px */
+  font-size: 25px;
+  font-weight: 900;
+  color: #193650;
+}
+
+.group-heading > span {
+  display: flex;
+  align-items: center;
+}
+    
+    .group-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+}
+
+.group-card {
+  min-width: 0;
+  padding: 12px 9px;
+  border: 5px solid #AEB6BF;
+  border-radius: 12px;
+  background: #f7f9fc;
+}
+
+.group-title {
+  margin-bottom: 10px;
+  color: #193650;
+  font-size: 30px;
+  font-weight: 900;
+  text-align: left;
+}
+
+/* 감독자 · 보조자 영역 */
+.group-leader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding: 0;
+  border-radius: 8px;
+  background: transparent;
+  line-height: 1.5;
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+}
+
+/* 좌우 각각 절반씩 사용하고 배경은 감독자·보조자 영역에만 적용 */
+.group-leader-side {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 9px 7px;
+  border-radius: 8px;
+  background: #C2CEDB;
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+
+/* 어두운 모드에서만 배경색을 더 진하게 변경 */
+body.dark-mode .group-leader-side {
+  background: #526579;
+}
+
+/* 보조자는 오른쪽 정렬 */
+.group-leader-side.right {
+  text-align: right;
+  align-items: flex-end;
+}
+
+/* 감독자 · 보조자 글자 */
+.group-leader strong {
+  color: #000;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* 박대기 (E, P) · 성낙봉 (E) */
+.group-leader .leader-name {
+  display: block;
+  font-size: 20px;
+  font-weight: 800;
+  color: #000;
+}
+
+/* 어두운 모드: 글자 흰색 */
+body.dark-mode .group-leader,
+body.dark-mode .group-leader strong,
+body.dark-mode .group-leader .leader-name {
+  color: #fff;
+}
+    
+    .member-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+/* 집단 명단 이름 - 밝은 테마 */
+.member-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  padding: 5px 7px;
+  border: 2px solid #3F6F9F;
+  border-radius: 7px;
+  background: #eef5fb;
+  overflow-wrap: anywhere;
+  font-size: 18px;
+  font-weight: 700;
+  color: #000;
+}
+
+/* 이름 옆 면당다음 (E, P) 등의 표시 */
+
+body.dark-mode .member-mark {
+  color: #fff;
+}
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+    }
+
+    
+.stat-item {
+  min-width: 0;
+  padding: 12px 8px;
+  border: 5px solid #AEB6BF;
+  border-radius: 10px;
+  background: #edf3f8;
+  text-align: center;
+}
+
+
+    .stat-label {
+      display: block;
+      margin-bottom: 5px;
+      color: #53677a;
+      font-size: .9em;
+    }
+
+    .stat-value {
+      color: #193650;
+      font-size: 1.35em;
+      font-weight: 900;
+    }
+
+
+.schedule-table,
+.assignment-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: .92em;
+}
+
+
+/* 호별 방문 · 전시대 봉사 · 줌 봉사 · 조직 부서 임명 · 책임별 임명 · 비고 */
+.schedule-table th,
+.schedule-table td,
+.assignment-table th,
+.assignment-table td {
+  font-size: 20px;
+  font-weight: 600;
+  color: #000;
+}
+
+/* 어두운 모드: 표 안의 글자 흰색 */
+body.dark-mode #content .schedule-table th,
+body.dark-mode #content .schedule-table td,
+body.dark-mode #content .assignment-table th,
+body.dark-mode #content .assignment-table td {
+  color: #fff !important;
+}
+
+/* 조직 부서 임명 및 책임별 표의 열 너비 */
+.assignment-table:not(.notes-table) th:nth-child(1),
+.assignment-table:not(.notes-table) td:nth-child(1) {
+  width: 50%;
+}
+
+.assignment-table:not(.notes-table) th:nth-child(2),
+.assignment-table:not(.notes-table) td:nth-child(2) {
+  width: 25%;
+}
+
+.assignment-table:not(.notes-table) th:nth-child(3),
+.assignment-table:not(.notes-table) td:nth-child(3) {
+  width: 25%;
+}
+
+/* 비고 표만 좌측 75%, 우측 25% */
+.assignment-table.notes-table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.assignment-table.notes-table td:nth-child(1) {
+  width: 75%;
+}
+
+.assignment-table.notes-table td:nth-child(2) {
+  width: 25%;
+}
+
+.schedule-table th,
+.schedule-table td,
+.assignment-table th,
+.assignment-table td {
+  padding: 9px 5px;
+  border: 1px solid #858585;
+  text-align: center;
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+
+    
+    .schedule-table th,
+    .assignment-table th {
+      background: #e8eef4;
+      color: #193650;
+      font-weight: 800;
+    }
+
+    .assignment-table td:first-child {
+      font-weight: 700;
+      background: #f7f9fb;
+    }
+
+   .subsection-title {
+  margin: 0;
+  padding: 8px 10px;
+  border-left: none;
+  background: #edf2f7;
+  color: #193650;
+  font-weight: 800;
+}
+
+/* 호별 방문 등 일정표: 바깥 박스와 내부 선 분리 */
+#content > .section-card.schedule-card > .schedule-table {
+  display: table;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+
+#content > .section-card.schedule-card > .schedule-table th,
+#content > .section-card.schedule-card > .schedule-table td {
+  border: 1px solid #858585;
+}
+
+/* 표의 바깥쪽 선은 제거하고 내부 가로·세로선만 유지 */
+#content > .section-card.schedule-card > .schedule-table tr:first-child > * {
+  border-top: none;
+}
+
+#content > .section-card.schedule-card > .schedule-table tr > *:first-child {
+  border-left: none;
+}
+
+#content > .section-card.schedule-card > .schedule-table tr > *:last-child {
+  border-right: none;
+}
+
+#content > .section-card.schedule-card > .schedule-table tbody tr:last-child > * {
+  border-bottom: none;
+}
+    .note-list {
+      margin: 0;
+      padding-left: 20px;
+      line-height: 1.9;
+    }
+
+    .loading-message,
+    .error-message,
+    .empty-message {
+      padding: 22px 12px;
+      color: #526273;
+      text-align: center;
+      line-height: 1.8;
+    }
+
+    .error-message { color: #a52b2b; }
+
+    .refresh-button {
+      display: block;
+      margin: 0 auto 16px;
+      padding: 9px 18px;
+      border: 0;
+      border-radius: 9px;
+      background: #193650;
+      color: white;
+      font-size: 1em;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .fixed-bottom {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 60px;
+      z-index: 1000;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      background: #193650;
+      border-top: 1px solid rgba(255,255,255,.10);
+    }
+
+    .fixed-bottom button {
+      min-width: 0;
+      height: 59px;
+      padding: 0 4px;
+      margin: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: #fff;
+      font-family: Arial, "Malgun Gothic", sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .fixed-bottom button + button {
+      border-left: 1px solid rgba(255,255,255,.25);
+    }
+
+    .settings-panel {
+      display: none;
+      position: fixed;
+      top: 85px;
+      right: 14px;
+      width: 328px;
+      max-width: calc(100vw - 20px);
+      padding: 17px;
+      z-index: 1100;
+      border: 1px solid #dedfe5;
+      border-radius: 22px;
+      background: #fff;
+      color: #222;
+      box-shadow: 0 14px 32px rgba(0,0,0,.18);
+    }
+
+    .settings-panel.show { display: block; }
+
+    .settings-theme-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .theme-btn {
+      min-width: 0;
+      height: 59px;
+      padding: 0 6px;
+      border: 1px solid #dce0e7;
+      border-radius: 16px;
+      background: #f5f6f8;
+      color: #222;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .theme-btn.active {
+      background: #eeeaff;
+      border-color: #7566ff;
+      color: #40348d;
+    }
+
+    .settings-font-row {
+      display: grid;
+      grid-template-columns: 72px 1fr 72px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .font-btn,
+    .font-size {
+      height: 59px;
+      min-width: 0;
+      border: 1px solid #dce0e7;
+      border-radius: 16px;
+      background: #f5f6f8;
+      color: #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+    }
+
+    .font-btn { font-size: 30px; cursor: pointer; }
+    .font-size { font-size: 21px; }
+
+    body.dark-mode {
+      background: #202124;
+      color: #f1f3f4;
+    }
+
+    body.dark-mode .page { background: #303134 !important; }
+
+    
+/* 어두운 모드: 본문 글자 전체 흰색 */
+body.dark-mode #content,
+body.dark-mode #content * {
+  color: #fff !important;
+}
+
+/* 링크 글자도 흰색 */
+body.dark-mode #content a {
+  color: #fff !important;
+}
+
+
+    body.dark-mode .section-title { border-color: #7898b8; }
+
+    body.dark-mode .stat-item {
+  border-color: #858585;
+}
+    body.dark-mode #content > .section-card:has(.stats-grid) .stat-item {
+  border-bottom-color: #858585;
+}
+    body.dark-mode .group-leader,
+    body.dark-mode .stat-item,
+    body.dark-mode .subsection-title {
+      background: #39434d;
+      color: #f1f3f4;
+    }
+
+    body.dark-mode .group-leader strong,
+    body.dark-mode .subsection-title {
+      color: #d3e7fb;
+    }
+
+    body.dark-mode .member-chip {
+  background: #303134;
+  border: 2px solid #fff;
+  color: #fff;
+}
+
+/* 일반 명단은 지정한 색상을 유지 */
+body.dark-mode .member-list-chip {
+  background: rgba(111,168,216,.16);
+  border: 2px solid #6FA8D8;
+}
+
+body.dark-mode .member-mark {
+  color: #fff;
+}
+
+    body.dark-mode .schedule-table th,
+    body.dark-mode .assignment-table th {
+      background: #39434d;
+      color: #e7f2ff;
+    }
+
+    
+body.dark-mode .schedule-table td,
+body.dark-mode .assignment-table td,
+body.dark-mode .schedule-table th,
+body.dark-mode .assignment-table th {
+  border-color: #858585;
+}
+
+
+    body.dark-mode .assignment-table td:first-child {
+      background: #292d31;
+    }
+    
+/* 호별 방문 표 배경 통일 */
+body.dark-mode .schedule-table th {
+  background: #39434d;
+}
+
+body.dark-mode .schedule-table td:not(:first-child) {
+  background: #292d31;
+}
+
+body.dark-mode .settings-panel {
+  background: #202020;
+  color: #f5f5f5;
+  border-color: #404040;
+}
+
+    body.dark-mode .settings-panel .theme-btn,
+    body.dark-mode .settings-panel .font-btn,
+    body.dark-mode .settings-panel .font-size {
+      background: #202020;
+      color: #eee;
+      border-color: #505050;
+    }
+
+    body.dark-mode .settings-panel .theme-btn.active {
+      background: #302b50;
+      border-color: #7566ff;
+      color: #fff;
+    }  
+
+  
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <header class="fixed-header">
+      <button type="button"
+        class="top-button back-button"
+        onclick="location.href='index.html'"
+        aria-label="홈으로">‹</button>
+
+      <div class="main-title">북부회중 게시판</div>
+
+      <button type="button"
+        class="top-button settings-button"
+        onclick="toggleSettings()"
+        aria-label="설정">⚙</button>
+    </header>
+
+    <main id="content">
+      <div class="loading-message">
+        집단 및 부서 자료를 불러오는 중입니다...
+      </div>
+    </main>
+
+ <nav class="fixed-bottom">
+  <button type="button" onclick="goBoardPage('publicTalk')">
+    공개강연
+  </button>
+
+  <button type="button" onclick="goBoardPage('ministry')">
+    생활과봉사
+  </button>
+
+  <button type="button" onclick="goBoardPage('groups')">
+    집단및부서
+  </button>
+</nav>
+  </div>
+
+  <div id="settingsPanel" class="settings-panel">
+    <div class="settings-theme-row">
+      <button type="button" id="lightBtn"
+        class="theme-btn" onclick="setTheme('light')">
+        ☀ 밝게
+      </button>
+      <button type="button" id="darkBtn"
+        class="theme-btn" onclick="setTheme('dark')">
+        🌙 어둡게
+      </button>
+    </div>
+
+    <div class="settings-font-row">
+      <button type="button" class="font-btn"
+        onclick="changeFont(-10)" aria-label="글자 작게">−</button>
+      <div id="fontSize" class="font-size">120%</div>
+      <button type="button" class="font-btn"
+        onclick="changeFont(10)" aria-label="글자 크게">＋</button>
+    </div>
+  </div>
+
+  <script>
+    /*
+     * 집단 데이터 Apps Script 웹앱 주소
+     * Apps Script의 doGet()이 JSON 배열을 반환해야 합니다.
+     */
+    const GROUP_DATA_URL =
+      "https://script.google.com/macros/s/AKfycbxbD0uW23kBcuvsBH7ZtVsHCNURPn6mrz2SHhmaQrocxmw-2JtCKVF6H9Mjw4SVAMgf/exec";
+
+    function toggleSettings() {
+      document.getElementById("settingsPanel")
+        .classList.toggle("show");
+    }
+
+    function setTheme(theme) {
+      const isLight = theme === "light";
+      const panel = document.getElementById("settingsPanel");
+
+      document.body.classList.toggle("dark-mode", !isLight);
+      document.body.style.background =
+        isLight ? "#f3f4f6" : "#202124";
+      document.body.style.color =
+        isLight ? "#222" : "#f1f3f4";
+
+      document.querySelector(".page").style.background =
+        isLight ? "#fff" : "#303134";
+
+      panel.classList.toggle("dark-mode", !isLight);
+
+      document.getElementById("lightBtn")
+        .classList.toggle("active", isLight);
+      document.getElementById("darkBtn")
+        .classList.toggle("active", !isLight);
+
+      localStorage.setItem("northBoardTheme", theme);
+    }
+
+    let fontPercent = 120;
+
+   function setFontPercent(percent) {
+  fontPercent = Math.max(80, Math.min(150, percent));
+
+  document.getElementById("fontSize").textContent =
+    fontPercent + "%";
+
+  const outdoorGroups =
+    document.getElementById("outdoorGroupsSection");
+
+  if (outdoorGroups) {
+    outdoorGroups.style.zoom = fontPercent + "%";
+  }
+
+  localStorage.setItem(
+    "northBoardFontPercent",
+    String(fontPercent)
+  );
+}
+
+       function changeFont(amount) {
+      setFontPercent(fontPercent + amount);
+    }
+
+    /* =====================================================
+       게시판 페이지 이동
+    ===================================================== */
+
+    async function goBoardPage(section) {
+      try {
+        const response = await fetch(
+          "게시판-공강.html",
+          { cache: "no-store" }
+        );
+
+        if (!response.ok) {
+          throw new Error("주소 설정을 읽지 못했습니다.");
+        }
+
+        const html = await response.text();
+
+        const doc = new DOMParser().parseFromString(
+          html,
+          "text/html"
+        );
+
+        const configElement =
+          doc.getElementById("board-url-config");
+
+        if (!configElement) {
+          throw new Error("주소 설정을 찾지 못했습니다.");
+        }
+
+        const boardUrls = JSON.parse(
+          configElement.textContent
+        );
+
+        if (!boardUrls[section]) {
+          throw new Error("해당 페이지 주소가 없습니다.");
+        }
+
+        window.location.href = boardUrls[section];
+
+      } catch (error) {
+        alert("페이지 이동에 실패했습니다. 다시 시도해 주세요.");
+        console.error(error);
+      }
+    }
+
+    (function restoreSettings() {
+      const savedTheme = localStorage.getItem("northBoardTheme");
+      const savedFont = Number(
+        localStorage.getItem("northBoardFontPercent")
+      );
+
+      setTheme(savedTheme === "light" ? "light" : "dark");
+
+      setFontPercent(
+        Number.isFinite(savedFont) &&
+        savedFont >= 80 &&
+        savedFont <= 150
+          ? savedFont
+          : 120
+      );
+    })();
+
+    function clean(value) {
+      return String(value == null ? "" : value)
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function escapeHTML(value) {
+      return String(value == null ? "" : value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function cell(row, index) {
+      return clean(row && row[index]);
+    }
+
+    function findRow(data, phrase) {
+      return data.findIndex(row =>
+        row.some(value => clean(value).includes(phrase))
+      );
+    }
+
+    function firstNonEmpty(row) {
+      return row.find(value => clean(value) !== "") || "";
+    }
+
+    function section(title, body) {
+      return `
+        <section class="section-card">
+          <h2 class="section-title">${escapeHTML(title)}</h2>
+          ${body}
+        </section>`;
+    }
+
+    function renderGroups(data) {
+      const headerIndex = findRow(data, "집 단 명");
+
+      if (headerIndex < 0) return "";
+
+      const header = data[headerIndex];
+      const groupColumns = [];
+
+      header.forEach((value, index) => {
+        const name = clean(value);
+        if (/^[A-D]집단$/.test(name)) {
+          groupColumns.push({
+            name,
+            index
+          });
+        }
+      });
+
+      if (!groupColumns.length) return "";
+
+      const endIndex = data.findIndex((row, index) =>
+        index > headerIndex &&
+        row.some(value => clean(value).includes("전도인"))
+      );
+
+      const stop = endIndex > headerIndex ? endIndex : data.length;
+      const groups = groupColumns.map(group => ({
+        name: group.name,
+        index: group.index,
+        supervisor: "",
+        assistant: "",
+        members: []
+      }));
+
+   
+      for (let r = headerIndex + 1; r < stop; r++) {
+        const row = data[r];
+        const label = row.map(clean).join(" ");
+
+        groups.forEach(group => {
+          const name = cell(row, group.index);
+
+          const marks = [
+            cell(row, group.index + 2),
+            cell(row, group.index + 3)
+          ].filter(Boolean);
+
+          if (!name) return;
+
+          if (label.includes("집단 감독자")) {
+            group.supervisor = name + (marks.length
+              ? " (" + marks.join(", ") + ")"
+              : "");
+            return;
+          }
+
+          if (label.includes("집단 보조자")) {
+            group.assistant = name + (marks.length
+              ? " (" + marks.join(", ") + ")"
+              : "");
+            return;
+          }
+
+          // 통계 행은 일반 명단에서 제외
+          if (
+            /^(형제|자매|전도인)\s*:/.test(name) ||
+            /^(P|E|M|SP|CO)\s*:/.test(name) ||
+            /^\d+\s*명$/.test(name)
+          ) {
+            return;
+          }
+
+          // 실제 이름만 수집하고 표시를 유지
+          group.members.push({
+            name,
+            marks
+          });
+        });
+      }
+
+      // 일반 명단을 가나다순으로 정렬
+      groups.forEach(group => {
+        group.members.sort((a, b) =>
+          a.name.localeCompare(b.name, "ko")
+        );
+      });
+
+
+      const html = groups.map(group => `
+        <div class="group-card">
+          <div class="group-title">
+            ${escapeHTML(group.name)}
+           <span style="float:right;font-size:20px;font-weight:600;color:#53677a">
+  ${group.members.length +
+  (group.supervisor ? 1 : 0) +
+  (group.assistant ? 1 : 0)}명
+</span>
+          </div>
+
+          <div class="group-leader">
+  <div class="group-leader-side">
+    <strong style="display:inline">감독자</strong>
+    <span class="leader-name">${escapeHTML(group.supervisor || "자료 없음")}</span>
+  </div>
+
+  <div class="group-leader-side right">
+    <strong style="display:inline">보조자</strong>
+    <span class="leader-name">${escapeHTML(group.assistant || "자료 없음")}</span>
+  </div>
+</div>
+
+          <div class="member-list">
+            ${group.members.length
+              ? group.members.map(member => `
+               <span class="member-chip member-list-chip">
+                  ${escapeHTML(member.name)}
+                  ${member.marks.length
+                    ? `<span class="member-mark">${escapeHTML(member.marks.join(" · "))}</span>`
+                    : ""}
+                </span>
+              `).join("")
+              : `<span class="empty-message">명단이 없습니다.</span>`
+            }
+          </div>
+        </div>
+      `).join("");
+
+      const totalMembers = groups.reduce(
+  (total, group) =>
+    total +
+    group.members.length +
+    (group.supervisor ? 1 : 0) +
+    (group.assistant ? 1 : 0),
+  0
+);
+
+     return `
+  <div id="outdoorGroupsSection">
+    <div class="group-heading">
+      <span>야외 봉사 집단</span>
+      <span>${totalMembers}명</span>
+    </div>
+    <div class="group-grid">${html}</div>
+  </div>
+`;
+    }
+
+  
+function renderStats(data) {
+  function getCell(rowIndex, colIndex) {
+    return cell(data[rowIndex] || [], colIndex);
+  }
+
+  // E, E · P, E · CO처럼 다른 표시와 함께 있어도 인식합니다.
+  function hasMark(values, target) {
+    return values.some(value =>
+      new RegExp("(^|[^A-Z])" + target + "([^A-Z]|$)", "i")
+        .test(clean(value))
+    );
+  }
+
+  const brotherCount = getCell(8, 3);    // D9
+  const sisterCount = getCell(19, 3);    // D20
+  const publisherCount = getCell(33, 3); // D34
+  const pioneerCount = getCell(34, 2);  // C35
+
+  const headerIndex = findRow(data, "집 단 명");
+  const header = headerIndex >= 0 ? data[headerIndex] : [];
+  const groupColumns = [];
+
+  header.forEach((value, index) => {
+    if (/^[A-D]집단$/.test(clean(value))) {
+      groupColumns.push(index);
+    }
+  });
+
+  let elderCount = 0;
+let servantCount = 0;
+
+// 시트 F6:U13 범위에서 E와 M을 직접 셉니다.
+for (let r = 5; r <= 12; r++) {
+  for (let c = 5; c <= 20; c++) {
+    const value = clean(cell(data[r] || [], c));
+
+    if (value === "E") elderCount++;
+    if (value === "M") servantCount++;
+  }
+}
+
+  const pioneers = Number.parseInt(pioneerCount, 10) || 0;
+  const publishers = Number.parseInt(publisherCount, 10) || 0;
+
+  const pioneerRate = publishers > 0
+    ? Math.round(pioneers / publishers * 100)
+    : 0;
+
+  const stats = [
+    { label: "형제 인원", value: brotherCount + "명" },
+    { label: "자매 인원", value: sisterCount + "명" },
+    { label: "총 전도인", value: publisherCount + "명" },
+    { label: "장로", value: elderCount + "명" },
+    { label: "봉사의 종", value: servantCount + "명" },
+    { label: "파이오니아", value: pioneers + "명" },
+    { label: "파이오니아 비율", value: pioneerRate + "%" }
+  ];
+
+  return `
+    <div class="group-heading">
+      <span>회중 인원 통계</span>
+    </div>
+
+    <section class="section-card">
+      <div class="stats-grid">
+        ${stats.map(stat => `
+          <div class="stat-item">
+            <span class="stat-label">${escapeHTML(stat.label)}</span>
+            <span class="stat-value">${escapeHTML(stat.value)}</span>
+          </div>
+        `).join("")}
+      </div>
+    </section>
+  `;
+}
+    
+/* =========================================================
+   왕국 회관 청소 / 봉사감독자 방문
+========================================================= */
+
+function renderRotationSchedules(data) {
+  const groups = [
+    { group: "A집단", column: 5 },
+    { group: "B집단", column: 9 },
+    { group: "C집단", column: 13 },
+    { group: "D집단", column: 17 }
+  ];
+
+    function readCell(rowNumber, columnIndex) {
+    const row = data[rowNumber - 1] || [];
+    const value = row[columnIndex];
+
+    return String(value == null ? "" : value).trim();
+  }
+
+  function makeRotation(title, rowNumber) {
+    return `
+      <div class="group-heading">
+        <span>${escapeHTML(title)}</span>
+      </div>
+
+      <section class="section-card rotation-card">
+       <div class="rotation-grid">
+
+  ${groups.map(item => `
+    <div class="rotation-group">
+      ${escapeHTML(item.group)}
+    </div>
+    <div class="rotation-value">
+      ${escapeHTML(readCell(rowNumber, item.column) || "-")}
+    </div>
+  `).join("")}
+
+</div>
+      </section>
+    `;
+  }
+
+  return `
+    ${makeRotation("왕국 회관 청소", 37)}
+    ${makeRotation("봉사감독자 방문", 38)}
+  `;
+}
+    
+function renderService(data) {
+  const dayIndex = findRow(data, "요일");
+  if (dayIndex < 0) return "";
+
+  const dayRow = data[dayIndex];
+  const days = [];
+
+  dayRow.forEach((value, index) => {
+    const day = clean(value);
+
+    if (/^(월|화|수|목|금|토|일)$/.test(day)) {
+      days.push({ day, index });
+    }
+  });
+
+  if (!days.length) return "";
+
+  const rows = [];
+  let currentType = "";
+
+  // 호별 방문 일정은 기존 방식대로 읽습니다.
+  for (let r = dayIndex + 1; r < data.length; r++) {
+    const row = data[r];
+    const first = row.map(clean).join(" ");
+
+    if (first.includes("직책")) break;
+
+    const label = cell(row, 1) || cell(row, 2);
+
+    if (
+      label.includes("호별") ||
+      label.includes("전시대") ||
+      label.includes("ZOOM") ||
+      label.includes("줌")
+    ) {
+      currentType = label.replace(/\s+/g, " ");
+    }
+
+    if (!currentType || !/호별/.test(currentType)) continue;
+
+    const subLabel = cell(row, 3) || cell(row, 2);
+
+    if (!["인도자", "시간"].some(key =>
+      subLabel.includes(key)
+    )) continue;
+
+    days.forEach(day => {
+      const value = cell(row, day.index);
+
+      let record = rows.find(item => item.day === day.day);
+
+      if (!record) {
+        record = {
+          day: day.day,
+          leader: "-",
+          time: "-"
+        };
+
+        rows.push(record);
+      }
+
+      if (subLabel.includes("인도자")) {
+        record.leader = value || "-";
+      }
+
+      if (subLabel.includes("시간")) {
+        record.time = value || "-";
+      }
+    });
+  }
+
+  // 호별 방문과 전시대 봉사에서 공통으로 사용할 모임장소
+  // W38 셀 = data[37][22]
+  const meetingPlace = cell(data[37] || [], 22);
+
+  // 호별 방문: 화요일부터 일요일까지 정렬 및 요일 전체 표기
+  const dayOrder = ["화", "수", "목", "금", "토", "일"];
+
+  rows.sort((a, b) =>
+    dayOrder.indexOf(a.day) - dayOrder.indexOf(b.day)
+  );
+
+  rows.forEach(item => {
+    item.day = item.day + "요일";
+  });
+
+  // 전시대 봉사
+  // V48 = 토요일 인도자
+  // V49 = 토요일 시간
+  // Z48 = 일요일 인도자
+  // Z49 = 일요일 시간
+  const exhibitionRows = [
+    {
+      day: "토요일",
+      leader: clean((data[47] || [])[21]) || "-",
+      time: clean((data[48] || [])[21]) || "-"
+    },
+    {
+      day: "일요일",
+      leader: clean((data[47] || [])[25]) || "-",
+      time: clean((data[48] || [])[25]) || "-"
+    }
+  ];
+
+  // 줌 [ZOOM] 봉사
+  // V52 = 토요일 인도자
+  // V53 = 토요일 시간
+  const zoomRows = [
+    {
+      day: "토요일",
+      leader: clean((data[51] || [])[21]) || "-",
+      time: clean((data[52] || [])[21]) || "-"
+    }
+  ];
+
+  // 일정 표 생성
+  function makeScheduleTable(items, showMeetingPlace) {
+    return `
+      <table class="schedule-table">
+        <thead>
+          <tr>
+            <th>요일</th>
+            <th>인도자</th>
+            <th>시간</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          ${items.map(item => `
+            <tr>
+              <td>${escapeHTML(item.day)}</td>
+              <td>${escapeHTML(item.leader || "-")}</td>
+              <td>${escapeHTML(item.time || "-")}</td>
+            </tr>
+          `).join("")}
+
+          ${showMeetingPlace ? `
+            <tr>
+             <td style="font-weight:700;">
+  모임장소
+</td>
+              <td colspan="2">
+                ${meetingPlace
+                  ? `<a
+                      href="https://map.naver.com/p/search/${encodeURIComponent(meetingPlace)}"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style="color:#0563c1;text-decoration:underline;font-weight:700;"
+                    >봉사모임장소</a>`
+                  : "-"}
+              </td>
+            </tr>
+          ` : ""}
+        </tbody>
+      </table>
+    `;
+  }
+
+  // 제목은 박스 밖에, 표는 박스 안에 표시
+  function makeScheduleSection(title, items, showMeetingPlace) {
+    if (!items.length) return "";
+
+    return `
+      <div class="group-heading">
+        <span>${escapeHTML(title)}</span>
+      </div>
+
+      <section class="section-card schedule-card">
+        ${makeScheduleTable(items, showMeetingPlace)}
+      </section>
+    `;
+  }
+
+
+  // 화면 표시 순서
+  return `
+    ${rows.length
+      ? makeScheduleSection("호별 방문", rows, true)
+      : ""}
+
+   ${makeScheduleSection(
+  "전시대 봉사",
+  exhibitionRows,
+  true
+)}
+
+    ${makeScheduleSection(
+      "줌 [ZOOM] 봉사",
+      zoomRows,
+      false
+    )}
+
+
+<div class="group-heading group-meeting-notice">
+ <div style="display:block; width:100%;">
+  <span style="display:block; font-size:25px; font-weight:900; line-height:35px;">
+    ※ 집단별 봉사모임 :
+  </span>
+  <span style="display:block; font-size:22px; font-weight:900; line-height:35px;">
+    매월 첫째 일요일 (오후 1:30)
+  </span>
+</div>
+</div>
+  `;
+}
+
+function renderAssignments(data) {
+
+  // 병합 셀 범위에서 실제 값이 있는 셀을 읽습니다.
+  function mergedCell(row, startCol, endCol) {
+    const values = [];
+
+    for (let c = startCol; c <= endCol; c++) {
+      const value = cell(row, c);
+
+      if (value && !values.includes(value)) {
+        values.push(value);
+      }
+    }
+
+    return values.join(" ");
+  }
+
+  // B~D열: 직책, E~F열: 담당, G열: 보조
+  function readRow(row) {
+    return {
+      role: mergedCell(row, 1, 3),
+      person: mergedCell(row, 4, 5),
+      assistant: cell(row, 6)
+    };
+  }
+
+  const phoneLinks = {
+    "장로의 회 조정자 책임": {
+      name: "정성일",
+      phone: "01075210755"
+    },
+    "서기 책임": {
+      name: "성지운",
+      phone: "01057460855"
+    },
+    "봉사 감독자 책임": {
+      name: "추요식",
+      phone: "01056143766"
+    }
+  };
+
+  function readRows(startRow, endRow) {
+    const records = [];
+
+    for (let r = startRow; r <= endRow; r++) {
+      const record = readRow(data[r - 1] || []);
+
+      if (record.role || record.person || record.assistant) {
+        records.push(record);
+      }
+    }
+
+    return records;
+  }
+
+  // 조직 부서 임명: B56:G67 중 제목 행 56 제외
+  const mainRecords = readRows(57, 67);
+
+  // 책임별 임명: 표마다 실제 행 범위를 구분
+  const responsibilityGroups = [
+    {
+      title: "장로의 회 조정자 책임",
+      records: readRows(69, 73)
+    },
+    {
+      title: "서기 책임",
+      records: readRows(75, 77)
+    },
+    {
+      title: "봉사 감독자 책임",
+      records: readRows(79, 82)
+    }
+  ];
+
+  // 비고: 84행은 제목, 85~89행은 내용
+  const notes = readRows(85, 89);
+
+  function assignmentRow(role, person, assistant) {
+    const linkInfo = phoneLinks[role];
+    let personHtml = escapeHTML(person || "-");
+
+    if (linkInfo) {
+      personHtml = `
+        <a
+          href="https://call.ctrlq.org/${linkInfo.phone}"
+          style="color:inherit;text-decoration:underline;font-weight:700;"
+        >${escapeHTML(person || linkInfo.name)}</a>
+      `;
+    }
+
+    return `
+      <tr>
+        <td>${escapeHTML(role || "-")}</td>
+        <td>${personHtml}</td>
+        <td>${escapeHTML(assistant || "")}</td>
+      </tr>
+    `;
+  }
+
+  function tableHeader() {
+    return `
+      <thead>
+        <tr>
+          <th>직책</th>
+          <th>담당</th>
+          <th>보조</th>
+        </tr>
+      </thead>
+    `;
+  }
+
+ function assignmentSection(title, tableHtml) {
+  const linkInfo = phoneLinks[title];
+
+  if (linkInfo) {
+    return `
+           <div class="group-heading"
+           style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="display:flex;align-items:center;">${escapeHTML(title)}</span>
+        <a
+          href="https://call.ctrlq.org/${linkInfo.phone}"
+          style="display:flex;align-items:center;color:inherit;text-decoration:underline;font-weight:700;font-size:18px;"
+        >${escapeHTML(linkInfo.name)}</a>
+      </div>
+
+      <section class="section-card schedule-card">
+        ${tableHtml}
+      </section>
+    `;
+  }
+
+  return `
+    <div class="group-heading">
+      <span>${escapeHTML(title)}</span>
+    </div>
+
+    <section class="section-card schedule-card">
+      ${tableHtml}
+    </section>
+  `;
+}
+
+  // 조직 부서 임명 표
+  const mainTable = `
+    <table class="assignment-table">
+      ${tableHeader()}
+      <tbody>
+        ${mainRecords.map(record =>
+          assignmentRow(
+            record.role,
+            record.person,
+            record.assistant
+          )
+        ).join("")}
+      </tbody>
+    </table>
+  `;
+
+   // 책임별 표
+  function responsibilityTable(group) {
+    const rows = group.records.slice(1).map(record =>
+      assignmentRow(
+        record.role,
+        record.person,
+        record.assistant
+      )
+    ).join("");
+
+    return `
+      <table class="assignment-table">
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+  }
+  
+  // 비고 표
+  // 비고 표
+const notesTable = `
+  <table class="assignment-table notes-table">
+      <tbody>
+        ${notes.map(note => `
+          <tr>
+            <td>${escapeHTML(note.role || "-")}</td>
+            <td>${escapeHTML(
+              [note.person, note.assistant]
+                .filter(Boolean)
+                .join(" ")
+            )}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+
+  return `
+    <div class="group-heading">
+      <span>조직 부서 임명</span>
+    </div>
+
+    ${mainRecords.length
+      ? `<section class="section-card schedule-card">${mainTable}</section>`
+      : ""}
+
+    ${responsibilityGroups.map(group =>
+      group.records.length
+        ? assignmentSection(
+            group.title,
+            responsibilityTable(group)
+          )
+        : ""
+    ).join("")}
+
+    ${notes.length
+      ? assignmentSection("비고", notesTable)
+      : ""}
+  `;
+}
+    function renderPage(data) {
+      if (!Array.isArray(data) || !data.length) {
+        throw new Error("스프레드시트에서 데이터가 반환되지 않았습니다.");
+      }
+
+ const html = [
+  renderGroups(data),
+  renderStats(data),
+  renderRotationSchedules(data),
+  renderService(data),
+  renderAssignments(data)
+].filter(Boolean).join("");
+
+      if (!html) {
+        throw new Error(
+          "자료를 받았지만 집단·일정·부서 항목을 찾지 못했습니다. 시트 구조를 확인해야 합니다."
+        );
+      }
+
+   
+      document.getElementById("content").innerHTML = html;
+
+    }
+
+    async function loadGroupData() {
+      const content = document.getElementById("content");
+
+      content.innerHTML =
+        '<div class="loading-message">집단 및 부서 자료를 불러오는 중입니다...</div>';
+
+      try {
+        const response = await fetch(GROUP_DATA_URL, {
+          method: "GET",
+          redirect: "follow",
+          cache: "no-store"
+        });
+
+        if (!response.ok) {
+          throw new Error("웹앱 응답 오류: " + response.status);
+        }
+
+        const text = await response.text();
+        let data;
+
+        try {
+          data = JSON.parse(text);
+        } catch (error) {
+          throw new Error(
+            "웹앱이 JSON 자료를 반환하지 않았습니다. Apps Script 배포 상태를 확인해 주세요."
+          );
+        }
+
+        renderPage(data);
+      } catch (error) {
+        console.error("집단 자료 불러오기 오류:", error);
+
+        content.innerHTML = `
+          <section class="section-card">
+            <h2 class="section-title">자료를 불러오지 못했습니다</h2>
+            <div class="error-message">
+              ${escapeHTML(error.message || "연결 오류가 발생했습니다.")}
+              <br><br>
+              Apps Script 웹앱의 배포 상태와 접근 권한,
+              JSON 반환 여부를 확인해 주세요.
+            </div>
+            <button class="refresh-button" type="button"
+              onclick="loadGroupData()">다시 시도</button>
+          </section>`;
+      }
+    }
+
+    loadGroupData();
+  </script>
+</body>
+</html>
