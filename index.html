@@ -60,25 +60,9 @@ html {
 body {
     margin: 0;
     padding: 0;
-
-    min-height: 100vh;
-    min-height: 100dvh;
-
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "SF Pro Display",
-        "SF Pro Text",
-        "Noto Sans KR",
-        "Malgun Gothic",
-        sans-serif;
-
-    background: #f3f6fa;
-    color: #172033;
-
-    -webkit-font-smoothing: antialiased;
 }
 
+</head>
 
 /* ==================================================
    메인 페이지
@@ -1110,12 +1094,13 @@ body.unlocked .page {
 ================================================== */
 
 body.dark-theme,
-html.dark-theme{
+html.dark-theme,
+body.dark-theme .page{
     background:#18212b;
 }
 
 body.dark-theme{
-    color:#f0f3f6;
+    color:#ffffff;
 }
 
 
@@ -1126,52 +1111,25 @@ body.dark-theme .title{
 }
 
 
-/* 어두운 화면에서 일반 메뉴 */
+/* 일반 버튼도 어둡게 */
 
 body.dark-theme .button{
     background:#26313d;
     color:#f0f3f6;
     border-color:#3b4856;
-    box-shadow:none;
 }
+
+
+/* 버튼 안의 글자 */
 
 body.dark-theme .button-text{
     color:#f0f3f6;
 }
 
+
+/* 버튼 오른쪽 화살표 */
+
 body.dark-theme .button-arrow{
-    color:#b9c8d6;
-}
-
-body.dark-theme .icon{
-    background:#e7efff;
-}
-
-
-/* 어두운 화면에서 관리자 버튼 */
-
-body.dark-theme .admin-button{
-    background:
-        linear-gradient(
-            135deg,
-            #174a7c 0%,
-            #10385f 100%
-        );
-
-    color:#ffffff;
-    border:none;
-    box-shadow:none;
-}
-
-body.dark-theme .admin-button .button-text{
-    color:#ffffff;
-}
-
-body.dark-theme .admin-button .icon{
-    background:rgba(255,255,255,.13);
-}
-
-body.dark-theme .admin-button .button-arrow{
     color:#b9c8d6;
 }
 
@@ -1222,56 +1180,9 @@ body.dark-theme .font-size-arrow{
 body.dark-theme .font-size-arrow:active{
     background:#405061;
 }
-
-
-/* ==================================================
-   ★ 추가된 부분
-   어두운 화면에서 전시대 관리자 선택 화면도
-   어둡게 표시
-================================================== */
-
-body.dark-theme .admin-choice-overlay{
-    background:rgba(5,15,25,.86);
-}
-
-body.dark-theme .admin-choice-box{
-    background:#26313d;
-    box-shadow:0 20px 50px rgba(0,0,0,.45);
-}
-
-body.dark-theme .admin-choice-title{
-    color:#ffffff;
-}
-
-body.dark-theme .admin-choice-link{
-    background:#334150;
-    color:#f0f3f6;
-    border-color:#465564;
-}
-
-body.dark-theme .admin-choice-link .choice-arrow{
-    color:#b9c8d6;
-}
-
-body.dark-theme .admin-choice-cancel{
-    background:#3a4653;
-    color:#f0f3f6;
-}
-
-body.dark-theme .admin-choice-link:active{
-    background:#405061;
-}
-
-body.dark-theme .admin-choice-cancel:active{
-    background:#465463;
-}
-
+   
 </style>
-
-</head>
-
-<body>
-
+   
 <!-- ==================================================
      화면 설정
      화면 배경만 밝게/어둡게 변경
@@ -1523,6 +1434,16 @@ body.dark-theme .admin-choice-cancel:active{
 
         <a
             class="admin-choice-link"
+            href="https://docs.google.com/spreadsheets/d/1eQHscrZpAWzrOo6QJw3pmyoeUijUoTKyfMmmPRPqkaU/edit#gid=1237649201"
+            onclick="openGoogleSheet(event, this.href)">
+
+            <span>⚙️ 전시대 관리자</span>
+            <span class="choice-arrow">›</span>
+
+        </a>
+
+        <a
+            class="admin-choice-link"
             href="./전시대참여자.html">
 
             <span>👥 전시대 참여자</span>
@@ -1548,14 +1469,14 @@ body.dark-theme .admin-choice-cancel:active{
 
         </a>
 
-<a
-    class="admin-choice-link"
-    href="./회의록2026.html">
+        <a
+            class="admin-choice-link"
+            href="./회의록2026.html">
 
-    <span>📝 회의록</span>
-    <span class="choice-arrow">›</span>
+            <span>📝 회의록</span>
+            <span class="choice-arrow">›</span>
 
-</a>
+        </a>
 
         <button
             type="button"
@@ -1586,14 +1507,12 @@ body.dark-theme .admin-choice-cancel:active{
             </h1>
 
         </header>
+<a
+    class="main-link"
 
-
-        <a
-           class="main-link"
-           
-            href="./게시판-공강.html">   
-           
-<!-- ==================================================
+    href="./게시판-공강.html">
+   
+   <!-- ==================================================
 
    href="./게시판-공강.html">   
 
@@ -1604,30 +1523,30 @@ body.dark-theme .admin-choice-cancel:active{
    onclick="openGoogleSheet(event, this.href)"> 
    
    ================================================== -->
-          
-                <div class="main-content">
+   
+    <div class="main-content">
 
-                <div class="main-icon">
-                    📋
-                </div>
+        <div class="main-icon">
+            📋
+        </div>
 
-                <div class="main-title">
-                    북부회중 게시판
-                </div>
+        <div class="main-title">
+            북부회중 게시판
+        </div>
 
-            </div>
+    </div>
 
-            <span class="arrow">
-                ›
-            </span>
+    <span class="arrow">
+        ›
+    </span>
 
-        </a>
-       <!-- ==================================================
+</a>
+
+        <!-- ==================================================
              메뉴
         ================================================== -->
 
         <section class="buttons">
-
 
         <!-- ==================================================
              화요일 링크
@@ -1644,18 +1563,8 @@ body.dark-theme .admin-choice-cancel:active{
                 <div class="button-left">
 
                     <div class="icon">
-            <img
-                src="./화요일.png"
-                alt="화요일"
-                style="
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                    border-radius: 18px;
-                    display: block;
-                "
-            >
-        </div>
+                        📅
+                    </div>
 
                     <span class="button-text">
                         화요일
@@ -1677,26 +1586,16 @@ body.dark-theme .admin-choice-cancel:active{
 
             <!-- 수요일 -->
 
-            <a
+             <a
                 class="button"
-                href="https://docs.google.com/spreadsheets/d/1UEdmbFROuAe1rny6-HN6998ObACrme-mhmC7QXBBUHE/edit?gid=0#gid=0"
+                href="./수요일.html"
                 target="_top">
 
                 <div class="button-left">
 
                     <div class="icon">
-            <img
-                src="./수요일.png"
-                alt="수요일"
-                style="
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                    border-radius: 18px;
-                    display: block;
-                "
-            >
-        </div>
+                        📅
+                    </div>
 
                     <span class="button-text">
                         수요일
@@ -1725,18 +1624,8 @@ body.dark-theme .admin-choice-cancel:active{
                 <div class="button-left">
 
                     <div class="icon">
-            <img
-                src="./목요일.png"
-                alt="목요일"
-                style="
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                    border-radius: 18px;
-                    display: block;
-                "
-            >
-        </div>
+                        📅
+                    </div>
 
                     <span class="button-text">
                         목요일
@@ -1759,24 +1648,14 @@ body.dark-theme .admin-choice-cancel:active{
 
             <a
                 class="button"
-                href="https://docs.google.com/spreadsheets/d/1ixb-jhy3HEtuJ8oJvII9TRp1VwV0plR1CxFaqjYdBTo/edit?gid=0#gid=0"
+                href="./금요일.html"
                 target="_top">
 
                 <div class="button-left">
 
                     <div class="icon">
-            <img
-                src="./금요일.png"
-                alt="금요일"
-                style="
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                    border-radius: 18px;
-                    display: block;
-                "
-            >
-        </div>
+                        📅
+                    </div>
 
                     <span class="button-text">
                         금요일
@@ -1805,18 +1684,8 @@ body.dark-theme .admin-choice-cancel:active{
                 <div class="button-left">
 
                     <div class="icon">
-            <img
-                src="./토요일.png"
-                alt="토요일"
-                style="
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                    border-radius: 18px;
-                    display: block;
-                "
-            >
-        </div>
+                        📅
+                    </div>
 
                     <span class="button-text">
                         토요일
@@ -1839,24 +1708,14 @@ body.dark-theme .admin-choice-cancel:active{
 
             <a
                 class="button"
-                href="https://docs.google.com/spreadsheets/d/1LhsyRYL04sOXDxstABVhvNcJ4eG6AxnEoa3jMiAahdg/edit?gid=0#gid=0"
+                href="./일요일.html"
                 target="_top">
 
                 <div class="button-left">
 
                     <div class="icon">
-    <img
-                src="./일요일.png"
-                alt="일요일"
-                style="
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                    border-radius: 18px;
-                    display: block;
-                "
-            >
-</div>
+                        📅
+                    </div>
 
                     <span class="button-text">
                         일요일
@@ -1956,29 +1815,18 @@ body.dark-theme .admin-choice-cancel:active{
              전시대 링크
              https://docs.google.com/spreadsheets/d/13biGx4c_LIhM7wLaZDLdbHAs5-egmXA9Io7naDJln-w/edit#gid=1888339369
            ================================================== -->
-      
+
             <!-- 전시대 -->
 
             <a
-                class="button"
-                href="./전시대.html"
-                target="_top">
+              class="button"
+              href="./전시대.html">
 
                 <div class="button-left">
 
-                   <div class="icon">
-    <img
-    src="./전시대아이콘.png"
-    alt="전시대"
-    style="
-        width:100%;
-        height:100%;
-        object-fit:cover;
-        border-radius:18px;
-        display:block;
-    "
->
-</div>
+                    <div class="icon">
+                        📝
+                    </div>
 
                     <span class="button-text">
                         전시대
@@ -1992,7 +1840,6 @@ body.dark-theme .admin-choice-cancel:active{
 
             </a>
 
-       
 
             <!-- 전시대 관리자 -->
 
@@ -2168,6 +2015,7 @@ function applyFontSize(
                 size
             )
         );
+
 
     /*
        5% 단위로 정확하게 맞춤
