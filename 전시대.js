@@ -150,6 +150,73 @@ function updateVolunteerScheduleButtonStyle() {
 
 
 /* =========================================================
+   봉사용 화면 - 선택한 일정의 인도자 조회
+   공용 Apps Script에서 인도자 이름 불러오기
+========================================================= */
+
+async function loadVolunteerLeader(schedule) {
+
+  schedule = String(schedule || "").trim();
+
+  /* 기존 HTML에 있는 인도자 버튼을 먼저 찾음 */
+  const leaderDisplay =
+    document.getElementById("serviceLeaderDisplay") ||
+    document.getElementById("volunteerLeaderDisplay");
+
+  if (!leaderDisplay) {
+    console.error("인도자 표시 요소를 찾을 수 없습니다.");
+    return;
+  }
+
+  if (!schedule) {
+    leaderDisplay.textContent = "인도자 : 미지정";
+    return;
+  }
+
+  leaderDisplay.textContent = "인도자 : 불러오는 중...";
+
+  try {
+
+    const response = await fetch(
+      SCRIPT_URL +
+      "?action=getScheduleLeader&key=" +
+      encodeURIComponent(schedule) +
+      "&t=" +
+      Date.now()
+    );
+
+    if (!response.ok) {
+      throw new Error("인도자 조회 요청에 실패했습니다.");
+    }
+
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error(
+        data.message || "인도자 조회에 실패했습니다."
+      );
+    }
+
+    /* 다른 일정을 선택했다면 이전 응답은 표시하지 않음 */
+    if (schedule !== selectedServiceSchedule) {
+      return;
+    }
+
+    leaderDisplay.textContent =
+      "인도자 : " + (data.leader || "미지정");
+
+  } catch (error) {
+
+    console.error("봉사용 인도자 조회 오류:", error);
+
+    if (schedule === selectedServiceSchedule) {
+      leaderDisplay.textContent = "인도자 : 조회 실패";
+    }
+
+  }
+}
+
+/* =========================================================
    봉사 일정 선택
 ========================================================= */
 
@@ -158,20 +225,17 @@ function selectVolunteerSchedule(schedule) {
   schedule =
     String(schedule || "").trim();
 
+  /* 신청 가능 시간 확인 */
+  if (
+    !isVolunteerScheduleAvailable(schedule)
+  ) {
 
- /* 신청 가능 시간 확인 */
+    showSubmitConfirm(
+      "지금은 신청 시간이 아닙니다.<div>알림 탭을 확인하세요</div>"
+    );
 
-if (
-  !isVolunteerScheduleAvailable(schedule)
-) {
-
-  showSubmitConfirm(
-    "지금은 신청 시간이 아닙니다.<div>알림 탭을 확인하세요</div>"
-  );
-
-  return;
-
-}
+    return;
+  }
 
   selectedVolunteerSchedule =
     schedule;
@@ -228,10 +292,15 @@ if (
   }
 
   /* 봉사자 명단 불러오기 */
-  selectedServiceSchedule =
-    selectedVolunteerSchedule;
-
   loadMasterNames();
+
+  /* 선택한 일정의 인도자 한 번만 불러오기 */
+  loadVolunteerLeader(selectedServiceSchedule);
+
+  console.log(
+    "봉사용 인도자 조회 일정 key:",
+    selectedServiceSchedule
+  );
 
   /* 선택한 봉사 일정의 관리자 배정 그룹 불러오기 */
   loadGroups().then(function() {
@@ -1552,37 +1621,13 @@ async function confirmCustomVolunteerSchedule() {
   }
 
 }
+
 /*
    특정 날짜 일정 시간
+   - 추가 일정은 저장된 시간 사용
+   - 기본 일정은 그룹에 저장된 시간 사용
 */
 function getVolunteerScheduleTime(scheduleKey) {
-
-  const fixedTimes = {
-
-    "토오전": {
-      startTime: "오전 10:00",
-      endTime: "오후 12:00"
-    },
-
-    "토오후": {
-      startTime: "오후 1:00",
-      endTime: "오후 3:00"
-    },
-
-    "일오전": {
-      startTime: "오전 10:00",
-      endTime: "오후 12:00"
-    }
-
-  };
-
-
-  if (fixedTimes[scheduleKey]) {
-
-    return fixedTimes[scheduleKey];
-
-  }
-
 
   const custom =
     getCustomVolunteerSchedule(
@@ -2095,6 +2140,7 @@ adminSelector.appendChild(
 }
 
   
+
 /* =========================================================
    관리자용 봉사 일정 선택
 ========================================================= */
@@ -2132,14 +2178,342 @@ function selectAdminSchedule(scheduleKey) {
       "block";
   }
 
+  /* 요일별 기본 인도자 정보 불러오기 */
+  toggleAdminLeaderDropdown();
+
   /* 신청자 명단 불러오기 */
   loadApplicants();
 
 }
 
 /* =========================================================
-   관리자용 특정 날짜 일정 추가 버튼
+   관리자용 인도자 선택
 ========================================================= */
+
+/* 스프레드시트에서 가져온 기본 인도자 */
+let jeonsiAdminLeaders = {
+  saturdayMorning: "",
+  saturdayAfternoon: "",
+  sundayMorning: ""
+};
+
+function getDefaultAdminLeader() {
+  if (selectedAdminSchedule === "토오전") {
+    return jeonsiAdminLeaders.saturdayMorning || "";
+  }
+
+  if (selectedAdminSchedule === "토오후") {
+    return jeonsiAdminLeaders.saturdayAfternoon || "";
+  }
+
+  if (selectedAdminSchedule === "일오전") {
+    return jeonsiAdminLeaders.sundayMorning || "";
+  }
+
+  return "";
+}
+
+
+
+/* 스프레드시트에서 기본 인도자 가져오기 */
+async function toggleAdminLeaderDropdown() {
+  const select =
+    document.getElementById("adminLeaderSelect");
+
+  if (!select) {
+    return;
+  }
+
+  select.innerHTML =
+    '<option value="">인도자를 불러오는 중...</option>';
+
+  try {
+    const response = await fetch(
+      "https://script.google.com/macros/s/AKfycbyGNTjZf3wagn7kWW0u1ZhBVnwBqQv-5MaYVM3U4lN1OjQ4JVMgckPnTIODGlL8e7yO/exec?action=jeonsidaeNotices&t=" + Date.now()
+       );
+
+    const data = await response.json();
+
+    if (!data.success || !data.leaders) {
+      throw new Error(
+        data.message || "인도자 정보를 불러오지 못했습니다."
+      );
+    }
+
+    jeonsiAdminLeaders = data.leaders;
+
+    console.log(
+      "스프레드시트 기본 인도자:",
+      jeonsiAdminLeaders
+    );
+
+    /* 주간 초기화가 끝날 때까지 기다립니다. */
+    await ensureWeeklyLeaderReset();
+
+    /* 초기화 완료 후 인도자 목록 구성 */
+    renderAdminLeaderOptions();
+
+  } catch (error) {
+    console.error(
+      "인도자 정보 불러오기 오류:",
+      error
+    );
+
+    select.innerHTML =
+      '<option value="">인도자를 불러오지 못했습니다</option>';
+
+    alert(
+      "인도자 정보를 불러오지 못했습니다. Apps Script 설정을 확인해 주세요."
+    );
+  }
+}
+
+
+
+/* =========================================================
+   인도자 주간 초기화 확인
+   공용 스프레드시트의 선택값을 덮어쓰지 않음
+========================================================= */
+
+async function ensureWeeklyLeaderReset() {
+
+  const now = new Date();
+  const monday = new Date(now);
+
+  monday.setHours(0, 0, 0, 0);
+
+  monday.setDate(
+    monday.getDate() -
+    ((monday.getDay() + 6) % 7)
+  );
+
+  const weekKey =
+    monday.getFullYear() + "-" +
+    String(monday.getMonth() + 1).padStart(2, "0") + "-" +
+    String(monday.getDate()).padStart(2, "0");
+
+  /*
+    인도자 선택값은 Apps Script의 공용 스프레드시트에서
+    관리하므로 여기서 localStorage의 인도자를 초기화하지 않음.
+  */
+  localStorage.setItem(
+    "jeonsidaeLeaderWeek",
+    weekKey
+  );
+
+}
+
+/* =========================================================
+   일정별 신청자 이름으로 드롭다운 구성
+   고정 일정은 공용 스프레드시트의 인도자를 우선 사용
+========================================================= */
+
+async function renderAdminLeaderOptions() {
+
+  const select =
+    document.getElementById("adminLeaderSelect");
+
+  if (!select) {
+    return;
+  }
+
+  const schedule = selectedAdminSchedule;
+
+  const isFixedSchedule = [
+    "토오전",
+    "토오후",
+    "일오전"
+  ].includes(schedule);
+
+  const defaultLeader = getDefaultAdminLeader();
+
+  let savedLeader = "";
+
+  /*
+    고정 일정의 현재 인도자는 서버에서 읽음.
+    사용자 기기의 localStorage 값을 우선하지 않음.
+  */
+  if (isFixedSchedule) {
+
+    try {
+
+      const response = await fetch(
+        "https://script.google.com/macros/s/AKfycbyGNTjZf3wagn7kWW0u1ZhBVnwBqQv-5MaYVM3U4lN1OjQ4JVMgckPnTIODGlL8e7yO/exec?action=getScheduleLeader&key=" +
+        encodeURIComponent(schedule) +
+        "&t=" + Date.now()
+      );
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(
+          data.message || "공용 인도자를 불러오지 못했습니다."
+        );
+      }
+
+      savedLeader = String(data.leader || "").trim();
+
+    } catch (error) {
+
+      console.error("공용 인도자 불러오기 오류:", error);
+
+      select.innerHTML =
+        '<option value="">공용 인도자를 불러오지 못했습니다</option>';
+
+      return;
+    }
+
+  } else {
+
+    /* 추가 일정은 기존 localStorage 방식 유지 */
+    savedLeader =
+      localStorage.getItem(
+        "jeonsidaeLeader_" + schedule
+      ) || "";
+
+  }
+
+  select.innerHTML = "";
+
+  const names = [...applicants];
+
+  [savedLeader, defaultLeader].forEach(function(name) {
+
+    if (name && !names.includes(name)) {
+      names.unshift(name);
+    }
+
+  });
+
+  if (names.length === 0) {
+
+    const option = document.createElement("option");
+
+    option.value = "";
+    option.textContent = "신청자가 없습니다";
+
+    select.appendChild(option);
+    return;
+  }
+
+  names.forEach(function(name) {
+
+    const option = document.createElement("option");
+
+    option.value = name;
+    option.textContent = name;
+
+    select.appendChild(option);
+
+  });
+
+  if (savedLeader && names.includes(savedLeader)) {
+
+    select.value = savedLeader;
+
+  } else if (defaultLeader && names.includes(defaultLeader)) {
+
+    select.value = defaultLeader;
+
+  } else {
+
+    select.value = names[0];
+
+  }
+
+  /*
+    중요:
+    목록을 표시할 때 자동 저장하지 않음.
+    사용자가 직접 선택을 변경했을 때만 저장.
+  */
+
+}
+
+
+/* =========================================================
+   선택한 인도자 저장
+   고정 일정은 공용 Apps Script에 저장
+========================================================= */
+
+async function saveAdminLeader() {
+
+  const select =
+    document.getElementById("adminLeaderSelect");
+
+  if (
+    !select ||
+    !selectedAdminSchedule ||
+    !select.value
+  ) {
+    return;
+  }
+
+  const schedule = selectedAdminSchedule;
+  const leader = select.value;
+
+  const isFixedSchedule = [
+    "토오전",
+    "토오후",
+    "일오전"
+  ].includes(schedule);
+
+  /* 추가 일정은 기존 방식 유지 */
+  if (!isFixedSchedule) {
+
+    localStorage.setItem(
+      "jeonsidaeLeader_" + schedule,
+      leader
+    );
+
+    return;
+  }
+
+  try {
+
+    const response = await fetch(
+      "https://script.google.com/macros/s/AKfycbyGNTjZf3wagn7kWW0u1ZhBVnwBqQv-5MaYVM3U4lN1OjQ4JVMgckPnTIODGlL8e7yO/exec",
+      {
+        method: "POST",
+        body: new URLSearchParams({
+          action: "saveScheduleLeader",
+          key: schedule,
+          leader: leader
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error(
+        data.message || "인도자 저장에 실패했습니다."
+      );
+    }
+
+    /* 현재 기기의 표시용 캐시만 갱신 */
+    localStorage.setItem(
+      "jeonsidaeLeader_" + schedule,
+      leader
+    );
+
+    console.log(
+      "공용 인도자 저장 완료:",
+      schedule,
+      leader
+    );
+
+  } catch (error) {
+
+    console.error("공용 인도자 저장 오류:", error);
+
+    alert(
+      "인도자를 공용 스프레드시트에 저장하지 못했습니다.\n" +
+      error.message
+    );
+
+  }
+
+}
 
 function addCustomScheduleButton(
   container
@@ -2827,6 +3201,9 @@ function showView(view) {
 
     setActiveNav("navNotice");
 
+    /* 시트에서 최신 알림 불러오기 */
+    loadJeonsiNotices();
+
     return;
 
   }
@@ -3064,6 +3441,220 @@ function checkAdminPassword() {
 
 }
 
+
+/* =========================================================
+   시트에서 알림 불러오기
+   명단 시트 F열: 항목
+   명단 시트 G열: 내용
+   - 신청·마감 안내와 인도자를 그룹별 카드로 표시
+========================================================= */
+
+async function loadJeonsiNotices() {
+
+  const container =
+    document.getElementById("noticeContent");
+
+  if (!container) {
+    return;
+  }
+
+  container.innerHTML = "";
+
+  const loadingCard = document.createElement("div");
+  loadingCard.className = "notice-card";
+
+  const loadingRow = document.createElement("div");
+  loadingRow.className = "notice-row";
+  loadingRow.textContent = "알림을 불러오는 중입니다.";
+
+  loadingCard.appendChild(loadingRow);
+  container.appendChild(loadingCard);
+
+  try {
+
+    const response = await fetch(
+      SCRIPT_URL +
+      "?action=jeonsidaeNotices&t=" +
+      Date.now()
+    );
+
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error(
+        data.message || "알림을 불러오지 못했습니다."
+      );
+    }
+
+    const notices = Array.isArray(data.notices)
+      ? data.notices
+      : [];
+
+    container.innerHTML = "";
+
+    if (notices.length === 0) {
+
+      const card = document.createElement("div");
+      card.className = "notice-card";
+
+      const row = document.createElement("div");
+      row.className = "notice-row";
+      row.textContent = "등록된 알림이 없습니다.";
+
+      card.appendChild(row);
+      container.appendChild(card);
+
+      return;
+    }
+
+    let currentCard = null;
+
+    // 섹션 제목
+    function addSectionTitle(title) {
+
+      const heading = document.createElement("div");
+
+      heading.className = "notice-section-title";
+      heading.textContent = title;
+
+      heading.style.cssText = `
+        text-align: left;
+        font-size: 1em;
+        font-weight: 800;
+        color: #777;
+        margin: 28px 20px 8px;
+      `;
+
+      container.appendChild(heading);
+
+      currentCard = document.createElement("div");
+      currentCard.className = "notice-card";
+
+      container.appendChild(currentCard);
+    }
+
+    // 카드 안에 항목과 내용을 한 줄로 표시
+    function addNoticeRow(label, value) {
+
+      if (!currentCard) {
+        currentCard = document.createElement("div");
+        currentCard.className = "notice-card";
+        container.appendChild(currentCard);
+      }
+
+      const row = document.createElement("div");
+      row.className = "notice-row";
+
+      row.style.cssText = `
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        width: 100%;
+      `;
+
+      const labelElement = document.createElement("strong");
+      labelElement.textContent = label;
+
+      labelElement.style.cssText = `
+        flex: 1;
+        min-width: 0;
+        text-align: left;
+        overflow-wrap: anywhere;
+      `;
+
+      row.appendChild(labelElement);
+
+      if (value) {
+
+        const valueElement = document.createElement("span");
+        valueElement.textContent = value;
+
+        valueElement.style.cssText = `
+          flex-shrink: 0;
+          text-align: right;
+          font-weight: 800;
+        `;
+
+        row.appendChild(valueElement);
+      }
+
+      currentCard.appendChild(row);
+    }
+
+    notices.forEach(function(notice) {
+
+      const label = String(notice.label || "").trim();
+      const value = String(notice.value || "").trim();
+
+      if (!label && !value) {
+        return;
+      }
+
+      // F1의 제목은 표시하지 않음
+      if (label === "알림") {
+        return;
+      }
+
+      // 맨 아래 추가 안내 문구는 독립된 카드로 표시
+      if (label.startsWith("※")) {
+
+        currentCard = null;
+
+        const noteCard = document.createElement("div");
+        noteCard.className = "notice-card";
+
+        const noteRow = document.createElement("div");
+        noteRow.className = "notice-row";
+        noteRow.textContent = label;
+
+        noteRow.style.cssText = `
+          display: block;
+          text-align: left;
+          font-weight: 800;
+          line-height: 1.6;
+          overflow-wrap: anywhere;
+        `;
+
+        noteCard.appendChild(noteRow);
+        container.appendChild(noteCard);
+
+        return;
+      }
+
+      // 내용이 없는 항목은 새 섹션의 제목
+      if (!value) {
+
+        addSectionTitle(label);
+
+        return;
+      }
+
+      // 항목과 내용 표시
+      addNoticeRow(label, value);
+
+    });
+
+  } catch (error) {
+
+    console.error("알림 불러오기 오류:", error);
+
+    container.innerHTML = "";
+
+    const card = document.createElement("div");
+    card.className = "notice-card";
+
+    const row = document.createElement("div");
+    row.className = "notice-row";
+    row.textContent =
+      "알림을 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.";
+
+    card.appendChild(row);
+    container.appendChild(card);
+
+  }
+
+}
 
 function setActiveNav(id) {
 
@@ -4361,15 +4952,16 @@ async function loadApplicants() {
 
     }
 
-    applicants =
-      Array.isArray(data.applicants)
-        ? data.applicants
-        : [];
+   applicants =
+  Array.isArray(data.applicants)
+    ? data.applicants
+    : [];
 
+renderAdminLeaderOptions();
 
-    await cleanGroups();
+await cleanGroups();
 
-    renderAdmin();
+renderAdmin();
 
   } catch (error) {
 
@@ -4753,12 +5345,9 @@ serviceCancelReason =
     groups =
       loaded.map(function(group) {
 
-        /*
-           Apps Script의 관리용 시트 데이터
-           [1번~7번 봉사자, 봉사장소]
-        */
+/* Apps Script의 관리용 시트 데이터 [1번~7번 봉사자, 봉사장소] */
 
-        if (Array.isArray(group)) {
+               if (Array.isArray(group)) {
 
           const members =
             group
@@ -4777,6 +5366,18 @@ serviceCancelReason =
             ).trim();
 
 
+          /* 스프레드시트에 저장된 봉사시간 */
+          const savedTime =
+            String(
+              group[9] || ""
+            ).trim();
+
+
+          /* 시작 시간과 종료 시간 분리 */
+          const timeParts =
+            savedTime.split(/\s*~\s*/);
+
+
           return {
 
             members:
@@ -4791,18 +5392,21 @@ serviceCancelReason =
             schedule:
               groupScheduleKey,
 
-            startTime: "",
+            startTime:
+              String(
+                timeParts[0] || ""
+              ).trim(),
 
-            endTime: ""
+            endTime:
+              String(
+                timeParts[1] || ""
+              ).trim()
 
           };
 
         }
 
-
-        /*
-           새 구조
-        */
+        /* 새 구조 */
 
         if (
           group &&
@@ -5450,12 +6054,8 @@ function addGroup() {
           봉사시작
         </label>
 
-        <input
-          type="text"
-          id="newGroupStartTime"
-          value="${startTime}"
-          readonly
-        >
+        <select id="newGroupStartTime">
+</select>
 
       </div>
 
@@ -5575,6 +6175,75 @@ function addGroup() {
     </div>
 
   `;
+
+   // 시작 시간 선택 목록 생성
+  const startSelect =
+    form.querySelector("#newGroupStartTime");
+
+  const endInput =
+    form.querySelector("#newGroupEndTime");
+
+  for (
+    let minutes = 10 * 60;
+    minutes <= 17 * 60;
+    minutes += 10
+  ) {
+    const hour = Math.floor(minutes / 60);
+    const minute = minutes % 60;
+
+    const ampm = hour < 12 ? "오전" : "오후";
+    const displayHour = hour > 12 ? hour - 12 : hour;
+
+    const timeText =
+      `${ampm} ${displayHour}:${String(minute).padStart(2, "0")}`;
+
+    const option = document.createElement("option");
+
+    // 저장할 때도 "오전 10:00" 같은 형식이 유지되도록 설정
+    option.value = timeText;
+    option.textContent = timeText;
+    option.dataset.minutes = String(minutes);
+
+    startSelect.appendChild(option);
+  }
+
+  // 해당 일정의 기본 시작 시간 선택
+  const defaultOption = Array.from(startSelect.options)
+    .find(option =>
+      Number(option.dataset.minutes) === startMinutes
+    );
+
+  if (defaultOption) {
+    startSelect.value = defaultOption.value;
+  }
+
+  // 시작 시간에 따라 종료 시간 자동 변경
+  function updateGroupEndTime() {
+    const selectedOption =
+      startSelect.options[startSelect.selectedIndex];
+
+    const selectedMinutes =
+      Number(selectedOption.dataset.minutes);
+
+    const endMinutes = selectedMinutes + 120;
+    const endHour = Math.floor(endMinutes / 60);
+    const endMinute = endMinutes % 60;
+
+    const endAmpm = endHour < 12 ? "오전" : "오후";
+    const endDisplayHour = endHour > 12
+      ? endHour - 12
+      : endHour;
+
+    endInput.value =
+      `${endAmpm} ${endDisplayHour}:${String(endMinute).padStart(2, "0")}`;
+  }
+
+  startSelect.addEventListener(
+    "change",
+    updateGroupEndTime
+  );
+
+  updateGroupEndTime();
 
   groupsEl.prepend(form);
 }
@@ -7549,6 +8218,68 @@ function getServiceAreasForDisplay() {
     return [];
   }
 
+/* =========================================================
+   봉사용 - 선택한 일정의 인도자 조회
+   모든 기기에서 관리용 시트 M2를 기준으로 표시
+========================================================= */
+
+async function loadScheduleLeader(scheduleKey) {
+
+  try {
+
+    const response = await fetch(
+      SCRIPT_URL +
+      "?action=getScheduleLeader" +
+      "&key=" +
+      encodeURIComponent(scheduleKey) +
+      "&t=" +
+      Date.now()
+    );
+
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error(
+        data.message ||
+        "인도자를 불러오지 못했습니다."
+      );
+    }
+
+    SERVICE_CONDUCTOR =
+      String(data.leader || "").trim();
+
+    const leaderDisplay =
+      document.getElementById("serviceConductor");
+
+    if (leaderDisplay) {
+      leaderDisplay.textContent =
+        "인도자 : " + SERVICE_CONDUCTOR;
+    }
+
+    return SERVICE_CONDUCTOR;
+
+  } catch (error) {
+
+    console.error(
+      "인도자 조회 오류:",
+      error
+    );
+
+    SERVICE_CONDUCTOR = "";
+
+    const leaderDisplay =
+      document.getElementById("serviceConductor");
+
+    if (leaderDisplay) {
+      leaderDisplay.textContent = "인도자 : ";
+    }
+
+    return "";
+
+  }
+
+}
+   
   const byNumber = new Map();
 
   SERVICE_AREAS.forEach(function(area) {
@@ -8127,37 +8858,29 @@ card.appendChild(
    시작 / 종료
 ----------------------------------------------------- */
 
-      const defaultTimes = {
+const defaultTimes = {
 
-        "토오전": {
-          start:
-            "오전 10:00",
-          end:
-            "오후 12:00"
-        },
+  "토오전": {
+    start: "오전 10:00",
+    end: "오후 12:00"
+  },
 
-        "토오후": {
-          start:
-            "오후 1:00",
-          end:
-            "오후 3:00"
-        },
+  "토오후": {
+    start: "오후 1:00",
+    end: "오후 3:00"
+  },
 
-        "일오전": {
-          start:
-            "오전 10:00",
-          end:
-            "오후 12:00"
-        }
+  "일오전": {
+    start: "오전 10:00",
+    end: "오후 12:00"
+  }
 
-      };
+};
 
-
-      let defaultTime =
+let defaultTime =
   defaultTimes[
     selectedServiceSchedule
   ];
-
 
 if (!defaultTime) {
 
@@ -8167,47 +8890,36 @@ if (!defaultTime) {
     );
 
   defaultTime = {
-
-    start:
-      customTime.startTime || "",
-
-    end:
-      customTime.endTime || ""
-
+    start: customTime.startTime || "",
+    end: customTime.endTime || ""
   };
 
 }
-
 
 if (!defaultTime) {
 
   defaultTime = {
-
     start: "",
     end: ""
-
   };
 
 }
 
+const startTime =
+  String(
+    group.startTime ||
+    defaultTime.start ||
+    ""
+  ).trim();
 
-      const startTime =
-        String(
-          group.startTime ||
-          defaultTime.start ||
-          ""
-        ).trim();
+const endTime =
+  String(
+    group.endTime ||
+    defaultTime.end ||
+    ""
+  ).trim();
 
-
-      const endTime =
-        String(
-          group.endTime ||
-          defaultTime.end ||
-          ""
-        ).trim();
-
-
-      const time =
+const time =
   document.createElement(
     "div"
   );
@@ -8403,6 +9115,32 @@ async function selectServiceSchedule(
     managementArea.style.display =
       "block";
   }
+
+
+  /* 주간 초기화가 완료될 때까지 기다립니다. */
+
+  await ensureWeeklyLeaderReset();
+
+
+
+  /* 주간 초기화가 완료될 때까지 기다립니다. */
+
+  await ensureWeeklyLeaderReset();
+
+
+  /* 선택한 일정의 인도자 이름 표시 */
+
+  const leaderDisplay =
+    document.getElementById(
+      "serviceLeaderDisplay"
+    );
+
+  if (leaderDisplay) {
+
+    loadVolunteerLeader(selectedServiceSchedule);
+
+  }
+
 
 
   /* 선택한 일정의 그룹을 서버에서 다시 불러오기 */
