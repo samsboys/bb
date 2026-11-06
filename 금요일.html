@@ -1516,11 +1516,12 @@ const DEFAULT_MASTER_NAMES = [
 '김현심',
 '남동완',
 '맹희주',
+'문미자',
 '민순자',
 '박대기',
 '박미화',
 '박수은',
-'박은호',
+'박재규',
 '박정은',
 '박정하',
 '박한별',
@@ -1539,7 +1540,6 @@ const DEFAULT_MASTER_NAMES = [
 '오솔잎',
 '왕건식',
 '이규자',
-'이보라',
 '이영자',
 '이우분',
 '이정임',
@@ -2398,22 +2398,14 @@ async function addManualApplicant() {
     name.trim();
 
   if (!trimmedName) {
-
     alert("이름을 입력해 주세요.");
-
     return;
-
   }
-
 
   if (applicants.includes(trimmedName)) {
-
     alert("이미 신청자 목록에 있습니다.");
-
     return;
-
   }
-
 
   try {
 
@@ -2427,8 +2419,8 @@ async function addManualApplicant() {
               "text/plain;charset=utf-8"
           },
           body: JSON.stringify({
-            name: trimmedName,
-            checked: true
+            action: "manualAdd",
+            name: trimmedName
           })
         }
       );
@@ -2436,20 +2428,20 @@ async function addManualApplicant() {
     const data =
       await response.json();
 
-
     if (!data.success) {
-
       throw new Error(
         data.message ||
         "신청자 추가에 실패했습니다."
       );
-
     }
 
-
-    applicants.push(trimmedName);
+    if (!applicants.includes(trimmedName)) {
+      applicants.push(trimmedName);
+    }
 
     selectedApplicants = [trimmedName];
+
+    replacementApplicant = "";
 
     renderAdmin();
 
@@ -2464,7 +2456,6 @@ async function addManualApplicant() {
   }
 
 }
-
 
 /* =========================================================
    그룹 불러오기
