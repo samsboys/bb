@@ -1,0 +1,2066 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+<title>순회 방문 계획표</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+/* 위아래 스크롤 막대 숨기기 */
+html, body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+}
+
+body {
+  margin: 0;
+  color: #18324a;
+  background: #fff;
+  font-family: Arial, "Malgun Gothic", sans-serif;
+  font-size: 20px;
+}
+  
+.top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  min-height: 62px;
+  display: grid;
+  grid-template-columns: 48px 1fr 48px;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  color: white;
+  background: #18324a;
+}
+
+.top-bar h1 {
+  margin: 0;
+  text-align: center;
+  font-size: 25px;
+}
+
+.nav-btn {
+  height: 42px;
+  border: 1px solid #9db2c4;
+  border-radius: 8px;
+  background: #234563;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* 오른쪽 설정 버튼 */
+.settings-button {
+  width: 42px;
+  height: 42px;
+  justify-self: end;
+  border: 1px solid #9db2c4;
+  border-radius: 8px;
+  background: #234563;
+  color: white;
+  font-size: 24px;
+}
+
+/* 설정창 */
+.settings-panel {
+  display: none;
+  position: fixed;
+  top: 70px;
+  right: 10px;
+  width: 230px;
+  max-width: calc(100vw - 20px);
+  padding: 12px;
+  z-index: 1100;
+  border: 1px solid #dedfe5;
+  border-radius: 16px;
+  background: #fff;
+  color: #222;
+  box-shadow: 0 14px 32px rgba(0,0,0,.18);
+}
+
+.settings-panel.show {
+  display: block;
+}
+
+.settings-theme-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin-bottom: 7px;
+}
+
+.theme-btn {
+  min-width: 0;
+  height: 42px;
+  padding: 0 4px;
+  border: 1px solid #dce0e7;
+  border-radius: 11px;
+  background: #f5f6f8;
+  color: #222;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.theme-btn.active {
+  background: #eeeaff;
+  border-color: #7566ff;
+  color: #40348d;
+}
+
+.settings-font-row {
+  display: grid;
+  grid-template-columns: 50px 1fr 50px;
+  gap: 7px;
+  align-items: center;
+}
+
+.font-btn,
+.font-size {
+  height: 42px;
+  min-width: 0;
+  border: 1px solid #dce0e7;
+  border-radius: 11px;
+  background: #f5f6f8;
+  color: #222;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+}
+
+.font-btn {
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.font-size {
+  font-size: 15px;
+}
+
+/* 어두운 모드 설정 */
+body.dark-mode {
+  background: #202124;
+  color: #f1f3f4;
+}
+
+/* 어두운 모드 화요일 */
+body.dark-mode .week-card,
+body.dark-mode .schedule-card {
+  background: #292d31;
+  border-color: #858585;
+}
+
+body.dark-mode .week-title,
+body.dark-mode .line {
+  color: #fff;
+}
+
+body.dark-mode .week-date {
+  background: #303a44;
+  color: #fff;
+}
+
+body.dark-mode .subhead,
+body.dark-mode .leader {
+  background: #39434d;
+  color: #fff;
+}
+
+body.dark-mode .settings-panel {
+  background: #202020;
+  color: #f5f5f5;
+  border-color: #404040;
+}
+
+body.dark-mode .settings-panel .theme-btn,
+body.dark-mode .settings-panel .font-btn,
+body.dark-mode .settings-panel .font-size {
+  background: #202020;
+  color: #eee;
+  border-color: #505050;
+}
+
+body.dark-mode .settings-panel .theme-btn.active {
+  background: #302b50;
+  border-color: #7566ff;
+  color: #fff;
+}
+
+main {
+  width: 100%;
+  margin: 0;
+  padding: 70px 10px 24px;
+}
+
+.week-card,
+.schedule-card {
+  margin: 0 0 18px;
+  padding: 0;
+  overflow: hidden;
+  background: white;
+  border: 5px solid #AEB6BF;
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+.week-card {
+  padding: 10px 8px;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.week-title {
+  margin-bottom: 10px;
+  color: #000;
+  font-size: 30px;
+  font-weight: 900;
+}
+
+.week-date {
+  padding: 12px;
+  border-radius: 8px;
+  background: #e6f2fb;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.schedule-card h2 {
+  margin: 0;
+  padding: 10px 14px;
+  color: white;
+  background: #3374A9;
+  font-size: 22px;
+  line-height: 1.4;
+}
+
+/* 요일과 인도자 */
+.day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px 12px;
+  padding: 8px 10px;
+  background: #245477;
+  color: white;
+  font-weight: 800;
+}
+
+.day-name {
+  flex-shrink: 0;
+  font-size: 30px;
+  font-weight: 800;
+  text-align: left;
+}
+
+.day-leader {
+  flex: 1;
+  min-width: 0;
+  font-size: 20px;
+  font-weight: 800;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.line,
+.subhead {
+  padding: 9px 14px;
+  border-bottom: 1px solid #858585;
+  overflow-wrap: anywhere;
+}
+
+.subhead {
+  background: #e6f2fb;
+  font-weight: 700;
+}
+
+.line:last-child {
+  border-bottom: 0;
+}
+
+.people {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.people span {
+  min-width: 0;
+  padding: 9px 12px;
+  border-right: 1px solid #858585;
+  border-bottom: 1px solid #858585;
+  overflow-wrap: anywhere;
+}
+
+.people span:nth-child(even) {
+  border-right: 0;
+}
+
+.leader {
+  padding: 10px 14px;
+  color: #174f7e;
+  background: #d8edfb;
+  border-top: 1px solid #858585;
+  font-weight: 700;
+}
+
+@media (max-width: 520px) {
+  body {
+    font-size: 18px;
+  }
+
+   .week-title {
+    font-size: 30px;
+  }
+  .week-date {
+    font-size: 20px;
+  }
+
+     .schedule-card h2 {
+     font-size: 20px;
+  }
+
+  .people span {
+    padding: 9px 8px;
+  }
+}
+
+/* ===== 전체 요일 공통 디자인 ===== */
+
+/* 요일과 인도자 */
+.friday-header,
+.day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  padding: 8px 10px;
+  background: #245477;
+  color: white;
+  font-weight: 800;
+}
+
+.friday-header > div:first-child,
+.day-header > div:first-child {
+  flex-shrink: 0;
+  font-size: 30px;
+  font-weight: 800;
+  text-align: left;
+}
+
+.friday-header > div:last-child,
+.day-header > div:last-child {
+  flex: 1;
+  min-width: 0;
+  font-size: 20px;
+  font-weight: 800;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+/* 오전·오후 시간과 봉사 모임 장소 */
+.friday-time,
+.schedule-time {
+  width: 100%;
+  min-height: 58px;
+  padding: 9px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  font-size: 25px;
+  font-weight: 800;
+  color: #18324a;
+  background: #D7EAF8;
+  border: 0;
+  border-bottom: 1px solid #858585;
+}
+
+.friday-time .time-label,
+.schedule-time .time-label {
+  font-size: 25px;
+  font-weight: 800;
+  text-align: left;
+}
+
+.friday-time .place-label,
+.schedule-time .place-label {
+  font-size: 20px;
+  font-weight: 800;
+  text-align: right;
+}
+
+/* 봉사 활동 */
+.friday-activity,
+.schedule-activity {
+  padding: 9px 5px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 800;
+  color: #18324a;
+  background: transparent;
+  border-bottom: 1px solid #858585;
+}
+
+/* 봉사자 이름 */
+.friday-people,
+.schedule-people {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.friday-people span,
+.schedule-people span {
+  min-width: 0;
+  padding: 9px 4px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 800;
+  color: #18324a;
+  background: #F0F4F7;
+  border-bottom: 1px solid #858585;
+  overflow-wrap: anywhere;
+}
+
+.schedule-people span:nth-child(odd) {
+  border-right: 1px solid #858585;
+}
+
+/* 어두운 모드 공통 시간·일정 버튼 */
+body.dark-mode .friday-time,
+body.dark-mode .schedule-time,
+body.dark-mode .friday-activity,
+body.dark-mode .schedule-activity {
+  background: #394F63;
+  color: #fff;
+}
+
+/* 화요일 일정 버튼 */
+body.dark-mode .schedule-card .schedule-activity {
+  background: #B5D2E7;
+  color: #18324a;
+}
+
+body.dark-mode .friday-people span,
+body.dark-mode .schedule-people:not(.thursday-people):not(.wednesday-supervisor):not(.wednesday-people) span {
+  background: #292D31;
+  color: #fff;
+}
+
+#fridayDay {
+  flex-shrink: 0;
+  font-size: 30px;
+  text-align: left;
+}
+
+#fridayLeader {
+  flex: 1;
+  min-width: 0;
+  font-size: 20px;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+/* 오전·오후 모임장소 버튼 */
+.friday-time {
+  width: 100%;
+  min-height: 58px;
+  padding: 9px 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  font-size: 25px;
+  font-weight: 800;
+  color: #18324a;
+  background: #D7EAF8;
+  border: 0;
+  border-bottom: 1px solid #858585;
+}
+
+.friday-time .time-label {
+  font-size: 25px;
+  font-weight: 800;
+}
+
+.friday-time .place-label {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.friday-activity {
+  padding: 9px 5px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 800;
+  color: #18324a;
+  background: #D7EAF8;
+  border-bottom: 1px solid #858585;
+}
+
+/* 봉사자 이름: 2열 배치 */
+.friday-people {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.friday-people span {
+  min-width: 0;
+  padding: 9px 4px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 800;
+  color: #18324a;
+  background: #F0F4F7;
+  border-bottom: 1px solid #858585;
+  overflow-wrap: anywhere;
+}
+
+.friday-people span:nth-child(odd) {
+  border-right: 1px solid #858585;
+}
+
+/* 어두운 모드 금요일 전용 버튼 */
+body.dark-mode .friday-time {
+  background: #394F63;
+  color: #fff;
+}
+
+body.dark-mode .friday-activity {
+  background: #394F63;
+  color: #fff;
+}
+
+body.dark-mode .friday-people span {
+  background: #292D31;
+  color: #fff;
+}
+
+/* 점심 식사 및 교제 마련 */
+.lunch-people {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.lunch-people span {
+  min-width: 0;
+  padding: 9px 8px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 800;
+  color: #18324a;
+  border-right: 1px solid #858585;
+  border-bottom: 1px solid #858585;
+  overflow-wrap: anywhere;
+}
+
+.lunch-people span:nth-child(even) {
+  border-right: 0;
+}
+
+body.dark-mode .lunch-people span {
+  background: #292D31;
+  color: #fff;
+}
+
+
+/* ===== 요청한 버튼 디자인: 화요일과 점심 항목 제외 ===== */
+
+/* 오전·오후 봉사 모임 장소 */
+.schedule-time,
+.friday-time {
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 8px;
+  text-align: left;
+  background: #D2DCE6;
+  color: #18324a;
+}
+
+.schedule-time .time-label,
+.friday-time .time-label {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  font-size: 25px;
+  font-weight: 800;
+}
+
+.schedule-time .place-label,
+.friday-time .place-label {
+  flex-shrink: 0;
+  text-align: right;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+/* ===== 수요일 전용 디자인 ===== */
+  
+/* 오전 봉사 마련 없음 - 한 줄 버튼 */
+.wednesday-morning {
+  width: 100%;
+  min-height: 58px;
+  margin: 6px 0 0;
+  padding: 9px 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-size: 25px;
+  font-weight: 900;
+  color: red;
+  background: transparent;
+  white-space: nowrap;
+}
+
+.wednesday-morning span {
+  padding: 0;
+  background: transparent;
+  font-size: 25px;
+  font-weight: 900;
+  color: red;
+  white-space: nowrap;
+}
+
+/* 오후 시간 버튼 */
+.wednesday-time {
+  min-height: 58px;
+  margin: 6px 6px 0;
+  padding: 10px 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 25px;
+  font-weight: 900;
+  color: #18324a;
+  background: #8BB6D5;
+  border-radius: 7px;
+}
+  
+/* 재방문 / 성서 연구 */
+.wednesday-activity {
+  min-height: 58px;
+  margin: 6px 6px 0;
+  padding: 10px 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 25px;
+  font-weight: 900;
+  color: #18324a;
+  background: #B5D2E7;
+  border-radius: 7px;
+}
+
+/* 순회 감독자 부부 버튼 */
+.schedule-people.wednesday-supervisor {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding: 6px;
+}
+
+.schedule-people.wednesday-supervisor span {
+  min-width: 0;
+  min-height: 48px;
+  padding: 10px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 900;
+  color: #18324a;
+  background: #F3D9A5;
+  border: 0;
+  border-radius: 7px;
+  overflow-wrap: anywhere;
+}
+
+/* 일반 신청인 버튼 */
+.schedule-people.wednesday-people {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding: 6px;
+}
+
+.schedule-people.wednesday-people span {
+  min-width: 0;
+  min-height: 48px;
+  padding: 10px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 800;
+  color: #18324a;
+  background: #e6f2fb;
+  border: 0;
+  border-radius: 7px;
+  overflow-wrap: anywhere;
+}
+
+/* 어두운 모드 수요일 */
+body.dark-mode .wednesday-morning,
+body.dark-mode .wednesday-morning span {
+  color: red;
+}
+
+body.dark-mode .wednesday-time {
+  background: #8BB6D5;
+  color: #18324a;
+}
+
+body.dark-mode .wednesday-activity {
+  background: #B5D2E7;
+  color: #18324a;
+}
+
+body.dark-mode .schedule-people.wednesday-supervisor span {
+  background: #F3D9A5;
+  color: #18324a;
+}
+
+body.dark-mode .schedule-people.wednesday-people span {
+  background: #e6f2fb;
+  color: #18324a;
+}
+
+/* 일반 신청인 버튼 */
+.people,
+.friday-people,
+.schedule-people {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding: 6px;
+}
+
+.people span,
+.friday-people span,
+.schedule-people span {
+  min-width: 0;
+  padding: 10px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 800;
+  color: #18324a;
+  background: #B3C1D0;
+  border: 0;
+  border-radius: 7px;
+  overflow-wrap: anywhere;
+}
+
+/* 어두운 모드에서도 이름 버튼을 구분 */
+body.dark-mode .people span,
+body.dark-mode .friday-people span,
+body.dark-mode .schedule-people:not(.thursday-people):not(.wednesday-supervisor):not(.wednesday-people) span {
+  background: #394F63;
+  color: #fff;
+}
+  
+/* ===== 목요일 전용 디자인 ===== */
+
+/* 오전 [AM 9:45] */
+.thursday-morning {
+  min-height: 58px;
+  margin: 6px 6px 0;
+  padding: 10px 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 25px;
+  font-weight: 900;
+  color: #18324a;
+  background: #8BB6D5;
+  border-radius: 7px;
+}
+
+/* 공개증거 (전시대) */
+.thursday-activity {
+  min-height: 58px;
+  margin: 6px 6px 0;
+  padding: 10px 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 25px;
+  font-weight: 900;
+  color: #18324a;
+  background: #B5D2E7;
+  border-radius: 7px;
+}
+
+/* 일반 신청인 버튼 */
+.schedule-people.thursday-people {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding: 6px;
+}
+
+.schedule-people.thursday-people span {
+  min-width: 0;
+  min-height: 48px;
+  padding: 10px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 800;
+  color: #18324a;
+  border: 0;
+  border-radius: 7px;
+  overflow-wrap: anywhere;
+}
+
+/* 순회 감독자 부부 버튼 */
+.schedule-people.thursday-people span.thursday-supervisor {
+  grid-column: auto;
+  min-height: 52px;
+  font-size: 22px;
+  font-weight: 900;
+  background: #F3D9A5;
+}
+
+/* 일반 신청인 버튼 */
+.schedule-people.thursday-people span.thursday-applicant {
+  background: #e6f2fb;
+}
+
+/* 오후 봉사 마련 없음 */
+.thursday-afternoon {
+  gap: 8px;
+  min-height: 58px;
+  margin: 6px 6px;
+  padding: 10px 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  font-size: 25px;
+  font-weight: 900;
+  color: red;
+  background: transparent;
+} 
+  
+  /* 어두운 모드 목요일 */
+body.dark-mode .thursday-morning,
+body.dark-mode .thursday-activity,
+body.dark-mode .thursday-people span {
+  color: #18324a;
+}
+
+  body.dark-mode .friday-afternoon {
+  color: red;
+} 
+  
+/* ===== 금요일 전용 디자인 ===== */
+
+/* 오전·오후 시간 */
+.friday-card .friday-time {
+  width: calc(100% - 12px);
+  min-height: 58px;
+  margin: 6px 6px 0;
+  padding: 10px 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: #8BB6D5;
+  border-radius: 7px;
+}
+
+.friday-card .friday-time .time-label {
+  font-size: 25px;
+  font-weight: 900;
+  text-align: center;
+}
+
+/* 봉사 모임 장소 */
+.friday-card .friday-time .place-label {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* 다양한 봉사 / 재방문·성서연구 */
+.friday-card .friday-activity-button {
+  min-height: 58px;
+  margin: 6px 6px 0;
+  padding: 10px 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 25px;
+  font-weight: 900;
+  color: #18324a;
+  background: #B5D2E7;
+  border-radius: 7px;
+}
+
+/* 일반 신청인 버튼 */
+.friday-card .friday-people {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding: 6px;
+}
+
+.friday-card .friday-people-no-border span {
+  min-height: 48px;
+  padding: 10px 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 800;
+  color: #18324a;
+  background: #e6f2fb;
+  border: 0;
+  border-radius: 7px;
+}
+
+/* 순회 감독자 부부 버튼 */
+.friday-card .friday-people span.friday-supervisor {
+  grid-column: auto;
+  min-height: 52px;
+  font-size: 22px;
+  font-weight: 900;
+  background: #F3D9A5;
+}
+/* 금요일 오후 봉사 마련 없음 */
+.friday-afternoon {
+  min-height: 58px;
+  margin: 6px 6px 0;
+  padding: 10px 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  font-size: 25px;
+  font-weight: 900;
+  color: red;
+  background: transparent;
+}
+  
+/* 어두운 모드 금요일 */
+body.dark-mode .friday-time {
+  background: #8BB6D5;
+  color: #18324a;
+}
+
+body.dark-mode .friday-activity {
+  background: #B5D2E7;
+  color: #18324a;
+}
+
+body.dark-mode .friday-people span {
+  background: #e6f2fb;
+  color: #18324a;
+}
+
+body.dark-mode .friday-people span.friday-supervisor {
+  background: #F3D9A5;
+  color: #18324a;
+}
+
+body.dark-mode .friday-afternoon {
+  color: red;
+}
+
+
+/* ===== 토요일 전용 디자인 ===== */
+
+/* 오전 [AM 9:45] */
+.saturday-time {
+  min-height: 58px;
+  margin: 6px 6px 0;
+  padding: 10px 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 25px;
+  font-weight: 900;
+  color: #18324a;
+  background: #8BB6D5;
+  border-radius: 7px;
+}
+
+/* 호별 방문 */
+.saturday-activity {
+  min-height: 58px;
+  margin: 6px 6px 0;
+  padding: 10px 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 25px;
+  font-weight: 900;
+  color: #18324a;
+  background: #B5D2E7;
+  border-radius: 7px;
+}
+
+/* 일반 신청인 버튼 */
+.saturday-people {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding: 6px;
+}
+
+.saturday-people span {
+  min-width: 0;
+  min-height: 48px;
+  padding: 10px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 900;
+  color: #18324a;
+  background: #e6f2fb;
+  border-radius: 7px;
+  overflow-wrap: anywhere;
+}
+
+/* 순회 감독자 부부 버튼 */
+.saturday-people span.saturday-supervisor {
+  min-height: 52px;
+  font-size: 22px;
+  font-weight: 900;
+  background: #F3D9A5;
+}
+
+/* 오후 봉사 마련 없음 */
+.saturday-afternoon {
+  min-height: 58px;
+  margin: 6px 0 0;
+  padding: 10px 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  font-size: 25px;
+  font-weight: 900;
+  color: red;
+  background: transparent;
+  white-space: nowrap;
+  border-bottom: 1px solid #858585;
+}
+
+/* 토요일 오후 모임 */
+.saturday-meeting {
+  min-height: 42px;
+  margin: 0;
+  padding: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 900;
+  color: #18324a;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #858585;
+}
+
+/* 어두운 모드 토요일 */
+body.dark-mode .saturday-time,
+body.dark-mode .saturday-activity,
+body.dark-mode .saturday-people span {
+  color: #18324a;
+}
+
+/* 어두운 모드 토요일 모임 */
+body.dark-mode .saturday-meeting {
+  color: #fff;
+}
+
+body.dark-mode .saturday-afternoon {
+  color: red;
+}
+
+
+/* ===== 일요일 전용 디자인 ===== */
+
+/* 오전 [AM 9:45] */
+.sunday-time {
+  min-height: 58px;
+  margin: 6px 6px 0;
+  padding: 10px 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 25px;
+  font-weight: 900;
+  color: #18324a;
+  background: #8BB6D5;
+  border-radius: 7px;
+}
+
+/* 호별 방문 */
+.sunday-activity {
+  min-height: 58px;
+  margin: 6px 6px 0;
+  padding: 10px 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 25px;
+  font-weight: 900;
+  color: #18324a;
+  background: #B5D2E7;
+  border-radius: 7px;
+}
+
+/* 순회 감독자 부부 버튼 */
+.sunday-people {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding: 6px;
+}
+
+.sunday-people span {
+  min-width: 0;
+  min-height: 48px;
+  padding: 10px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 900;
+  color: #18324a;
+  background: #e6f2fb;
+  border-radius: 7px;
+  overflow-wrap: anywhere;
+}
+
+/* 순회 감독자 부부 버튼 */
+.sunday-people span.sunday-supervisor {
+  min-height: 52px;
+  font-size: 22px;
+  font-weight: 900;
+  background: #F3D9A5;
+}
+
+/* 오후 봉사 마련 없음 */
+.sunday-afternoon {
+  min-height: 58px;
+  margin: 6px 6px 0;
+  padding: 10px 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  font-size: 25px;
+  font-weight: 900;
+  color: red;
+  background: transparent;
+  white-space: nowrap;
+}
+
+/* 어두운 모드 일요일 */
+body.dark-mode .sunday-time,
+body.dark-mode .sunday-activity,
+body.dark-mode .sunday-people span {
+  color: #18324a;
+}
+
+body.dark-mode .sunday-afternoon {
+  color: red;
+}
+
+/* ===== 오전·오후 시간과 장소를 한 버튼에 위아래 두 줄로 표시 ===== */
+
+.schedule-time,
+.wednesday-time,
+.thursday-morning,
+.friday-card .friday-time,
+.saturday-time,
+.sunday-time {
+  width: calc(100% - 12px);
+  min-height: 68px;
+  margin: 6px 6px 0;
+  padding: 10px 8px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+
+  text-align: center;
+  white-space: nowrap;
+  border-radius: 7px;
+}
+
+.schedule-time .time-label,
+.wednesday-time .time-label,
+.thursday-morning .time-label,
+.friday-card .friday-time .time-label,
+.saturday-time .time-label,
+.sunday-time .time-label {
+  flex-shrink: 0;
+  font-size: 25px;
+  font-weight: 900;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.schedule-time .place-label,
+.wednesday-time .place-label,
+.thursday-morning .place-label,
+.friday-card .friday-time .place-label,
+.saturday-time .place-label,
+.sunday-time .place-label {
+  flex-shrink: 0;
+  font-size: 20px;
+  font-weight: 800;
+  text-align: center;
+  white-space: nowrap;
+}
+  
+</style>
+</head>
+
+<body>
+
+<header class="top-bar">
+  <button class="nav-btn" onclick="history.back()" aria-label="뒤로가기">‹</button>
+
+  <h1>순회 방문 계획표</h1>
+
+  <button class="nav-btn settings-button"
+    type="button"
+    onclick="toggleSettings()"
+    aria-label="설정">⚙</button>
+</header>
+<main>
+
+  <section class="week-card">
+    <div class="week-title" id="weekTitle"></div>
+    <div class="week-date" id="weekDate"></div>
+  </section>
+
+  <div id="scheduleContainer"></div>
+
+</main><div id="settingsPanel" class="settings-panel">
+
+  <div class="settings-theme-row">
+    <button type="button" id="lightBtn"
+      class="theme-btn" onclick="setTheme('light')">
+      ☀ 밝게
+    </button>
+
+    <button type="button" id="darkBtn"
+      class="theme-btn" onclick="setTheme('dark')">
+      🌙 어둡게
+    </button>
+  </div>
+
+  <div class="settings-font-row">
+    <button type="button" class="font-btn"
+      onclick="changeFont(-10)" aria-label="글자 작게">−</button>
+
+    <div id="fontSize" class="font-size">100%</div>
+
+    <button type="button" class="font-btn"
+      onclick="changeFont(10)" aria-label="글자 크게">＋</button>
+  </div>
+
+</div>
+
+<script>
+function toggleSettings() {
+  document.getElementById("settingsPanel")
+    .classList.toggle("show");
+}
+
+let fontPercent = 100;
+
+function setTheme(theme) {
+  const isLight = theme === "light";
+
+  document.body.classList.toggle("dark-mode", !isLight);
+
+  document.getElementById("lightBtn")
+    .classList.toggle("active", isLight);
+
+  document.getElementById("darkBtn")
+    .classList.toggle("active", !isLight);
+
+  localStorage.setItem("northBoardTheme", theme);
+}
+
+function setFontPercent(percent) {
+  fontPercent = Math.max(80, Math.min(150, percent));
+
+  document.getElementById("fontSize").textContent =
+    fontPercent + "%";
+
+  document.querySelector("main").style.zoom =
+    fontPercent + "%";
+
+  localStorage.setItem(
+    "northBoardFontPercent",
+    String(fontPercent)
+  );
+}
+
+function changeFont(amount) {
+  setFontPercent(fontPercent + amount);
+}
+
+(function restoreSettings() {
+  const savedTheme = localStorage.getItem("northBoardTheme");
+  const savedFont = Number(
+    localStorage.getItem("northBoardFontPercent")
+  );
+
+  setTheme(savedTheme === "light" ? "light" : "dark");
+
+   setFontPercent(
+    Number.isFinite(savedFont) &&
+    savedFont >= 80 &&
+    savedFont <= 150
+      ? savedFont
+      : 100
+  );
+})();
+
+/* ===== 전체 일정 Apps Script 데이터 연결 ===== */
+
+const FRIDAY_SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbzG_HeGUoqZHMzObeK6KD3ch22S7eMzG0jRx8KcM0Nf0k_Fy3KFjshZUzB6BNj7Eo7Wwg/exec";
+
+
+function loadFridaySchedule() {
+
+  window.receiveFridaySchedule = function(data) {
+
+    if (!data || data.error || !data.rows) {
+      document.getElementById("scheduleContainer").textContent =
+        "일정을 불러오지 못했습니다.";
+      return;
+    }
+
+    document.getElementById("weekTitle").textContent =
+  data.rows["1"]?.b || "";
+
+document.getElementById("weekDate").textContent =
+  data.rows["2"]?.b || "";
+
+    renderAllSchedules(data.rows);
+  };
+
+  const script = document.createElement("script");
+
+  script.src = FRIDAY_SCRIPT_URL +
+    "?callback=receiveFridaySchedule&t=" + Date.now();
+
+  script.onerror = function() {
+    document.getElementById("scheduleContainer").textContent =
+      "일정 연결에 실패했습니다.";
+  };
+
+  document.body.appendChild(script);
+}
+
+
+function getB(rows, symbol) {
+  return rows[symbol]?.b || "";
+}
+
+
+function getC(rows, symbol) {
+  return rows[symbol]?.c || "";
+}
+
+
+function makeElement(tag, className, text) {
+
+  const element = document.createElement(tag);
+
+  if (className) {
+    element.className = className;
+  }
+
+  element.textContent = text || "";
+
+  return element;
+}
+
+/* ===== 시간 + 장소 한 줄 버튼 ===== */
+
+function addTimeButton(parent, timeText, placeText, className) {
+
+  if (!timeText) return;
+
+  const button = makeElement("div", className, "");
+
+  button.appendChild(
+    makeElement(
+      "span",
+      "time-label",
+      String(timeText).trim()
+    )
+  );
+
+  if (placeText && String(placeText).trim()) {
+
+    let place = String(placeText).trim();
+
+    if (!place.startsWith("장소:")) {
+      place = "장소:" + place.replace(/\s+/g, "");
+    }
+
+    button.appendChild(
+      makeElement(
+        "span",
+        "place-label",
+        place
+      )
+    );
+  }
+
+  parent.appendChild(button);
+}  
+
+function addLine(
+  parent,
+  text,
+  className = "line",
+  applyButtonDesign = false
+) {
+  if (!text) return;
+
+  const lineText = String(text).trim();
+
+  // 버튼 디자인 적용을 요청한 항목만 변경
+  if (applyButtonDesign) {
+
+    // 오전·오후 봉사 모임 장소
+    if (
+      /^(오전|오후)\b/.test(lineText) &&
+      /\b(AM|PM)\s*\d{1,2}:\d{2}\b/i.test(lineText)
+    ) {
+      const time = makeElement("div", "schedule-time", "");
+
+      const timeLabel = makeElement(
+        "span",
+        "time-label",
+        lineText.replace(/봉사\s*모임\s*장소/g, "").trim()
+      );
+
+      const placeLabel = makeElement(
+        "span",
+        "place-label",
+        "봉사 모임 장소"
+      );
+
+      time.appendChild(timeLabel);
+      time.appendChild(placeLabel);
+      parent.appendChild(time);
+      return;
+    }
+
+    // 다양한 봉사
+    if (lineText.includes("다양한 봉사")) {
+      parent.appendChild(
+        makeElement(
+          "div",
+          "service-activity-button",
+          lineText
+        )
+      );
+      return;
+    }
+  }
+
+  // 그 밖의 항목은 기존 방식 그대로 표시
+  parent.appendChild(
+    makeElement("div", className, text)
+  );
+}
+
+
+function addPeople(parent, rows, symbols, className = "people") {
+
+  const people = makeElement("div", className, "");
+
+  symbols.forEach(function(symbol) {
+
+    const left = getB(rows, symbol);
+    const right = getC(rows, symbol);
+
+    if (left || right) {
+
+      if (left) {
+        people.appendChild(
+          makeElement("span", "", left)
+        );
+      }
+
+      if (right) {
+        people.appendChild(
+          makeElement("span", "", right)
+        );
+      }
+    }
+  });
+
+  parent.appendChild(people);
+}
+
+function addLeader(parent, text) {
+
+  if (text) {
+
+    parent.appendChild(
+      makeElement("div", "leader", "인도자 : " + text)
+    );
+  }
+}
+
+
+function addCard(container, title, leader) {
+
+  const card = makeElement("section", "schedule-card", "");
+
+  const header = makeElement("div", "day-header", "");
+
+  header.appendChild(
+    makeElement("div", "day-name", title)
+  );
+
+  header.appendChild(
+    makeElement(
+      "div",
+      "day-leader",
+      leader
+        ? "인도자 : " + leader.replace(/^인도자\s*:\s*/, "")
+        : ""
+    )
+  );
+
+  card.appendChild(header);
+
+  container.appendChild(card);
+
+  return card;
+}
+
+
+function addFridayPart(
+  container,
+  rows,
+  timeSymbol,
+  activitySymbol,
+  peopleSymbols
+) {
+
+  const timeText = getB(rows, timeSymbol);
+  const activityText = getB(rows, activitySymbol);
+
+  const time = makeElement("div", "schedule-time", "");
+
+  const timeLabel = makeElement(
+    "span",
+    "time-label",
+    timeText.replace(/봉사\s*모임장소/g, "").trim()
+  );
+
+  const placeLabel = makeElement(
+    "span",
+    "place-label",
+    "봉사 모임 장소"
+  );
+
+  time.appendChild(timeLabel);
+  time.appendChild(placeLabel);
+
+  container.appendChild(time);
+
+ addLine(
+  container,
+  activityText,
+  "service-activity-button"
+);
+
+  const people = makeElement("div", "schedule-people", "");
+
+  peopleSymbols.forEach(function(symbol) {
+
+    [getB(rows, symbol), getC(rows, symbol)].forEach(function(name) {
+
+      if (name) {
+        people.appendChild(
+          makeElement("span", "", name)
+        );
+      }
+    });
+  });
+
+  container.appendChild(people);
+}
+
+
+function renderAllSchedules(rows) {
+
+  const container = document.getElementById("scheduleContainer");
+
+  container.replaceChildren();
+
+
+  // 화요일
+  {
+  const card = addCard(
+  container,
+  getB(rows, "3-1"),
+  getC(rows, "3-1")
+);
+
+addLine(card, getB(rows, "3-2"), "schedule-activity");
+addLine(card, getB(rows, "3-3"), "schedule-activity");
+  }
+
+
+  // 수요일
+{
+  const card = addCard(
+    container,
+    getB(rows, "4-1"),
+    getC(rows, "4-1")
+  );
+
+  // 오전 봉사 마련 없음
+  const morning = makeElement("div", "wednesday-morning", "");
+
+  morning.appendChild(
+    makeElement("span", "", getB(rows, "4-2") || "오전")
+  );
+
+  morning.appendChild(
+    makeElement("span", "", getC(rows, "4-2") || "봉사 마련 없음")
+  );
+
+  card.appendChild(morning);
+
+ // 오후 1:30 + 봉사 모임 장소
+addTimeButton(
+  card,
+  getB(rows, "4-3"),
+  getC(rows, "4-3"),
+  "wednesday-time"
+);
+
+  // 재방문 / 성서 연구
+  addLine(card, getB(rows, "4-4"), "wednesday-activity");
+
+  // 순회 감독자 부부
+  addPeople(card, rows, ["4-5"], "schedule-people wednesday-supervisor");
+
+  // 오솔잎 형제 / 오민아 자매
+  addPeople(card, rows, ["4-6"], "schedule-people wednesday-people");
+
+  // 한카이더 추가
+  addPeople(card, rows, ["4-7"], "schedule-people wednesday-people");
+
+ // 오후 3:00 + 봉사 모임 장소
+addTimeButton(
+  card,
+  getB(rows, "4-8"),
+  getC(rows, "4-8"),
+  "wednesday-time"
+);
+
+  // 호별 방문
+  addLine(card, getB(rows, "4-9"), "wednesday-activity");
+
+  // 윤재원 형제 / 박여송 자매
+  addPeople(card, rows, ["4-10"], "schedule-people wednesday-supervisor");
+
+  // 신청인
+  addPeople(card, rows, ["4-11"], "schedule-people wednesday-people");
+
+  // 신청인
+  addPeople(card, rows, ["4-12"], "schedule-people wednesday-people");
+
+  // 신청인
+  addPeople(card, rows, ["4-13"], "schedule-people wednesday-people");
+}
+ 
+   // 목요일
+  {
+    const card = addCard(
+      container,
+      getB(rows, "5-1"),
+      getC(rows, "5-1")
+    );
+
+   // 오전 9:45 + 봉사 모임 장소
+addTimeButton(
+  card,
+  getB(rows, "5-2"),
+  getC(rows, "5-2"),
+  "thursday-morning"
+);
+
+    // 공개증거 (전시대)
+    addLine(card, getB(rows, "5-3"), "thursday-activity");
+
+    // 첫 번째 신청자 그룹
+    const morningPeople = makeElement(
+      "div",
+      "schedule-people thursday-people",
+      ""
+    );
+
+    ["5-4", "5-5", "5-6", "5-7"].forEach(function(symbol) {
+      [getB(rows, symbol), getC(rows, symbol)].forEach(function(name) {
+        if (!name) return;
+
+        const isSupervisor = symbol === "5-4";
+
+        morningPeople.appendChild(
+          makeElement(
+            "span",
+            isSupervisor ? "thursday-supervisor" : "thursday-applicant",
+            name
+          )
+        );
+      });
+    });
+
+    card.appendChild(morningPeople);
+
+   // 오후 1:30 + 봉사 모임 장소
+addTimeButton(
+  card,
+  getB(rows, "5-8"),
+  getC(rows, "5-8"),
+  "thursday-morning"
+);
+
+    // 재방문 / 성서 연구
+    addLine(card, getB(rows, "5-9"), "thursday-activity");
+
+    // 두 번째 신청자 그룹
+    const afternoonPeople = makeElement(
+      "div",
+      "schedule-people thursday-people",
+      ""
+    );
+
+    ["5-10", "5-11", "5-12"].forEach(function(symbol) {
+      [getB(rows, symbol), getC(rows, symbol)].forEach(function(name) {
+        if (!name) return;
+
+        const isSupervisor = symbol === "5-10";
+
+        afternoonPeople.appendChild(
+          makeElement(
+            "span",
+            isSupervisor ? "thursday-supervisor" : "thursday-applicant",
+            name
+          )
+        );
+      });
+    });
+
+    card.appendChild(afternoonPeople);
+  }
+
+
+  // 금요일
+  {
+    const card = makeElement("section", "schedule-card friday-card", "");
+
+    const header = makeElement("div", "friday-header", "");
+
+    header.appendChild(
+      makeElement("div", "", getB(rows, "6-1"))
+    );
+
+    header.appendChild(
+      makeElement(
+        "div",
+        "",
+        getC(rows, "6-1")
+          ? "인도자 : " + getC(rows, "6-1").replace(/^인도자\s*:\s*/, "")
+          : ""
+      )
+    );
+
+    card.appendChild(header);
+
+   function addFridayStyledPart(timeSymbol, activitySymbol, peopleSymbols) {
+
+  const timeText = getB(rows, timeSymbol);
+  const placeText = getC(rows, timeSymbol);
+
+  if (timeText) {
+
+    addTimeButton(
+      card,
+      timeText,
+      placeText,
+      "friday-time"
+    );
+  }
+
+  const activityText = getB(rows, activitySymbol);
+      if (activityText) {
+        card.appendChild(
+          makeElement("div", "friday-activity-button", activityText)
+        );
+      }
+
+      const people = makeElement("div", "friday-people friday-people-no-border", "");
+
+     peopleSymbols.forEach(function(symbol) {
+  [getB(rows, symbol), getC(rows, symbol)].forEach(function(name) {
+    if (!name) return;
+
+    const isSupervisor =
+      symbol === "6-4" || symbol === "6-10";
+
+    people.appendChild(
+      makeElement(
+        "span",
+        isSupervisor ? "friday-supervisor" : "",
+        name
+      )
+    );
+  });
+});
+
+      if (people.children.length) {
+        card.appendChild(people);
+      }
+    }
+
+     // 오전 일정
+    addFridayStyledPart("6-2", "6-3", ["6-4", "6-5", "6-6", "6-7"]);
+
+    // 오후 : 봉사 마련 없음
+    const afternoon = makeElement("div", "friday-afternoon", "");
+
+    afternoon.appendChild(
+      makeElement("span", "", getB(rows, "6-8") || "오후 :")
+    );
+
+    afternoon.appendChild(
+      makeElement("span", "", getC(rows, "6-8") || "봉사 마련 없음")
+    );
+
+    card.appendChild(afternoon);
+
+    container.appendChild(card);
+  }
+
+  
+  
+  // 토요일
+  {
+    const card = addCard(
+      container,
+      getB(rows, "7-1"),
+      getC(rows, "7-1")
+    );
+
+  // 오전 [AM 9:45] + 봉사 모임 장소
+addTimeButton(
+  card,
+  getB(rows, "7-2"),
+  getC(rows, "7-2"),
+  "saturday-time"
+);
+
+    // 호별 방문
+    addLine(card, getB(rows, "7-3"), "saturday-activity");
+
+    // 인도자 부부와 일반 신청자
+    const people = makeElement("div", "saturday-people", "");
+
+    ["7-4", "7-5", "7-6", "7-7"].forEach(function(symbol) {
+      [getB(rows, symbol), getC(rows, symbol)].forEach(function(name) {
+        if (!name) return;
+
+        const isSupervisor = symbol === "7-4";
+
+        people.appendChild(
+          makeElement(
+            "span",
+            isSupervisor ? "saturday-supervisor" : "",
+            name
+          )
+        );
+      });
+    });
+
+    if (people.children.length) {
+      card.appendChild(people);
+    }
+
+    // 오후 : 봉사 마련 없음
+    const afternoon = makeElement("div", "saturday-afternoon", "");
+
+    afternoon.appendChild(
+      makeElement("span", "", getB(rows, "7-8") || "오후 :")
+    );
+
+    afternoon.appendChild(
+      makeElement("span", "", getC(rows, "7-8") || "봉사 마련 없음")
+    );
+
+    card.appendChild(afternoon);
+
+    // 파이오니아 모임
+    addLine(card, getB(rows, "7-9"), "saturday-meeting");
+
+    // 장로 봉사의 종 모임
+    addLine(card, getB(rows, "7-10"), "saturday-meeting");
+
+    // 주말 집회
+    addLine(card, getB(rows, "7-11"), "saturday-meeting");
+  }
+
+
+ 
+  // 일요일
+  {
+    const card = addCard(
+      container,
+      getB(rows, "8-1"),
+      getC(rows, "8-1")
+    );
+
+   // 오전 [AM 9:45] + 봉사 모임 장소
+addTimeButton(
+  card,
+  getB(rows, "8-2"),
+  getC(rows, "8-2"),
+  "sunday-time"
+);
+
+    // 호별 방문
+    addLine(card, getB(rows, "8-3"), "sunday-activity");
+
+    // 인도자 부부와 일반 신청자
+    const people = makeElement("div", "sunday-people", "");
+
+    ["8-4", "8-5", "8-6", "8-7"].forEach(function(symbol) {
+      [getB(rows, symbol), getC(rows, symbol)].forEach(function(name) {
+        if (!name) return;
+
+        const isSupervisor = symbol === "8-4";
+
+        people.appendChild(
+          makeElement(
+            "span",
+            isSupervisor ? "sunday-supervisor" : "",
+            name
+          )
+        );
+      });
+    });
+
+    if (people.children.length) {
+      card.appendChild(people);
+    }
+
+    // 오후 : 봉사 마련 없음
+    const afternoon = makeElement("div", "sunday-afternoon", "");
+
+    afternoon.appendChild(
+      makeElement("span", "", getB(rows, "8-8") || "오후 :")
+    );
+
+    afternoon.appendChild(
+      makeElement("span", "", getC(rows, "8-8") || "봉사 마련 없음")
+    );
+
+    card.appendChild(afternoon);
+
+    // 기존 일요일 추가 항목은 유지
+    addLine(card, getB(rows, "8-9"), "service-activity-button");
+  }
+
+  
+  // 점심 식사 및 교제
+  {
+    const card = addCard(container, getB(rows, "9-1"));
+
+    const people = makeElement("div", "lunch-people", "");
+
+    ["9-2", "9-3", "9-4", "9-5", "9-6"].forEach(function(symbol) {
+
+      const left = getB(rows, symbol);
+      const right = getC(rows, symbol);
+
+      if (left) {
+        people.appendChild(
+          makeElement("span", "", left)
+        );
+      }
+
+      if (right) {
+        people.appendChild(
+          makeElement("span", "", right)
+        );
+      }
+    });
+
+    card.appendChild(people);
+  }
+}
+
+
+loadFridaySchedule();
+
+</script>
+
+</body>
+</html>
