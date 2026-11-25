@@ -784,26 +784,30 @@ function loadNotices(data) {
 
       });
 
-      // 광고별 재생 버튼
-      const playButton = document.createElement("button");
-      playButton.type = "button";
-      playButton.className = "notice-play-button";
-      playButton.textContent = "▶ 재생";
+    // 순회방문 광고는 준비중 문구만 표시
+if ((section.title || "").includes("순회방문")) {
 
-     playButton.onclick = function() {
+  const message = document.createElement("div");
+  message.className = "notice-play-button";
+  message.textContent = "준비중입니다.";
+  message.style.textAlign = "center";
 
-  if ((section.title || "").includes("순회방문")) {
-    const utterance =
-      new SpeechSynthesisUtterance("준비중입니다.");
-    utterance.lang = "ko-KR";
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utterance);
-    return;
-  }
+  noticeBox.appendChild(message);
 
-  toggleNoticeSpeech(playButton, speechText);
-};
-      noticeBox.appendChild(playButton);
+} else {
+
+  // 기존 광고별 재생 버튼
+  const playButton = document.createElement("button");
+  playButton.type = "button";
+  playButton.className = "notice-play-button";
+  playButton.textContent = "▶ 재생";
+
+  playButton.onclick = function() {
+    toggleNoticeSpeech(playButton, speechText);
+  };
+
+  noticeBox.appendChild(playButton);
+}
 
       // 광고 하나를 날짜별 박스에 추가
       monthBox.appendChild(noticeBox);
