@@ -427,6 +427,17 @@ body.dark-mode #content .notice-text {
 .group-top-buttons button.active {
   background: #35536d;
 }
+  /* 준비중 안내 */
+.coming-soon {
+  min-height: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 26px;
+  font-weight: 900;
+  color: #245477;
+  text-align: center;
+}
   
 </style>
 </head>
@@ -493,10 +504,11 @@ body.dark-mode #content .notice-text {
 
   </div>
 
-  <main id="content">
-  <p id="loadingMessage">알림을 불러오는 중입니다…</p>
+<main id="content">
+  <div class="coming-soon">
+    준비중입니다.
+  </div>
 </main>
-
 <!-- 하단 고정 메뉴 -->
 <div class="group-top-buttons">
 
