@@ -790,10 +790,19 @@ function loadNotices(data) {
       playButton.className = "notice-play-button";
       playButton.textContent = "▶ 재생";
 
-      playButton.onclick = function() {
-        toggleNoticeSpeech(playButton, speechText);
-      };
+     playButton.onclick = function() {
 
+  if ((section.title || "").includes("순회방문")) {
+    const utterance =
+      new SpeechSynthesisUtterance("준비중입니다.");
+    utterance.lang = "ko-KR";
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utterance);
+    return;
+  }
+
+  toggleNoticeSpeech(playButton, speechText);
+};
       noticeBox.appendChild(playButton);
 
       // 광고 하나를 날짜별 박스에 추가
