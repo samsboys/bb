@@ -587,9 +587,14 @@ async function loadNotices() {
       }
 
       // 알림 카드 생성
-      const card = document.createElement("section");
-      card.className = "notice-card";
+const card = document.createElement("section");
+card.className = "notice-card";
 
+if ((notice.title || "").includes("순회방문")) {
+  card.textContent = "준비중입니다.";
+  noticeList.appendChild(card);
+  return;
+}
       // 제목
       const title = document.createElement("div");
       title.className = "notice-title";
