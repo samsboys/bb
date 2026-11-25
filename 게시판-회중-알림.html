@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+
+  <title>알림</title>
+
+  <style>
+html {
+  touch-action: pan-x pan-y pinch-zoom;
+}
+
+body {
+  margin: 0;
+  padding-top: 82px;
+  background: #f2f4f7;
+  color: #222222;
+  font-family: Arial, sans-serif;
+}
+
+/* =====================================
+   상단 고정 메뉴
+===================================== */
+.fixed-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  height: 62px;
+  padding: 0 12px;
+
+  display: grid;
+  grid-template-columns: 48px 1fr 48px;
+  align-items: center;
+  gap: 10px;
+
+  background: #18324a;
+  color: #ffffff;
+
+  box-sizing: border-box;
+  z-index: 1000;
+}
+
+/* 상단 버튼 공통 */
+.top-button {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  background: #234563;
+  color: #ffffff;
+
+  border: 1px solid #9db2c4;
+  border-radius: 8px;
+
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+/* 뒤로가기 버튼 */
+.back-button {
+  font-size: 25px;
+  font-weight: 400;
+}
+
+/* 가운데 제목 */
+.main-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+
+  color: #ffffff;
+
+  font-size: 30px;
+  font-weight: 900;
+
+  white-space: nowrap;
+}
+
+/* 설정 버튼 */
+.settings-button {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+
+  width: 42px;
+  height: 42px;
+
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* =====================================
+   설정창
+===================================== */
+.settings-panel {
+  display: none;
+
+  position: fixed;
+  top: 70px;
+  right: 12px;
+
+  width: 230px;
+  max-width: calc(100vw - 24px);
+
+  padding: 12px;
+
+  z-index: 1100;
+
+  border: 1px solid #dedfe5;
+  border-radius: 16px;
+
+  background: #ffffff;
+  color: #222222;
+
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.18);
+
+  box-sizing: border-box;
+}
+
+.settings-panel.show {
+  display: block;
+}
+
+/* 밝게 / 어둡게 */
+.settings-theme-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin-bottom: 7px;
+}
+
+/* 테마 버튼 */
+.theme-btn {
+  min-width: 0;
+  height: 42px;
+
+  padding: 0 4px;
+
+  border: 1px solid #dce0e7;
+  border-radius: 11px;
+
+  background: #f5f6f8;
+  color: #222222;
+
+  font-size: 13px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.theme-btn.active {
+  background: #eeeaff;
+  border-color: #7566ff;
+  color: #40348d;
+}
+
+/* 글자 크기 */
+.settings-font-row {
+  display: grid;
+  grid-template-columns: 50px 1fr 50px;
+  gap: 7px;
+  align-items: center;
+}
+
+/* 글자 크기 버튼 및 표시 */
+.font-btn,
+.font-size {
+  height: 42px;
+  min-width: 0;
+
+  border: 1px solid #dce0e7;
+  border-radius: 11px;
+
+  background: #f5f6f8;
+  color: #222222;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 900;
+}
+
+/* 글자 작게 / 크게 */
+.font-btn {
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* 글자 크기 표시 */
+.font-size {
+  font-size: 15px;
+}
+
+/* =====================================
+   알림 카드
+===================================== */
+#content {
+  padding: 12px 0 84px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.notice-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: calc(100% - 16px);
+  margin: 0 8px;
+  box-sizing: border-box;
+}
+
+/* 알림 하나 */
+.notice-card {
+  overflow: hidden;
+
+  background: #ffffff;
+  border: 1px solid #d4dbe3;
+  border-radius: 13px;
+
+  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.07);
+}
+
+/* 알림 제목 */
+.notice-title {
+  padding: 13px 15px;
+
+  background: #2459A6;
+  color: #ffffff;
+
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1.45;
+
+  word-break: keep-all;
+}
+
+.notice-body {
+  padding: 13px 15px 16px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  font-size: 20px;
+  line-height: 1.6;
+
+  word-break: keep-all;
+}
+
+.notice-date {
+  color: #174b80;
+  font-size: 22px;
+  font-weight: 800;
+
+  margin-bottom: 3px;
+}
+
+/* 알림 내용 줄바꿈 */
+.notice-detail {
+  white-space: pre-line;
+}
+
+/* =====================================
+   어두운 모드
+===================================== */
+body.dark-mode {
+  background: #181D24;
+  color: #E1E6ED;
+}
+
+/* 어두운 모드 카드 */
+body.dark-mode .notice-card {
+  background: #242C36;
+  border-color: #3B4654;
+  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.25);
+}
+
+/* 어두운 모드 제목 */
+body.dark-mode .notice-title {
+  background: #34445C;
+  color: #FFFFFF;
+}
+
+/* 어두운 모드 카드 내용 */
+body.dark-mode .notice-body {
+  color: #E1E6ED;
+}
+
+/* 어두운 모드 날짜 */
+body.dark-mode .notice-date {
+  color: #A9CEFF;
+}
+
+/* 어두운 모드 설정창 */
+body.dark-mode .settings-panel {
+  background: #242C36;
+  color: #E1E6ED;
+  border-color: #3B4654;
+}
+
+/* 어두운 모드 버튼 */
+body.dark-mode .settings-panel .theme-btn,
+body.dark-mode .settings-panel .font-btn,
+body.dark-mode .settings-panel .font-size {
+  background: #242C36;
+  color: #E1E6ED;
+  border-color: #3B4654;
+}
+
+/* 어두운 모드 선택 테마 */
+body.dark-mode .settings-panel .theme-btn.active {
+  background: #34445C;
+  border-color: #A9CEFF;
+  color: #FFFFFF;
+}
+    
+/* =====================================
+   하단 고정 메뉴 3개
+===================================== */
+.group-top-buttons {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 60px;
+  z-index: 1000;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  background: #18324a;
+  border-top: 1px solid rgba(255,255,255,.10);
+}
+
+.group-top-buttons button {
+  border: 0;
+  background: transparent;
+  color: #ffffff;
+
+  font-size: 20px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.group-top-buttons button:not(:last-child) {
+  border-right: 1px solid rgba(255,255,255,.25);
+}
+
+/* 현재 페이지 버튼 */
+.group-top-buttons button.active {
+  background: #35536d;
+}
+
+  </style>
+</head>
+
+<body>
+
+  <!-- 상단 메뉴 -->
+  <header class="fixed-header">
+
+    <!-- 홈으로 이동 -->
+    <button type="button"
+      class="top-button back-button"
+      onclick="window.location.replace('./index.html')"
+      aria-label="홈으로">‹</button>
+
+    <!-- 가운데 제목 -->
+    <div class="main-title">회중 알림</div>
+
+    <!-- 설정 -->
+    <button type="button"
+      class="top-button settings-button"
+      onclick="toggleSettings()"
+      aria-label="설정">⚙</button>
+
+  </header>
+
+  <!-- 설정창 -->
+  <div id="settingsPanel" class="settings-panel">
+
+    <!-- 밝게 / 어둡게 -->
+    <div class="settings-theme-row">
+
+      <button type="button"
+        id="lightBtn"
+        class="theme-btn"
+        onclick="setTheme('light')">
+        ☀ 밝게
+      </button>
+
+      <button type="button"
+        id="darkBtn"
+        class="theme-btn"
+        onclick="setTheme('dark')">
+        🌙 어둡게
+      </button>
+
+    </div>
+
+    <!-- 글자 크기 -->
+    <div class="settings-font-row">
+
+      <button type="button"
+        class="font-btn"
+        onclick="changeFont(-10)"
+        aria-label="글자 작게">−</button>
+
+      <div id="fontSize" class="font-size">100%</div>
+
+      <button type="button"
+        class="font-btn"
+        onclick="changeFont(10)"
+        aria-label="글자 크게">＋</button>
+
+    </div>
+
+  </div>
+
+  <!-- 알림 내용 -->
+  <main id="content">
+
+    <div class="notice-list" id="noticeList">
+  <!-- Apps Script에서 알림을 불러옵니다. -->
+</div>
+
+  </main>
+
+  <!-- 하단 고정 메뉴 -->
+  <div class="group-top-buttons">
+
+    <button type="button"
+      onclick="location.href='게시판-회중-광고.html'">
+      광고
+    </button>
+
+    <button type="button"
+      onclick="location.href='게시판-회중-순방.html'">
+      순회방문
+    </button>
+
+    <button type="button"
+      class="active"
+      aria-current="page"
+      onclick="location.href='게시판-회중-알림.html'">
+      알림
+    </button>
+
+  </div>
+
+<script>
+
+/* 설정창 열기 / 닫기 */
+function toggleSettings() {
+  document.getElementById("settingsPanel")
+    .classList.toggle("show");
+}
+
+/* 글자 크기 */
+let fontPercent = 100;
+
+/* 테마 설정 */
+function setTheme(theme) {
+
+  const isLight = theme === "light";
+
+  document.body.classList.toggle(
+    "dark-mode",
+    !isLight
+  );
+
+  document.getElementById("lightBtn")
+    .classList.toggle("active", isLight);
+
+  document.getElementById("darkBtn")
+    .classList.toggle("active", !isLight);
+
+  localStorage.setItem(
+    "northBoardTheme",
+    theme
+  );
+}
+
+/* 글자 크기 설정 */
+function setFontPercent(percent) {
+
+  fontPercent = Math.max(
+    80,
+    Math.min(150, percent)
+  );
+
+  document.getElementById("fontSize")
+    .textContent = fontPercent + "%";
+
+  document.querySelector("main").style.zoom =
+    fontPercent + "%";
+
+  localStorage.setItem(
+    "northBoardFontPercent",
+    String(fontPercent)
+  );
+}
+
+/* 글자 크기 변경 */
+function changeFont(amount) {
+  setFontPercent(fontPercent + amount);
+}
+
+/* 저장된 설정 불러오기 */
+(function restoreSettings() {
+
+  const savedTheme =
+    localStorage.getItem("northBoardTheme");
+
+  const savedFont =
+    Number(localStorage.getItem("northBoardFontPercent"));
+
+  setTheme(
+    savedTheme === "light"
+      ? "light"
+      : "dark"
+  );
+
+  setFontPercent(
+    Number.isFinite(savedFont) &&
+    savedFont >= 80 &&
+    savedFont <= 150
+      ? savedFont
+      : 100
+  );
+
+})();
+
+/* =====================================
+   Apps Script에서 알림 불러오기
+===================================== */
+
+const NOTICE_SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbw8L_EsIAt0LbXwYwdrIJI0gihxH9M93NtTg7cUjVPgtRZaWqGwabq5UBsCfeDUJ8SFDA/exec";
+
+async function loadNotices() {
+
+  const noticeList = document.getElementById("noticeList");
+
+  try {
+
+    const response = await fetch(NOTICE_SCRIPT_URL);
+    const notices = await response.json();
+
+    noticeList.innerHTML = "";
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    notices.forEach(notice => {
+
+      // 날짜 확인
+      const match = String(notice.date).match(
+        /(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일/
+      );
+
+      // 날짜가 지난 알림 숨기기
+      if (match) {
+        const noticeDate = new Date(
+          Number(match[1]),
+          Number(match[2]) - 1,
+          Number(match[3])
+        );
+
+        noticeDate.setHours(0, 0, 0, 0);
+
+        if (noticeDate < today) {
+          return;
+        }
+      }
+
+      // 알림 카드 생성
+      const card = document.createElement("section");
+      card.className = "notice-card";
+
+      // 제목
+      const title = document.createElement("div");
+      title.className = "notice-title";
+      title.textContent = notice.title || "";
+
+      // 카드 내용
+      const body = document.createElement("div");
+      body.className = "notice-body";
+
+      // 날짜
+      const date = document.createElement("div");
+      date.className = "notice-date";
+      date.textContent = notice.date || "";
+
+      // 상세 내용
+      const detail = document.createElement("div");
+      detail.className = "notice-detail";
+      detail.textContent = (notice.details || []).join("\n");
+
+      body.appendChild(date);
+      body.appendChild(detail);
+
+      card.appendChild(title);
+      card.appendChild(body);
+
+      noticeList.appendChild(card);
+
+    });
+
+  } catch (error) {
+
+    noticeList.textContent = "알림을 불러오지 못했습니다.";
+    console.error("알림 불러오기 오류:", error);
+
+  }
+
+}
+
+// 실행
+loadNotices();
+
+</script>
+
+</body>
+</html>
