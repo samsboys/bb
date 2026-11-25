@@ -744,20 +744,16 @@ function loadNotices(data) {
   // 광고 하나를 담는 별도 영역
   const noticeBox = document.createElement("div");
 
-  // 순회방문 광고는 준비중 문구만 표시
-  if ((section.title || "").includes("순회방문")) {
+ // 모든 광고는 준비중 문구만 표시
+const message = document.createElement("p");
+message.className = "notice-text";
+message.textContent = "준비중입니다.";
+message.style.textAlign = "center";
+message.style.fontWeight = "800";
 
-    const message = document.createElement("p");
-    message.className = "notice-text";
-    message.textContent = "준비중입니다.";
-    message.style.textAlign = "center";
-    message.style.fontWeight = "800";
-
-    noticeBox.appendChild(message);
-
-    monthBox.appendChild(noticeBox);
-    return;
-  }
+noticeBox.appendChild(message);
+monthBox.appendChild(noticeBox);
+return;
 
   // 광고 제목
   const sectionTitle = document.createElement("h3");
