@@ -738,63 +738,61 @@ function loadNotices(data) {
 
     monthBox.appendChild(monthTitle);
 
-    // 해당 날짜의 광고들
-    (dateData.sections || []).forEach(section => {
+ // 해당 날짜의 광고들
+(dateData.sections || []).forEach(section => {
 
-      // 광고 하나를 담는 별도 영역
-      const noticeBox = document.createElement("div");
+  // 광고 하나를 담는 별도 영역
+  const noticeBox = document.createElement("div");
 
-      // 광고 제목
-      const sectionTitle = document.createElement("h3");
-      sectionTitle.className = "notice-section-title";
-      sectionTitle.textContent = section.title || "";
+  // 순회방문 광고는 준비중 문구만 표시
+  if ((section.title || "").includes("순회방문")) {
 
-      noticeBox.appendChild(sectionTitle);
+    const message = document.createElement("p");
+    message.className = "notice-text";
+    message.textContent = "준비중입니다.";
+    message.style.textAlign = "center";
+    message.style.fontWeight = "800";
 
-      // 해당 광고의 음성 읽기 내용
-      let speechText = section.title || "";
+    noticeBox.appendChild(message);
 
-      // 본문을 시트 순서대로 표시
-      (section.contents || []).forEach(text => {
+    monthBox.appendChild(noticeBox);
+    return;
+  }
 
-        // 빈 내용은 표시하지 않음
-        if (!String(text || "").trim()) {
-          return;
-        }
+  // 광고 제목
+  const sectionTitle = document.createElement("h3");
+  sectionTitle.className = "notice-section-title";
+  sectionTitle.textContent = section.title || "";
 
-        const paragraph = document.createElement("p");
-        paragraph.className = "notice-text";
+  noticeBox.appendChild(sectionTitle);
 
-        // 본문 내용 유지
-        paragraph.textContent = String(text);
+  // 해당 광고의 음성 읽기 내용
+  let speechText = section.title || "";
 
-        // 2번, 3번 등 번호가 시작되는 본문 위에 간격 추가
-        const numberMatch = String(text)
-          .trim()
-          .match(/^(\d+)\s*[.)]/);
+  // 본문을 시트 순서대로 표시
+  (section.contents || []).forEach(text => {
 
-        if (numberMatch && Number(numberMatch[1]) >= 2) {
-          paragraph.classList.add("numbered-notice");
-        }
+    if (!String(text || "").trim()) {
+      return;
+    }
 
-        noticeBox.appendChild(paragraph);
+    const paragraph = document.createElement("p");
+    paragraph.className = "notice-text";
+    paragraph.textContent = String(text);
 
-        // 음성 읽기 내용에 추가
-        speechText += "\n" + String(text);
+    const numberMatch = String(text)
+      .trim()
+      .match(/^(\d+)\s*[.)]/);
 
-      });
+    if (numberMatch && Number(numberMatch[1]) >= 2) {
+      paragraph.classList.add("numbered-notice");
+    }
 
-    // 순회방문 광고는 준비중 문구만 표시
-if ((section.title || "").includes("순회방문")) {
+    noticeBox.appendChild(paragraph);
 
-  const message = document.createElement("div");
-  message.className = "notice-play-button";
-  message.textContent = "준비중입니다.";
-  message.style.textAlign = "center";
+    speechText += "\n" + String(text);
 
-  noticeBox.appendChild(message);
-
-} else {
+  });
 
   // 기존 광고별 재생 버튼
   const playButton = document.createElement("button");
@@ -807,19 +805,11 @@ if ((section.title || "").includes("순회방문")) {
   };
 
   noticeBox.appendChild(playButton);
-}
 
-      // 광고 하나를 날짜별 박스에 추가
-      monthBox.appendChild(noticeBox);
+  // 광고 하나를 날짜별 박스에 추가
+  monthBox.appendChild(noticeBox);
 
-    });
-
-    // 날짜별 박스 추가
-    content.appendChild(monthBox);
-
-  });
-
-}
+});
 
 function loadNoticesError() {
   document.getElementById("content").textContent =
