@@ -586,9 +586,24 @@ async function loadNotices() {
         }
       }
 
-      // 알림 카드 생성
+     // 알림 카드 생성
 const card = document.createElement("section");
 card.className = "notice-card";
+
+// 순회방문 알림은 준비중 문구만 표시
+if ((notice.title || "").includes("순회방문")) {
+
+  card.textContent = "준비중입니다.";
+
+  card.style.padding = "20px 15px";
+  card.style.textAlign = "center";
+  card.style.fontSize = "22px";
+  card.style.fontWeight = "900";
+  card.style.color = "#2459A6";
+
+  noticeList.appendChild(card);
+  return;
+}
 
 if ((notice.title || "").includes("순회방문")) {
   card.textContent = "준비중입니다.";
