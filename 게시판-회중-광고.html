@@ -814,10 +814,18 @@ return;
 
   noticeBox.appendChild(playButton);
 
-  // 광고 하나를 날짜별 박스에 추가
+   // 광고 하나를 날짜별 박스에 추가
   monthBox.appendChild(noticeBox);
 
-});
+}); // 광고 목록 반복 종료
+
+  // 날짜별 박스를 화면에 추가
+  content.appendChild(monthBox);
+
+}); // 날짜 목록 반복 종료
+
+} // loadNotices 함수 종료
+
 
 function loadNoticesError() {
   document.getElementById("content").textContent =
